@@ -1,0 +1,35 @@
+{
+  "name": "frame-server",
+  "version": "1.0.0",
+  "description": "Modular Node/Express server. Use it as a quick, lightweight server or build it up easily with the features you need.",
+  "main": "bin/frame-server.cli.js",
+  "bin": {
+    "fserver": "bin/frame-server.cli.js"
+  },
+  "scripts": {
+    "postinstall": "node install/postinstall.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjdv/frame-server.git"
+  },
+  "keywords": [
+    "server",
+    "node",
+    "express",
+    "http",
+    "frame",
+    "modular"
+  ],
+  "author": "Jacek Jakubik (https://github.com/jjdv)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jjdv/frame-server/issues"
+  },
+  "homepage": "https://github.com/jjdv/frame-server#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "helmet": "^3.15.0"
+  }
+}

@@ -1,52 +1,75 @@
 'use strict';
 
-const path = require('path')
-const fs = require('fs')
+const rootDir = process.env.INIT_CWD || process.cwd()
 
-const exit = exports.exit = function (errMsg) {
-    console.error(errMsg)
+function exit(...errMsg) {
+    console.error(...errMsg)
     process.exit(9)
 }
 
-exports.getConfPath = function (rootDir, confDirs, confFileName) {
-    let confPath
+async function getServerMiddlewareDefs(serverConfig) {
+    if (!serverConfig.middlewares) serverConfig.middlewares = []
+    const middlewares = serverConfig.middlewares
     
-    if (process.argv.length > 2) {
-        // confPath provided as cli argument
-
-        const confDir = process.argv[2]
-        confPath = path.resolve(rootDir, confDir, confFileName)
-        if (!fs.existsSync(confPath)) exit( dirErrMsg(confDirs, confFileName, confPath) )
-
-        return confPath
-    } else {
-        // conf file to be found in default directories
-
-        let notFound = true
-        for (let i=0; i<confDirs.length; i++) {
-            confPath = path.resolve(rootDir, confDirs[i], confFileName)
-            if (fs.existsSync(confPath)) {
-                notFound = false
-                break
-            }
+    const middlewareIds = middlewareDefIds(middlewares)
+    const helmetIndex = middlewareIds.indexOf('helmet')
+    if (helmetIndex == -1) {
+        if (!serverConfig.noHelmet && !process.argv.includes('--no-helmet') && await addHelmet()) {
+            middlewares.unshift('helmet')
+            confirmServeMiddlewares(middlewares)
+            return middlewares
         }
-        return notFound ? null : confPath
+    } else if (helmetIndex > 0) {
+        middlewares.splice(helmetIndex, 1).concat(middlewares)
+        console.log("The 'helmet' middleware should be first on the middleware list. It's corrected for this session but please correct it also in your server configuration file.")
     }
+    confirmServeMiddlewares(middlewares)
+    return middlewares
 }
 
-exports.getLocalMiddleware = function (siteMiddleware) {
-    const middleware = require(siteMiddleware)
-    if (!middleware) exit('Error: siteMiddleware specified but not found in the given file.')
-    if (typeof middleware !== 'function') exit('Error: Middleware definition is not a function.')
+module.exports = { rootDir, exit, getServerMiddlewareDefs }
 
-    console.log('Site middleware installed.')
-    return middleware
-}
 
 //-------------------------------------------------------------------------------
 // supporting functions 
+//-------------------------------------------------------------------------------
 
-function dirErrMsg(confDirs, confFileName, confPath = null) {
-    const searchedDirs = confPath ? ("the dir: '" + confPath + "'") : ("any of the dirs: '" + confDirs.join("', '") + "'")
-    return `Error: No server config file '${confFileName}' found in ${searchedDirs}.`
+const validMiddlewareIds = Object.keys(require('./server-middleware.def').packageNames)
+
+function middlewareDefId(mDef) {
+    if (typeof mDef === 'string') {
+        if (!validMiddlewareIds.includes(mDef)) exit('Error: Invalid server middleware id: ', mDef)
+        
+        return mDef
+    }
+    if (
+        typeof mDef !== 'object' || mDef.constructor !== Object ||
+        !mDef.name || !validMiddlewareIds.includes(mDef.name)
+    ) exit('Error: Invalid server middleware definition: ', mDef)
+
+    return mDef.name
+}
+
+function middlewareDefIds(middlewares) {
+    return middlewares.map(m => middlewareDefId(m) )
+}
+
+function addHelmet() {
+    return new Promise(resolve => {
+        const rl = require('readline').createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        
+        rl.question("Do you want to add the security package 'helmet', recommended for production server? (y/n): ", answer => {
+            resolve(answer.toLowerCase() == 'y')
+            rl.close()
+        });
+    })
+}
+
+function confirmServeMiddlewares(middlewareIds) {
+    if (middlewareIds.length)
+        console.log('The following server middlewares are accepted for use: ', middlewareIds.join(', '), '.')
+    else console.log('No server middlewares were defined for implementation.')
 }

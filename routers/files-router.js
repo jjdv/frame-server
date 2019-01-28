@@ -22,7 +22,7 @@ module.exports = function getFilesRouter(serverConfig) {
             if (extRgx.test(req.path)) next()
             else res.sendFile(filePath)
         })
-        console.log(`Serving file ${filePath.match(/[^\/\\]+$/)[0]} for all paths except static files with extensions ${serverConfig.staticFileExt.join(', ')}.`)
+        console.log(`Serving file ${filePath.match(/[^\/\\]+$/)[0]} for all paths except static files with extensions: ${serverConfig.staticFileExt.join(', ')}.`)
     } else {
         const paths = serverConfig.serveFileDef.paths
 

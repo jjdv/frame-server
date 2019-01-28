@@ -1,25 +1,55 @@
 'use strict';
 
-const { fileName, dirs, rootDir, serverConfig } = require('./config.ini')
-const { getConfPath } = require('../modules/helpers')
-const processConfigData = require('../modules/process-config-data')
+const path = require('path')
+const fs = require('fs')
 
-const localConfPath = getConfPath(rootDir, dirs, fileName)
+let { fileName, dirs, serverConfig } = require('./config.ini')
+const { rootDir } = require('../modules/helpers')
 
 // getConfPath makes sure to provide valid path or null
-if (localConfPath) {
-    const localConf = require( localConfPath )
+const localConfPath = getConfPath(dirs, fileName)
+
+// merge default ini config with local server config
+if (localConfPath) serverConfig = { ...serverConfig, ...require(localConfPath) }
+
+module.exports = serverConfig
+
+
+//-------------------------------------------------------------------------------
+// supporting functions 
+//-------------------------------------------------------------------------------
+
+function getConfPath(confDirs, confFileName) {
+    let confPath = confPathFromArgs()
     
-    serverConfig = {
-        ...serverConfig,
-        
-        // merge default ini config with local server config
-        ...localConf
+    if (confPath) {
+        // confPath provided as cli argument
+
+        confPath = path.resolve(rootDir, confPath)
+        if (fs.existsSync(confPath)) return confPath
+        exit( dirErrMsg(confDirs, confFileName, confPath) )
+    } else {
+        // conf file to be found in default directories
+
+        let notFound = true
+        for (let i=0; i<confDirs.length; i++) {
+            confPath = path.resolve(rootDir, confDirs[i], confFileName)
+            if (fs.existsSync(confPath)) { notFound = false; break }
+        }
+        return notFound ? null : confPath
     }
 }
 
-// if the config data are wrong, processConfigData reports errors and terminates the process
-// also relative paths are changed into absolute and RegExp for file extensions is generated
-serverConfig = processConfigData(rootDir, serverConfig)
+function confPathFromArgs() {
+    if (process.argv.length < 4) return false
 
-module.exports = serverConfig
+    // confPath provided as cli argument
+    let argIndex = process.argv.indexOf('--conf', 2)
+    if (argIndex == -1) argIndex = process.argv.indexOf('-c', 2)
+    return process.argv.length > ++argIndex && process.argv[argIndex]
+}
+
+function dirErrMsg(confDirs, confFileName, confPath = null) {
+    const searchedDirs = confPath ? ("the dir: '" + confPath + "'") : ("any of the dirs: '" + confDirs.join("', '") + "'")
+    return `Error: No server config file '${confFileName}' found in ${searchedDirs}.`
+}

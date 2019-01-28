@@ -7,7 +7,7 @@ module.exports = function getStaticRouter(serverConfig) {
     const { extRgx, staticFileExt, siteRoot } = serverConfig
 
     if (extRgx) {
-        console.log(`Serving static files with extensions ${staticFileExt.join(', ')}.`)
+        console.log(`Serving static files with extensions: ${staticFileExt.join(', ')}.`)
         return function(req, res) {
             if (!extRgx.test(req.path)) res.sendStatus(404)
             

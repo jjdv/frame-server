@@ -3,9 +3,11 @@
 const path = require('path')
 const fs = require('fs')
 
-module.exports = function processConfigData(rootDir, config) {
+const { rootDir } = require('./helpers')
+
+module.exports = function processConfigData(config) {
     let configWrong = false
-    const { siteMiddleware, serveFileDef, staticFileExt, port } = config
+    const { siteMiddleware, serveFileDef, staticFileExt, port, view, noHelmet } = config
 
     function reportError(...errMsg) {
         console.error(...errMsg)
@@ -13,17 +15,17 @@ module.exports = function processConfigData(rootDir, config) {
     }
 
     // siteRoot changed into absolute path and done validity check
-    config.siteRoot = path.resolve(rootDir, config.siteRoot)
-    if (!fs.existsSync(config.siteRoot)) reportError('Error: Cannot find site rood directory:', config.siteRoot)
+    const siteRoot = config.siteRoot = path.resolve(rootDir, config.siteRoot)
+    if (!fs.existsSync(siteRoot)) reportError('Error: Cannot find site root directory:', siteRoot)
 
     // siteMiddleware check
-    if (siteMiddleware && !fs.existsSync(siteMiddleware)) reportError('Error: Site middleware is specified but cannot find its file:', siteMiddleware)
+    if (siteMiddleware && !fs.existsSync(siteMiddleware)) reportError('Error: Site middleware is specified but cannot find its file: ', siteMiddleware)
 
     // serveFileDef check. errors, if any, are reported by isServeFileDefWrong()
     if (isServeFileDefWrong(serveFileDef)) configWrong = true
     else {
         const serveFile = typeof serveFileDef === 'string' ? serveFileDef : serveFileDef.file
-        const  filePath = path.resolve(config.siteRoot, serveFile)
+        const  filePath = path.resolve(siteRoot, serveFile)
         if (!fs.existsSync(filePath)) reportError("Error: Defined file in 'serveFileDef' was not found")
         else {
             if (typeof serveFileDef === 'string') config.serveFileDef = filePath
@@ -37,7 +39,22 @@ module.exports = function processConfigData(rootDir, config) {
     if (typeof serveFileDef === 'string' && !config.extRgx) reportError("Error: Missing proper definition of the static file extensions. Required when serveFileDef defines only the file to be served.")
     
     // port check
-    if (!Number.isInteger(port)) reportError('Error: Provided port is not an integer. Specified port:', port)
+    if (!Number.isInteger(port)) reportError('Error: Provided port is not an integer. Specified port: ', port)
+    
+    // view check
+    if (view) {
+        if (
+            view.constructor !== Object || !view.engine || !view.dir ||
+            typeof view.engine !== 'string' || typeof view.dir !== 'string'
+        ) reportError('Error: Wrong format of the view definition in the serverr config file: ', view)
+        const viewDir = path.resolve(siteRoot, view.dir)
+        if (!fs.existsSync(viewDir)) reportError('Error: Provided views directory in the serverr config file does not exist: ', view.dir)
+    }
+    
+    // noHelmet check
+    if (typeof noHelmet !== 'boolean') reportError(
+        "Error: Wrong format of the 'noHelmet' parameter in the server config file: ", noHelmet
+    )
 
     if (configWrong) process.exit(9)
     return config
@@ -46,6 +63,7 @@ module.exports = function processConfigData(rootDir, config) {
 
 //-------------------------------------------------------------------------------
 // supporting functions 
+//-------------------------------------------------------------------------------
 
 function isRgx(val) {
     return typeof val === 'object' && typeof val.multiline === 'boolean'
