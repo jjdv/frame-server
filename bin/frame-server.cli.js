@@ -12,8 +12,8 @@ serverConfig = processConfigData(serverConfig)
 
 // set views if defined
 if (serverConfig.view) {
-  app.set('view engine', view.engine);
-  app.set('views', view.dir);
+  app.set('view engine', view.engine)
+  app.set('views', view.dir)
 }
 
 async function runServer() {
