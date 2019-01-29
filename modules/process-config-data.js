@@ -34,7 +34,7 @@ module.exports = function processConfigData(config) {
     }
 
     // staticFileExt check and, if correct, RegExp for file extensions (extRgx) is generated
-    if (!Array.isArray(staticFileExt)) 
+    if (Array.isArray(staticFileExt)) 
         if (staticFileExt.find(ext => typeof ext !== 'string') || staticFileExt.find(ext => !ext)) reportError("Error: Wrong format of the 'staticFileExt':", staticFileExt)
         else config.extRgx = RegExp( staticFileExt.map(ext => `\\.${ext}$`).join('|') )
     else if (!staticFileExt) config.extRgx = null
