@@ -1,7 +1,7 @@
 {
   "name": "frame-server",
   "version": "1.0.0-alpha.1",
-  "description": "Modular Node/Express server. Use it as a quick, lightweight server or build it up easily with the features you need.",
+  "description": "Modular Node.js/Express server. Use it as a quick, lightweight server or build it up easily with the features you need.",
   "main": "bin/frame-server.cli.js",
   "bin": {
     "fserver": "bin/frame-server.cli.js"
@@ -29,7 +29,6 @@
   },
   "homepage": "https://github.com/jjdv/frame-server#readme",
   "dependencies": {
-    "express": "^4.16.4",
-    "helmet": "^3.15.0"
+    "express": "^4.16.4"
   }
 }
