@@ -8,8 +8,8 @@ function exit(...errMsg) {
 }
 
 async function getServerMiddlewareDefs(serverConfig) {
-    if (!serverConfig.middlewares) serverConfig.middlewares = []
-    const middlewares = serverConfig.middlewares
+    if (!serverConfig.serverMiddlewares) serverConfig.serverMiddlewares = []
+    const middlewares = serverConfig.serverMiddlewares
     
     const middlewareIds = middlewareDefIds(middlewares)
     const helmetIndex = middlewareIds.indexOf('helmet')
@@ -27,24 +27,24 @@ async function getServerMiddlewareDefs(serverConfig) {
     return middlewares
 }
 
-module.exports = { rootDir, exit, getServerMiddlewareDefs }
+const validServerMiddlewareIds = Object.keys(require('./server-middleware.def').packageNames)
+
+module.exports = { rootDir, exit, getServerMiddlewareDefs, validServerMiddlewareIds }
 
 
 //-------------------------------------------------------------------------------
 // supporting functions 
 //-------------------------------------------------------------------------------
 
-const validMiddlewareIds = Object.keys(require('./server-middleware.def').packageNames)
-
 function middlewareDefId(mDef) {
     if (typeof mDef === 'string') {
-        if (!validMiddlewareIds.includes(mDef)) exit('Error: Invalid server middleware id: ', mDef)
+        if (!validServerMiddlewareIds.includes(mDef)) exit('Error: Invalid server middleware id: ', mDef)
         
         return mDef
     }
     if (
         typeof mDef !== 'object' || mDef.constructor !== Object ||
-        !mDef.name || !validMiddlewareIds.includes(mDef.name)
+        !mDef.name || !validServerMiddlewareIds.includes(mDef.name)
     ) exit('Error: Invalid server middleware definition: ', mDef)
 
     return mDef.name

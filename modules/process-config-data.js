@@ -3,11 +3,11 @@
 const path = require('path')
 const fs = require('fs')
 
-const { rootDir } = require('./helpers')
+const { rootDir, validServerMiddlewareIds } = require('./helpers')
 
 module.exports = function processConfigData(config) {
     let configWrong = false
-    const { siteMiddleware, serveFileDef, staticFileExt, port, view, noHelmet } = config
+    const { serverMiddlewares, siteMiddleware, serveFileDef, staticFileExt, port, view, noHelmet } = config
 
     function reportError(...errMsg) {
         console.error(...errMsg)
@@ -17,6 +17,11 @@ module.exports = function processConfigData(config) {
     // siteRoot changed into absolute path and done validity check
     const siteRoot = config.siteRoot = path.resolve(rootDir, config.siteRoot)
     if (!fs.existsSync(siteRoot)) reportError('Error: Cannot find site root directory:', siteRoot)
+
+    // serverMiddlewares check
+    if (!Array.isArray(serverMiddlewares)) reportError("Error: The value of 'serverMiddlewares' is not an array: ", serverMiddlewares)
+    const invalidServerMiddlewareId = serverMiddlewares.find(mId => !validServerMiddlewareIds.includes(mId))
+    if (invalidServerMiddlewareId) reportError('Error: Invalid server middleware identifier: ', invalidServerMiddlewareId)
 
     // siteMiddleware check
     if (siteMiddleware && !fs.existsSync(siteMiddleware)) reportError('Error: Site middleware is specified but cannot find its file: ', siteMiddleware)
