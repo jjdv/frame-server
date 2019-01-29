@@ -13,11 +13,11 @@ module.exports = {
         // [ 'helmet', 'json', 'url', 'multipart', 'cookies', 'session' ]
         serverMiddlewares: [],
         
-        // middleware / routers to be used prior to the served files defined below
+        // middlewares / routers to be used prior to the served file and static files
         // absolute path has to be provided for 'require()' request
         siteMiddleware: null,
     
-        // dedicated files to be served for specified paths or all paths if no path is specified
+        // dedicated file to be served for specified paths or all paths if no path is specified
         // possible formats: falsy, string, object, array. detailed format info in 'files-router.js'
         serveFileDef: 'index.html',
     
