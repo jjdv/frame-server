@@ -34,8 +34,11 @@ module.exports = function processConfigData(config) {
     }
 
     // staticFileExt check and, if correct, RegExp for file extensions (extRgx) is generated
-    if (!Array.isArray(staticFileExt) || staticFileExt.find(ext => typeof ext !== 'string')) reportError("Error: Wrong format of the 'staticFileExt'.")
-    else config.extRgx = RegExp( staticFileExt.map(ext => `\\.${ext}$`).join('|') )
+    if (!Array.isArray(staticFileExt)) 
+        if (staticFileExt.find(ext => typeof ext !== 'string') || staticFileExt.find(ext => !ext)) reportError("Error: Wrong format of the 'staticFileExt':", staticFileExt)
+        else config.extRgx = RegExp( staticFileExt.map(ext => `\\.${ext}$`).join('|') )
+    else if (!staticFileExt) config.extRgx = null
+    else reportError("Error: Wrong format of the 'staticFileExt':", staticFileExt)
     if (typeof serveFileDef === 'string' && !config.extRgx) reportError("Error: Missing proper definition of the static file extensions. Required when serveFileDef defines only the file to be served.")
     
     // port check
