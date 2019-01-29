@@ -1,6 +1,6 @@
 {
   "name": "frame-server",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "Modular Node.js/Express server. Use it as a quick, lightweight server or build it up easily with the features you need.",
   "main": "bin/frame-server.cli.js",
   "bin": {
