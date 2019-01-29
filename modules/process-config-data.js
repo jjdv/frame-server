@@ -21,10 +21,10 @@ module.exports = function processConfigData(config) {
     // serverMiddlewares check
     if (!Array.isArray(serverMiddlewares)) reportError("Error: The value of 'serverMiddlewares' is not an array: ", serverMiddlewares)
     const invalidServerMiddlewareId = serverMiddlewares.find(mId => !validServerMiddlewareIds.includes(mId))
-    if (invalidServerMiddlewareId) reportError('Error: Invalid server middleware identifier: ', invalidServerMiddlewareId)
+    if (invalidServerMiddlewareId) reportError('Error: Invalid server middleware identifier:', invalidServerMiddlewareId)
 
     // siteMiddleware check
-    if (siteMiddleware && !fs.existsSync(siteMiddleware)) reportError('Error: Site middleware is specified but cannot find its file: ', siteMiddleware)
+    if (siteMiddleware && !fs.existsSync(siteMiddleware)) reportError('Error: Site middleware is specified but cannot find its file:', siteMiddleware)
 
     // serveFileDef check. errors, if any, are reported by isServeFileDefWrong()
     if (isServeFileDefWrong(serveFileDef)) configWrong = true
@@ -47,22 +47,20 @@ module.exports = function processConfigData(config) {
     if (typeof serveFileDef === 'string' && !config.extRgx) reportError("Error: Missing proper definition of the static file extensions. Required when serveFileDef defines only the file to be served.")
     
     // port check
-    if (!Number.isInteger(port)) reportError('Error: Provided port is not an integer. Specified port: ', port)
+    if (!Number.isInteger(port)) reportError('Error: Provided port is not an integer. Specified port:', port)
     
     // view check
     if (view) {
         if (
             view.constructor !== Object || !view.engine || !view.dir ||
             typeof view.engine !== 'string' || typeof view.dir !== 'string'
-        ) reportError('Error: Wrong format of the view definition in the serverr config file: ', view)
+        ) reportError('Error: Wrong format of the view definition in the serverr config file:', view)
         const viewDir = path.resolve(siteRoot, view.dir)
-        if (!fs.existsSync(viewDir)) reportError('Error: Provided views directory in the serverr config file does not exist: ', view.dir)
+        if (!fs.existsSync(viewDir)) reportError('Error: Provided views directory in the serverr config file does not exist:', view.dir)
     }
     
     // noHelmet check
-    if (typeof noHelmet !== 'boolean') reportError(
-        "Error: Wrong format of the 'noHelmet' parameter in the server config file: ", noHelmet
-    )
+    if (typeof noHelmet !== 'boolean') reportError("Error: Wrong format of the 'noHelmet' parameter in the server config file:", noHelmet)
 
     if (configWrong) process.exit(9)
     return config

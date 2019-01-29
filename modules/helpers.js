@@ -38,14 +38,14 @@ module.exports = { rootDir, exit, getServerMiddlewareDefs, validServerMiddleware
 
 function middlewareDefId(mDef) {
     if (typeof mDef === 'string') {
-        if (!validServerMiddlewareIds.includes(mDef)) exit('Error: Invalid server middleware id: ', mDef)
+        if (!validServerMiddlewareIds.includes(mDef)) exit('Error: Invalid server middleware id:', mDef)
         
         return mDef
     }
     if (
         typeof mDef !== 'object' || mDef.constructor !== Object ||
         !mDef.name || !validServerMiddlewareIds.includes(mDef.name)
-    ) exit('Error: Invalid server middleware definition: ', mDef)
+    ) exit('Error: Invalid server middleware definition:', mDef)
 
     return mDef.name
 }
@@ -70,6 +70,6 @@ function addHelmet() {
 
 function confirmServeMiddlewares(middlewareIds) {
     if (middlewareIds.length)
-        console.log('The following server middlewares are accepted for use: ', middlewareIds.join(', '), '.')
+        console.log('The following server middlewares are accepted for use:', middlewareIds.join(', ') + '.')
     else console.log('No server middlewares were defined for implementation.')
 }
