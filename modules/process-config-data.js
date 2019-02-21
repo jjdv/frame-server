@@ -3,11 +3,12 @@
 const path = require('path')
 const fs = require('fs')
 
-const { rootDir, validServerMiddlewareIds } = require('./helpers')
+const { rootDir } = require('./helpers')
+const { validServerMiddlewareIds } = require('../middlewares/server-middleware.def')
 
 module.exports = function processConfigData(config) {
     let configWrong = false
-    const { serverMiddlewares, siteMiddleware, serveFileDef, staticFileExt, port, view, noHelmet } = config
+    const { serverMiddlewares, siteMiddlewares, serveFileDef, staticFileExt, port, view, noHelmet } = config
 
     function reportError(...errMsg) {
         console.error(...errMsg)
@@ -23,20 +24,15 @@ module.exports = function processConfigData(config) {
     const invalidServerMiddlewareId = serverMiddlewares.find(mId => !validServerMiddlewareIds.includes(mId))
     if (invalidServerMiddlewareId) reportError('Error: Invalid server middleware identifier:', invalidServerMiddlewareId)
 
-    // siteMiddleware check
-    if (siteMiddleware && !fs.existsSync(siteMiddleware)) reportError('Error: Site middleware is specified but cannot find its file:', siteMiddleware)
+    // siteMiddlewares check
+    if (siteMiddlewares) {
+        if (!Array.isArray(siteMiddlewares)) siteMiddlewares = [ siteMiddlewares ]
+        config.siteMiddlewares = siteMiddlewares.map(middlewareDef => getMiddleware(middlewareDef, 'siteMiddlewares', reportError))
+    }
 
     // serveFileDef check. errors, if any, are reported by isServeFileDefWrong()
-    if (isServeFileDefWrong(serveFileDef)) configWrong = true
-    else {
-        const serveFile = typeof serveFileDef === 'string' ? serveFileDef : serveFileDef.file
-        const  filePath = path.resolve(siteRoot, serveFile)
-        if (!fs.existsSync(filePath)) reportError("Error: Defined file in 'serveFileDef' was not found")
-        else {
-            if (typeof serveFileDef === 'string') config.serveFileDef = filePath
-            else config.serveFileDef.file = filePath
-        }
-    }
+    if (config.serveFileDef) config.serveFileDef = getServeFileDef(config.serveFileDef, siteRoot, reportError)
+    
 
     // staticFileExt check and, if correct, RegExp for file extensions (extRgx) is generated
     if (Array.isArray(staticFileExt)) 
@@ -53,10 +49,11 @@ module.exports = function processConfigData(config) {
     if (view) {
         if (
             view.constructor !== Object || !view.engine || !view.dir ||
-            typeof view.engine !== 'string' || typeof view.dir !== 'string'
+            typeof view.engine !== 'string' || (typeof view.dir !== 'string' && !Array.isArray(view.dir))
         ) reportError('Error: Wrong format of the view definition in the serverr config file:', view)
-        const viewDir = path.resolve(siteRoot, view.dir)
-        if (!fs.existsSync(viewDir)) reportError('Error: Provided views directory in the serverr config file does not exist:', view.dir)
+
+        if (typeof view.dir === 'string') view.dir = filePath(view.dir, rootDir, 'view.dir', reportError)
+        else view.dir = view.dir.map(dir => filePath(dir, rootDir, 'view.dir', reportError))
     }
     
     // noHelmet check
@@ -71,55 +68,91 @@ module.exports = function processConfigData(config) {
 // supporting functions 
 //-------------------------------------------------------------------------------
 
-function isRgx(val) {
-    return typeof val === 'object' && typeof val.multiline === 'boolean'
+function getMiddleware(middlewareDef, varName, reportError) {
+    switch (middlewareDef.constructor) {
+        case String:
+            const mPath = filePath(middlewareDef, rootDir, varName, reportError)
+            if (mPath) return { middleware: require(mPath) }
+            return null
+        case Function: return { middleware: middlewareDef }
+        case Object: return getMiddlewareObject(middlewareDef, varName, reportError)
+        default:
+            reportError(`Error: Unknown format of ${varName} definition: `, middlewareDef)
+            return null
+    }
 }
 
-function isPathWrong(path) {
+function filePath(pathDef, rootDir, varName, reportError) {
+    if (typeof pathDef !== 'string') reportError(`Error: Wrong format of ${varName}.`)
+    if (!pathDef) reportError(`Error: The specification of the ${varName} cannot be an empty string.`)
+
+    const filePath = path.resolve(rootDir, pathDef)
+    if (!fs.existsSync(filePath)) {
+        reportError(`Error: Cannot find the file "${filePath}" specified by the ${varName} as "${pathDef}"`)
+        return null
+    }
+    return filePath
+}
+
+function getMiddlewareObject(middlewareDef, varName, reportError) {
+    switch (middlewareDef.middleware.constructor) {
+        default:
+            reportError(`Error: Wrong ${varName}.middleware definition: ${middlewareDef.middleware}`)
+            return null
+        case String:
+            const mPath = filePath(middlewareDef.middleware, rootDir, varName, reportError)
+            if (!mPath) return null
+            middlewareDef.middleware = require(mPath)
+        case Function:
+    }
+
+    if (middlewareDef.paths && rootPathsErr(middlewareDef.paths, `${varName}.paths`, reportError)) return null
+
+    return middlewareDef
+}
+
+const isRgx = val => val.constructor === RegExp
+
+function rootPathsErr(paths, varName, reportError) {
+    if (Array.isArray(paths)) {
+        for (let path of paths) if (rootPathErr(path, varName, reportError)) return false
+        return true
+    } else return rootPathErr(paths, varName, reportError)
+}
+
+function rootPathErr(path, varName, reportError) {
+    let error = false
     if (typeof path === 'string') {
-        if (!path) return {stringEmpty: true}
-    } else if (!isRgx(path)) return {pathFormatWrong: true}
-    return false
+        if (!path) {
+            reportError(`Error: The specification of the path in ${varName} cannot be an empty string.`)
+            error = true
+        } else if (path[0] != '/') {
+            reportError(`Error: Route path in ${varName} should be absolute, i.e. start with: '/' but defined as: ${path}`)
+            error = true
+        }
+    } else if (!isRgx(path)) {
+        reportError(`Wrong path format in ${varName}.`)
+        error = true
+    }
+    return error
 }
 
-function isServeFileDefWrong(serveFileDef) {
-    let configWrong = false
-
-    function reportError(errMsg) {
-        console.error(errMsg)
-        configWrong = true
-    }
-
+function getServeFileDef(serveFileDef, siteRoot, reportError) {
     if (typeof serveFileDef === 'string') {
-        // string is ok but it cannot be empty
-        if (!serveFileDef) reportError("Error: The specification of the 'serveFileDef' cannot be an empty string.")
-    } else {
-        // if not string it has to be object
-        if (typeof serveFileDef !== 'object' || serveFileDef.constructor !== Object || typeof serveFileDef.file !== 'string') reportError("Error: Wrong file definition format.")
-
-        // file def has to be non-empty string
-        if (typeof serveFileDef.file !== 'string') reportError("Error: Wrong format of serveFileDef.file.")
-        if (!serveFileDef.file) reportError("Error: The specification of the 'serveFileDef.file' cannot be an empty string.")
-
-        let err;
-        if (Array.isArray(serveFileDef.paths)) {
-            // paths definition can be an array of non-empty strings and regexp
-            let status = {strEmpty: false, pathFormatWrong: false};
-            serveFileDef.paths.forEach(path => {
-                err = isPathWrong(path)
-                if (err) status = {...status, ...err}
-            })
-            if (status.strEmpty) reportError("Error: The specification of the path cannot be an empty string.")
-            if (status.pathFormatWrong) reportError("Error: Wrong path format'.")
-        } else {
-            // if not array it has to be non-empty string or regexp
-            err = isPathWrong(serveFileDef.paths)
-            if (err) {
-                if (err.strEmpty) reportError("Error: The specification of the path cannot be an empty string.")
-                if (err.pathFormatWrong) reportError("Error: Wrong path format'.")
-            }
-        }
+        const fPath = filePath(serveFileDef, siteRoot, 'serveFileDef', reportError)
+        if (fPath) return { file: fPath }
+        else return null
+    } else if (serveFileDef.constructor !== Object || !serveFileDef.file) {
+        reportError("Error: Wrong format of serveFileDef: ", serveFileDef)
+        return null
     }
 
-    return configWrong
+    // file def has to be non-empty string
+    const fPath = filePath(serveFileDef.file, siteRoot, 'serveFileDef.file', reportError)
+    if (fPath) serveFileDef.file = fPath
+    else return null
+
+    if (serveFileDef.paths && rootPathsErr(serveFileDef.paths, 'serveFileDef.paths', reportError)) return null
+
+    return serveFileDef
 }

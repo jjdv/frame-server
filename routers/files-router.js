@@ -13,9 +13,14 @@ module.exports = function getFilesRouter(serverConfig) {
     const { serveFileDef, extRgx } = serverConfig
     if (!serveFileDef) return null
 
-    const filePath = typeof serveFileDef === 'string' ? serveFileDef : serveFileDef.file
+    const filePath = serveFileDef.file
+    if (serveFileDef.paths) {
+        const paths = serverConfig.serveFileDef.paths
 
-    if (typeof serveFileDef === 'string') {
+        // serving the defined file for all defined paths
+        router.get(paths, (req, res) => res.sendFile(filePath))
+        console.log(`Serving the file ${filePath.match(/\/[^\/]$/)[0]} for all defined paths.`)
+    } else {
         
         // serving the defined file for all paths except static files with defined extensions
         router.get('*', (req, res, next) => {
@@ -23,12 +28,6 @@ module.exports = function getFilesRouter(serverConfig) {
             else res.sendFile(filePath)
         })
         console.log(`Serving file ${filePath.match(/[^\/\\]+$/)[0]} for all paths except static files with extensions: ${serverConfig.staticFileExt.join(', ')}.`)
-    } else {
-        const paths = serverConfig.serveFileDef.paths
-
-        // serving the defined file for all defined paths
-        router.get(paths, (req, res) => res.sendFile(filePath))
-        console.log(`Serving the file ${filePath.match(/\/[^\/]$/)[0]} for all defined paths.`)
     }
 
     return router

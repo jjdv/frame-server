@@ -12,8 +12,8 @@ serverConfig = processConfigData(serverConfig)
 
 // set views if defined
 if (serverConfig.view) {
-  app.set('view engine', view.engine)
-  app.set('views', view.dir)
+  app.set('view engine', serverConfig.view.engine)
+  app.set('views', serverConfig.view.dir)
 }
 
 async function runServer() {
@@ -22,7 +22,10 @@ async function runServer() {
 
   // deploy middleware/routers defined for the site
   if (middlewares.length) {
-    app.use(middlewares)
+    middlewares.forEach(middlewareDef => {
+      if (middlewareDef.path) app.use(middlewareDef.path, middlewareDef.middleware)
+      else app.use(middlewareDef.middleware)
+    })
   }
 
   // if defined, serve special file for defined paths or all paths except files with defined extensions
@@ -33,7 +36,6 @@ async function runServer() {
   // handle pure static files, limited to specified extensions, if defined
   app.get('*', staticRouter)
 
-  // PORT in cloud and local deployments
   const PORT = process.env.PORT || serverConfig.port
   app.listen(PORT, () => {
     const uriDesc = process.env.PORT ? `port: ${PORT}` : `http://localhost:${PORT}`

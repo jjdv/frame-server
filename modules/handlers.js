@@ -1,6 +1,6 @@
 'use strict';
 
-const getMiddlewares = require('../middlewares/middlewares')
+const { getMiddlewares } = require('../middlewares/middlewares')
 const getFilesRouter = require('../routers/files-router')
 const getStaticRouter = require('../routers/static-router')
 

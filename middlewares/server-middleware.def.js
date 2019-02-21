@@ -1,6 +1,6 @@
 'use strict';
 
-const packageNames = exports.packageNames = {
+const packageNames = {
     helmet: 'helmet',
     json: 'body-parser',
     url: 'body-parser',
@@ -9,7 +9,9 @@ const packageNames = exports.packageNames = {
     session: 'express-session'
 }
 
-exports.getServerMiddleware = (mDef) => {
+const validServerMiddlewareIds = Object.keys(packageNames)
+
+function getServerMiddleware(mDef) {
     const isMDefStr = typeof mDef === 'string'
 
     const mId = isMDefStr ? mDef : mDef.name
@@ -17,9 +19,10 @@ exports.getServerMiddleware = (mDef) => {
     const mOptions = isMDefStr ? {} : mDef.options
     const m = require(mPackageName)
 
-    return middlewares[mId](m, mOptions)
+    return { middleware: middlewares[mId](m, mOptions) }
 }
 
+module.exports = { packageNames, validServerMiddlewareIds, getServerMiddleware }
 
 //-------------------------------------------------------------------------------
 // supporting middleware build definitions

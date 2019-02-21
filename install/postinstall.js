@@ -1,13 +1,13 @@
 'use strict';
 
 const serverConfig = require('../config/server.config')
-const { getServerMiddlewareDefs } = require('../modules/helpers')
+const { getServerMiddlewareDefs } = require('../middlewares/middlewares')
 
 async function installServerDependencies() {
     let serverMiddlewares = await getServerMiddlewareDefs(serverConfig)
 
     if (serverMiddlewares.length) {
-        const { packageNames } = require('../modules/server-middleware.def')
+        const { packageNames } = require('../middlewares/server-middleware.def')
 
         // get respective unique package names
         serverMiddlewares =  serverMiddlewares.map(mDef => packageNames[typeof mDef === 'string' ? mDef : mDef.name])

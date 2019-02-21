@@ -91,7 +91,7 @@ serverMiddlewares: [
     },
     {
         name: 'session',
-        options: {secret: 'Shh, its a secret!''}
+        options: {secret: 'Shh, its a secret!'}
     }
 ]
 ```
@@ -103,15 +103,14 @@ noHelmet: true
 ```
 Alternatively, start the server in the command line with `--no-helmet` argument, i.e. `fserver --no-helmet`.
 
-#### 4.2 Site middleware
-Server middlewares/parsers are provided automatically (based on your config definition) to allow you to focus on your own, specific middleware needed for the site. Basically you can do anything which can be placed in the Express statement `app.use(<your middleware>)`. The statement is applied after the server middlewares and before serving the defined file (e.g. 'index.html') and static files so you can overwrite this functionality as needed.
+#### 4.2 Site middlewares
+Server middlewares/parsers are provided automatically (based on your config definition) to allow you to focus on your own, specific middlewares needed for your site. To include your own middlewares provide the path to your middlewares definition object in the `siteMiddlewares` configuration option. The path should be absolute or relative to CWD. Your middlewares definition object should have one of the three possible forms:
+1. string `'path/to/my/middleware'`, absolute or relative to CWD - will be applied with `app.use( path.resolve(rootDir, 'path/to/my/middleware') )`
+2. your middleware - will be applied with `app.use( yourMiddleware )`
+3. object `{paths: '/route/path', middleware: string|function as in 1-2 above}` - will be applied with `app.use(path, middleware)`
+4. array of any elements 1-3 above - middlewares will be applied according to the array order
 
-To define your own middleware just use `siteMiddleware` configuration option with an absolute path to your middleware for the `require(<path/to/your/middleware>)` statement. The config fiels will then look like this:
-```
-// middlewares / routers to be used prior to the defined file (e.g. index.html) and static files
-// absolute path has to be provided for 'require()' request
-siteMiddleware: <absolute/path/to/your/middleware> // string
-```
+The middlewares are applied after the server middlewares and before serving the defined file (e.g. 'index.html') and static files so you can overwrite those functions as needed.
 
 #### 4.3 Views definition
 To complement configuration options the server can configure the views for you in the Express environment. Just add to your config options the `view` property with `engine` and `dir` where the files are located:
