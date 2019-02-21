@@ -1,8 +1,8 @@
 'use strict';
 
 const { getMiddlewares } = require('../middlewares/middlewares')
-const getFilesRouter = require('../routers/files-router')
-const getStaticRouter = require('../routers/static-router')
+const getFilesRouter = require('../middlewares/files-router')
+const getStaticRouter = require('../middlewares/static-router')
 
 module.exports = async function(serverConfig) {
     return {
