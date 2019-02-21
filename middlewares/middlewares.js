@@ -2,13 +2,16 @@
 
 async function getMiddlewares(serverConfig) {
     const serverMiddlewares = await getServerMiddlewares(serverConfig)
-    return serverConfig.siteMiddlewares ? serverMiddlewares.concat(serverConfig.siteMiddlewares) : serverMiddlewares
+    const siteMiddlewares = serverConfig.siteMiddlewares
+    const siteMiddlewaresNo = siteMiddlewares && siteMiddlewares.length ? siteMiddlewares.length : 0
+    console.log(`Number of site middlewares applied: ${siteMiddlewaresNo}.`)
+    return serverConfig.siteMiddlewares ? serverMiddlewares.concat(siteMiddlewares) : serverMiddlewares
 }
 
 async function getServerMiddlewareDefs(serverConfig) {
     if (!serverConfig.serverMiddlewares) serverConfig.serverMiddlewares = []
     const middlewares = serverConfig.serverMiddlewares
-    const middlewareIds = helmetCheckAndCorrect(serverConfig, middlewares)
+    const middlewareIds = await helmetCheckAndCorrect(serverConfig, middlewares)
     
     confirmServeMiddlewares(middlewareIds)
 

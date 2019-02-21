@@ -21,8 +21,12 @@ module.exports = function processConfigData(config) {
 
     // serverMiddlewares check
     if (!Array.isArray(serverMiddlewares)) reportError("Error: The value of 'serverMiddlewares' is not an array: ", serverMiddlewares)
-    const invalidServerMiddlewareId = serverMiddlewares.find(mId => !validServerMiddlewareIds.includes(mId))
-    if (invalidServerMiddlewareId) reportError('Error: Invalid server middleware identifier:', invalidServerMiddlewareId)
+    const invalidServerMiddlewareIds = serverMiddlewares.filter(mId => {
+        !validServerMiddlewareIds.includes(typeof mId === 'object' ? mId.name : mId)
+    })
+    if (invalidServerMiddlewareIds.length) invalidServerMiddlewareIds.forEach(mId => {
+        reportError('Error: Invalid server middleware identifier:', mId)
+    })
 
     // siteMiddlewares check
     if (siteMiddlewares) {
