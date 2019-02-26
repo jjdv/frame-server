@@ -5,16 +5,19 @@ module.exports = {
     dirs: ['./server', './config', './config/server', '.'],
     
     serverConfig: {
+
+        // serverRootDir is the starting point in the file resolution process
+        serverRootDir: process.env.INIT_CWD || process.cwd(),
     
-        // siteRoot relative to CWD or absolute (path resolution with path.resolve)
-        siteRoot: 'dist',
+        // siteRootDir relative to CWD or absolute (path resolution with path.resolve)
+        siteRootDir: 'dist',
 
         // available values for middlewares installed by the server are:
         // [ 'helmet', 'json', 'url', 'multipart', 'cookies', 'session' ]
         serverMiddlewares: [],
         
         // middlewares / routers to be used prior to the served file and static files
-        // absolute path has to be provided for 'require()' request
+        siteMiddlewaresDir: null,
         siteMiddlewares: null,
     
         // dedicated file to be served for specified paths or all paths if no path is specified
@@ -27,7 +30,7 @@ module.exports = {
         // server port to be used
         port: 3000,
 
-        // view, if defined, must be an object with 'engine' and view 'dir' specifications. The 'dir' is relative to the siteRoot.
+        // view, if defined, must be an object with 'engine' and view 'dir' specifications. The 'dir' is relative to the siteRootDir.
         view: null,
         /* example view specification:
         view: {

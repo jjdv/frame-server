@@ -4,13 +4,17 @@ const path = require('path')
 const fs = require('fs')
 
 let { fileName, dirs, serverConfig } = require('./config.ini')
-const { rootDir } = require('../modules/helpers')
+const serverRootDir = serverConfig.serverRootDir
 
 // getConfPath makes sure to provide valid path or null
 const localConfPath = getConfPath(dirs, fileName)
 
 // merge default ini config with local server config
 if (localConfPath) serverConfig = { ...serverConfig, ...require(localConfPath) }
+
+// put final reference dirs to process.env
+process.env.serverRootDir = serverConfig.serverRootDir
+process.env.siteRootDir = serverConfig.siteRootDir
 
 module.exports = serverConfig
 
@@ -25,7 +29,7 @@ function getConfPath(confDirs, confFileName) {
     if (confPath) {
         // confPath provided as cli argument
 
-        confPath = path.resolve(rootDir, confPath)
+        confPath = path.resolve(serverRootDir, confPath)
         if (fs.existsSync(confPath)) return confPath
         exit( dirErrMsg(confDirs, confFileName, confPath) )
     } else {
@@ -33,7 +37,7 @@ function getConfPath(confDirs, confFileName) {
 
         let notFound = true
         for (let i=0; i<confDirs.length; i++) {
-            confPath = path.resolve(rootDir, confDirs[i], confFileName)
+            confPath = path.resolve(serverRootDir, confDirs[i], confFileName)
             if (fs.existsSync(confPath)) { notFound = false; break }
         }
         return notFound ? null : confPath

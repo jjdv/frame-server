@@ -12,8 +12,8 @@ serverConfig = processConfigData(serverConfig)
 
 // set views if defined
 if (serverConfig.view) {
-  app.set('view engine', serverConfig.view.engine)
-  app.set('views', serverConfig.view.dir)
+  if (serverConfig.view.engine) app.set('view engine', serverConfig.view.engine)
+  if (serverConfig.view.dir) app.set('views', serverConfig.view.dir)
 }
 
 async function runServer() {
@@ -23,7 +23,7 @@ async function runServer() {
   // deploy middleware/routers defined for the site
   if (middlewares.length) {
     middlewares.forEach(middlewareDef => {
-      if (middlewareDef.path) app.use(middlewareDef.path, middlewareDef.middleware)
+      if (middlewareDef.paths) app.use(middlewareDef.paths, middlewareDef.middleware)
       else app.use(middlewareDef.middleware)
     })
   }

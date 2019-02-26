@@ -9,15 +9,15 @@ async function installServerDependencies() {
     if (serverMiddlewares.length) {
         const { packageNames } = require('../middlewares/server-middleware.def')
 
-        // get respective unique package names
-        serverMiddlewares =  serverMiddlewares.map(mDef => packageNames[typeof mDef === 'string' ? mDef : mDef.name])
-        for (let i=0; i<serverMiddlewares.length; i++) {
-            if (serverMiddlewares.indexOf(serverMiddlewares[i], i+1) != -1) serverMiddlewares.splice(i--, 1)
+        // get external package names
+        const serverMiddlewareNames =  serverMiddlewares.map(mDef => packageNames[typeof mDef === 'string' ? mDef : mDef.name])
+        for (let i=0; i<serverMiddlewareNames.length; i++) {
+            if (serverMiddlewareNames[i] == 'express') serverMiddlewareNames.splice(i--, 1)
         }
 
         // install server middleware dependencies if any
-        if (serverMiddlewares.length) installMiddlewares(serverMiddlewares)
-        else console.log('No middleware was requested for installation.')
+        if (serverMiddlewareNames.length) installMiddlewares(serverMiddlewareNames)
+        else console.log('No server middleware required installation.')
     }
 }
 
@@ -28,9 +28,9 @@ installServerDependencies()
 // supporting functions 
 //-------------------------------------------------------------------------------
 
-function installMiddlewares(serverMiddlewares) {
+function installMiddlewares(serverMiddlewareNames) {
     const { spawn } = require('child_process')
-    const spawnArgs = ['install', '--save'].concat(serverMiddlewares)
+    const spawnArgs = ['install', '--save'].concat(serverMiddlewareNames)
     const spawnOptions = {shell: process.platform == 'win32'}
     const child = spawn('npm', spawnArgs, spawnOptions)
 

@@ -2,7 +2,7 @@
 // - falsy value: (false/null/undefined) to serve files on the path basis only
 // - string: 'pathToFile' - just single file to be served for all paths. In this option parameter 'staticFileExt' is required
 // - object: (file: 'pathToFile, paths: pathsToBeUsed) - dedicated file to be served for paths specified in the format accepted by Express
-// Paths of dedicated files are specified relative to siteRoot
+// Paths of dedicated files are specified relative to siteRootDir
 
 'use strict';
 

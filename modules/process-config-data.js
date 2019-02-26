@@ -3,21 +3,20 @@
 const path = require('path')
 const fs = require('fs')
 
-const { rootDir } = require('./helpers')
 const { validServerMiddlewareIds } = require('../middlewares/server-middleware.def')
 
 module.exports = function processConfigData(config) {
     let configWrong = false
-    const { serverMiddlewares, siteMiddlewares, serveFileDef, staticFileExt, port, view, noHelmet } = config
+    const { serverRootDir, serverMiddlewares, siteMiddlewaresDir, serveFileDef, staticFileExt, port, view, noHelmet } = config
 
     function reportError(...errMsg) {
         console.error(...errMsg)
         configWrong = true
     }
 
-    // siteRoot changed into absolute path and done validity check
-    const siteRoot = config.siteRoot = path.resolve(rootDir, config.siteRoot)
-    if (!fs.existsSync(siteRoot)) reportError('Error: Cannot find site root directory:', siteRoot)
+    // siteRootDir changed into absolute path and done validity check
+    const siteRootDir = config.siteRootDir = path.resolve(serverRootDir, config.siteRootDir)
+    if (!fs.existsSync(siteRootDir)) reportError('Error: Cannot find site root directory:', siteRootDir)
 
     // serverMiddlewares check
     if (!Array.isArray(serverMiddlewares)) reportError("Error: The value of 'serverMiddlewares' is not an array: ", serverMiddlewares)
@@ -29,13 +28,15 @@ module.exports = function processConfigData(config) {
     })
 
     // siteMiddlewares check
+    let siteMiddlewares = config.siteMiddlewares
     if (siteMiddlewares) {
         if (!Array.isArray(siteMiddlewares)) siteMiddlewares = [ siteMiddlewares ]
-        config.siteMiddlewares = siteMiddlewares.map(middlewareDef => getMiddleware(middlewareDef, 'siteMiddlewares', reportError))
+        const siteMiddlewaresRootDir = siteMiddlewaresDir ? path.resolve(serverRootDir, siteMiddlewaresDir) : serverRootDir
+        config.siteMiddlewares = siteMiddlewares.map(middlewareDef => getMiddleware(middlewareDef, siteMiddlewaresRootDir, 'siteMiddlewares', reportError))
     }
 
     // serveFileDef check. errors, if any, are reported by isServeFileDefWrong()
-    if (config.serveFileDef) config.serveFileDef = getServeFileDef(config.serveFileDef, siteRoot, reportError)
+    if (config.serveFileDef) config.serveFileDef = getServeFileDef(config.serveFileDef, siteRootDir, reportError)
     
 
     // staticFileExt check and, if correct, RegExp for file extensions (extRgx) is generated
@@ -56,8 +57,8 @@ module.exports = function processConfigData(config) {
             typeof view.engine !== 'string' || (typeof view.dir !== 'string' && !Array.isArray(view.dir))
         ) reportError('Error: Wrong format of the view definition in the serverr config file:', view)
 
-        if (typeof view.dir === 'string') view.dir = filePath(view.dir, rootDir, 'view.dir', reportError)
-        else view.dir = view.dir.map(dir => filePath(dir, rootDir, 'view.dir', reportError))
+        if (typeof view.dir === 'string') view.dir = filePath(view.dir, serverRootDir, 'view.dir', reportError)
+        else view.dir = view.dir.map(dir => filePath(dir, serverRootDir, 'view.dir', reportError))
     }
     
     // noHelmet check
@@ -72,14 +73,14 @@ module.exports = function processConfigData(config) {
 // supporting functions 
 //-------------------------------------------------------------------------------
 
-function getMiddleware(middlewareDef, varName, reportError) {
+function getMiddleware(middlewareDef, rootDir, varName, reportError) {
     switch (middlewareDef.constructor) {
         case String:
             const mPath = filePath(middlewareDef, rootDir, varName, reportError)
             if (mPath) return { middleware: require(mPath) }
             return null
         case Function: return { middleware: middlewareDef }
-        case Object: return getMiddlewareObject(middlewareDef, varName, reportError)
+        case Object: return getMiddlewareObject(middlewareDef, rootDir, varName, reportError)
         default:
             reportError(`Error: Unknown format of ${varName} definition: `, middlewareDef)
             return null
@@ -98,7 +99,7 @@ function filePath(pathDef, rootDir, varName, reportError) {
     return filePath
 }
 
-function getMiddlewareObject(middlewareDef, varName, reportError) {
+function getMiddlewareObject(middlewareDef, rootDir, varName, reportError) {
     switch (middlewareDef.middleware.constructor) {
         default:
             reportError(`Error: Wrong ${varName}.middleware definition: ${middlewareDef.middleware}`)
@@ -119,8 +120,8 @@ const isRgx = val => val.constructor === RegExp
 
 function rootPathsErr(paths, varName, reportError) {
     if (Array.isArray(paths)) {
-        for (let path of paths) if (rootPathErr(path, varName, reportError)) return false
-        return true
+        for (let path of paths) if (rootPathErr(path, varName, reportError)) return true
+        return false
     } else return rootPathErr(paths, varName, reportError)
 }
 
@@ -141,9 +142,9 @@ function rootPathErr(path, varName, reportError) {
     return error
 }
 
-function getServeFileDef(serveFileDef, siteRoot, reportError) {
+function getServeFileDef(serveFileDef, siteRootDir, reportError) {
     if (typeof serveFileDef === 'string') {
-        const fPath = filePath(serveFileDef, siteRoot, 'serveFileDef', reportError)
+        const fPath = filePath(serveFileDef, siteRootDir, 'serveFileDef', reportError)
         if (fPath) return { file: fPath }
         else return null
     } else if (serveFileDef.constructor !== Object || !serveFileDef.file) {
@@ -152,7 +153,7 @@ function getServeFileDef(serveFileDef, siteRoot, reportError) {
     }
 
     // file def has to be non-empty string
-    const fPath = filePath(serveFileDef.file, siteRoot, 'serveFileDef.file', reportError)
+    const fPath = filePath(serveFileDef.file, siteRootDir, 'serveFileDef.file', reportError)
     if (fPath) serveFileDef.file = fPath
     else return null
 
