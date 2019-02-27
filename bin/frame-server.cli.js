@@ -3,38 +3,44 @@
 
 const app = require('express')()
 
+// get the final server configuration data
 let serverConfig = require('../config/server.config')
-const processConfigData = require('../modules/process-config-data')
 
-// if the config data are wrong, processConfigData reports errors and terminates the process
-// also relative paths are changed into absolute and RegExp for file extensions is generated
-serverConfig = processConfigData(serverConfig)
+// processConfigData changes file paths to absolute and creates respective middlewares
+// it does sanity check, reports errors and, if errors are found, terminates the process
+const processConfigData = require('../modules/process-config-data')
+const { view } = serverConfig = processConfigData(serverConfig)
+
+// put final reference dirs to process.env
+process.env.serverRootDir = serverConfig.serverRootDir
+process.env.siteRootDir = serverConfig.siteRootDir
 
 // set views if defined
-if (serverConfig.view) {
-  if (serverConfig.view.engine) app.set('view engine', serverConfig.view.engine)
-  if (serverConfig.view.dir) app.set('views', serverConfig.view.dir)
+if (view) {
+  if (view.engine) app.set('view engine', view.engine)
+  if (view.dir) app.set('views', view.dir)
 }
 
+const middlewares = require('../middlewares/middlewares')
+const { applyMiddleware } = require('../modules/helpers')
+
 async function runServer() {
-  const handlers = require('../modules/handlers')
-  const { middlewares, filesRouter, staticRouter } = await handlers(serverConfig)
+  const { serverMiddlewares, siteMiddlewares, serveDynamicFiles, serveStaticFiles, wrongRequestHandler } = await middlewares(serverConfig)
 
-  // deploy middleware/routers defined for the site
-  if (middlewares.length) {
-    middlewares.forEach(middlewareDef => {
-      if (middlewareDef.paths) app.use(middlewareDef.paths, middlewareDef.middleware)
-      else app.use(middlewareDef.middleware)
-    })
-  }
+  // server middlewares
+  serverMiddlewares.forEach(middleware => app.use(middleware))
 
-  // if defined, serve special file for defined paths or all paths except files with defined extensions
-  if (filesRouter) {
-    app.use( filesRouter )
-  }
+  // deploy site middlewares defined for the site
+  siteMiddlewares.forEach(middlewareDef => applyMiddleware(middlewareDef, app))
+
+  // serve special files for defined route paths
+  serveDynamicFiles.forEach(file => app.get(file.routePaths, file.handler))
+
+  // serve static files from defined directories for defined route paths
+  serveStaticFiles.forEach(dirMiddleware => applyMiddleware(dirMiddleware, app))
 
   // handle pure static files, limited to specified extensions, if defined
-  app.get('*', staticRouter)
+  app.use(wrongRequestHandler)
 
   const PORT = process.env.PORT || serverConfig.port
   app.listen(PORT, () => {

@@ -12,10 +12,6 @@ const localConfPath = getConfPath(dirs, fileName)
 // merge default ini config with local server config
 if (localConfPath) serverConfig = { ...serverConfig, ...require(localConfPath) }
 
-// put final reference dirs to process.env
-process.env.serverRootDir = serverConfig.serverRootDir
-process.env.siteRootDir = serverConfig.siteRootDir
-
 module.exports = serverConfig
 
 
