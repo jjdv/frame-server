@@ -21,23 +21,23 @@ if (view) {
   if (view.dir) app.set('views', view.dir)
 }
 
-const middlewares = require('../middlewares/middlewares')
+const { middlewares } = require('../middlewares/middlewares')
 const { applyMiddleware } = require('../modules/helpers')
 
 async function runServer() {
   const { serverMiddlewares, siteMiddlewares, serveDynamicFiles, serveStaticFiles, wrongRequestHandler } = await middlewares(serverConfig)
 
   // server middlewares
-  serverMiddlewares.forEach(middleware => app.use(middleware))
+  if (serverMiddlewares) serverMiddlewares.forEach(middlewareDef => app.use(middlewareDef.middleware))
 
   // deploy site middlewares defined for the site
-  siteMiddlewares.forEach(middlewareDef => applyMiddleware(middlewareDef, app))
+  if (siteMiddlewares) siteMiddlewares.forEach(middlewareDef => applyMiddleware(middlewareDef, app))
 
   // serve special files for defined route paths
-  serveDynamicFiles.forEach(file => app.get(file.routePaths, file.handler))
+  if (serveDynamicFiles) serveDynamicFiles.forEach(file => app.get(file.routePaths, file.handler))
 
   // serve static files from defined directories for defined route paths
-  serveStaticFiles.forEach(dirMiddleware => applyMiddleware(dirMiddleware, app))
+  if (serveStaticFiles) serveStaticFiles.forEach(dirMiddleware => applyMiddleware(dirMiddleware, app))
 
   // handle pure static files, limited to specified extensions, if defined
   app.use(wrongRequestHandler)

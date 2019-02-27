@@ -1,5 +1,8 @@
 'use strict';
 
+const path = require('path')
+const fs = require('fs')
+
 exports.exit = function(...errMsg) {
     if (errMsg.length) {
         console.error(...errMsg)

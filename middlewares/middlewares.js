@@ -1,30 +1,24 @@
 'use strict';
 
-const getFilesRouter = require('../middlewares/files-router')
-const getStaticRouter = require('../middlewares/static-router')
+//const getFilesRouter = require('../middlewares/files-router')
+//const getStaticRouter = require('../middlewares/static-router')
 
 exports.middlewares = async function(serverConfig) {
     return {
-        middlewares: await getMiddlewares(serverConfig),
-        filesRouter: serverConfig.serveFileDef ? getFilesRouter(serverConfig) : null,
-        staticRouter: getStaticRouter(serverConfig)
+        serverMiddlewares: await getServerMiddlewares(serverConfig),//await getMiddlewares(serverConfig),
+        siteMiddlewares: serverConfig.siteMiddlewares,
+        serveDynamicFiles: serverConfig.serveDynamicFiles,
+        serveStaticFiles: serverConfig.serveStaticFiles,
+        wrongRequestHandler: serverConfig.wrongRequestHandler
     }
 }
 
 const getServerMiddlewareDefs = exports.getServerMiddlewareDefs = async function(serverConfig) {
-    if (!serverConfig.serverMiddlewares) serverConfig.serverMiddlewares = []
-    const middlewares = serverConfig.serverMiddlewares
-    const middlewareIds = await helmetCheckAndCorrect(serverConfig, middlewares)
-    
+    const middlewareIds = await helmetCheckAndCorrect(serverConfig, serverConfig.serverMiddlewares)
     confirmServeMiddlewares(middlewareIds)
 
-    return middlewares
+    return serverConfig.serverMiddlewares
 }
-
-//function fileHandler(filePath) {
-    console.log(`Serving the file ${filePath.match(/\/[^\/]$/)[0]} for defined route paths.`)
-    //return ((req, res) => res.sendFile(filePath))
-//}
 
 
 //-------------------------------------------------------------------------------

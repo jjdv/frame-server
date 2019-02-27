@@ -5,7 +5,7 @@ const fs = require('fs')
 const express = require('express')
 
 const { validServerMiddlewareIds } = require('../middlewares/server-middleware.def')
-const { ErrorBox, getMiddleware, filePathNotEmpty } = require('./helpers')
+const { ErrorBox, getMiddleware, filePathNotEmpty, routePathsErr } = require('./helpers')
 
 
 module.exports = function processConfigData(config) {
@@ -36,14 +36,21 @@ module.exports = function processConfigData(config) {
     if (siteMiddlewares) {
         if (!Array.isArray(siteMiddlewares)) siteMiddlewares = [ siteMiddlewares ]
         const siteMiddlewaresRootDir = siteMiddlewaresDir ? path.resolve(serverRootDir, siteMiddlewaresDir) : serverRootDir
-        config.siteMiddlewares = siteMiddlewares.map(middlewareDef => getSiteMiddleware(middlewareDef, siteMiddlewaresRootDir, configError))
+        config.siteMiddlewares = siteMiddlewares
+            .map(middlewareDef => getSiteMiddleware(middlewareDef, siteMiddlewaresRootDir, configError))
+            .filter(m => !!m)
+        console.log(`Number of accepted site middlewares: ${config.siteMiddlewares.length}.`)
     }
 
     // serveDynamicFiles check
     let serveDynamicFiles = config.serveDynamicFiles
     if (serveDynamicFiles) {
         if (!Array.isArray(serveDynamicFiles)) serveDynamicFiles = [ serveDynamicFiles ]
-        config.serveDynamicFiles = serveDynamicFiles.map(fileDef => getDymamicFileDef(fileDef, siteRootDir, configError))
+        config.serveDynamicFiles = serveDynamicFiles
+            .map(fileDef => getDymamicFileDef(fileDef, siteRootDir, configError))
+            .filter(dfDef => !!dfDef)
+        const dynamicFilesNames = config.serveDynamicFiles.map(dfDef => dfDef.fileName).join(', ')
+        console.log(`Accepted dymamic files: ${dynamicFilesNames}.`)
     }
 
     // serveStaticFiles check
@@ -77,7 +84,7 @@ function processView(view, serverRootDir, errorHandler) {
     }
     if (view.dir) {
         if (typeof view.dir === 'string') view.dir = filePathNotEmpty(view.dir, serverRootDir, 'view.dir', errorHandler)
-        if (Array.isArray(view.dir)) view.dir = view.dir.map(dir => filePathNotEmpty(dir, serverRootDir, 'view.dir', errorHandler))
+        else if (Array.isArray(view.dir)) view.dir = view.dir.map(dir => filePathNotEmpty(dir, serverRootDir, 'view.dir', errorHandler))
         else errorHandler.report('Error: view.dir in the server config file must be a string or an array, not: ', view.dir)
     }
 }
@@ -119,7 +126,7 @@ function getDymamicFileDef(fileDef, siteRootDir, errorHandler) {
     else if (!fileDef.name) errorHandler.report('Error: Missing serveDynamicFiles.name definition.')
     else if (!routePathsErr(fileDef.routePaths, 'serveDynamicFiles.routePaths', errorHandler)) {
         const filePath = filePathNotEmpty(fileDef.name, siteRootDir, 'serveDynamicFiles.name', errorHandler)
-        if (filePath) return {routePaths: file.routePaths, handler: fileHandler(filePath), filePath: filePath}
+        if (filePath) return {routePaths: file.routePaths, handler: fileHandler(filePath), filePath: filePath, fileName: fileDef.name}
     }
     return null
 }
@@ -129,6 +136,8 @@ function fileHandler(filePath) {
 }
 
 function getStaticFileDef(dirMiddleware, serverRootDir, errorHandler) {
+    if (typeof dirMiddleware === 'string') dirMiddleware = { dir: dirMiddleware }
+    
     if (dirMiddleware.constructor !== Object) errorHandler.report('Error: serveStaticFiles must be an object, not:', dirMiddleware)
     else if (!dirMiddleware.dir) errorHandler.report('Error: Missing serveStaticFiles.dir definition.')
     else if (dirMiddleware.options && dirMiddleware.options.constructor !== Object)
@@ -137,7 +146,7 @@ function getStaticFileDef(dirMiddleware, serverRootDir, errorHandler) {
         return {
             routePaths: dirMiddleware.routePaths,
             middleware: express.static(
-                path.resolve(serverRootDir, dirMiddleware.dir),
+                filePathNotEmpty(dirMiddleware.dir, serverRootDir, 'serveStaticFiles.dir', errorHandler),
                 dirMiddleware.options ? dirMiddleware.options : {}
             )
         }
