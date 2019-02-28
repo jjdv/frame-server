@@ -8,12 +8,7 @@
   "author": "Jacek Jakubik (https://github.com/jjdv)",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "cookie-parser": "^1.4.4",
-    "express-session": "^1.15.6",
     "frame-server": "^1.0.0",
-    "helmet": "^3.15.1",
-    "multer": "^1.4.1",
     "pug": "^2.0.3"
   }
 }
