@@ -123,16 +123,16 @@ function getSiteMiddlewareObject(middlewareDef, rootDir, errorHandler) {
 function getDymamicFileDef(fileDef, siteRootDir, errorHandler) {
     if (fileDef.constructor !== Object) errorHandler.report('Error: serveDynamicFiles must be an object, not:', fileDef)
     else if (!fileDef.routePaths) errorHandler.report('Error: Missing serveDynamicFiles.routePaths definition.')
-    else if (!fileDef.name) errorHandler.report('Error: Missing serveDynamicFiles.name definition.')
+    else if (!fileDef.fileName) errorHandler.report('Error: Missing serveDynamicFiles.fileName definition.')
     else if (!routePathsErr(fileDef.routePaths, 'serveDynamicFiles.routePaths', errorHandler)) {
-        const filePath = filePathNotEmpty(fileDef.name, siteRootDir, 'serveDynamicFiles.name', errorHandler)
-        if (filePath) return {routePaths: file.routePaths, handler: fileHandler(filePath), filePath: filePath, fileName: fileDef.name}
+        const filePath = filePathNotEmpty(fileDef.fileName, siteRootDir, 'serveDynamicFiles.fileName', errorHandler)
+        if (filePath) return {routePaths: fileDef.routePaths, handler: fileHandler(filePath), filePath: filePath, fileName: fileDef.fileName}
     }
     return null
 }
 
 function fileHandler(filePath) {
-    return ((req, res) => res.sendFile(filePath))
+    return (req, res) => res.sendFile(filePath)
 }
 
 function getStaticFileDef(dirMiddleware, serverRootDir, errorHandler) {

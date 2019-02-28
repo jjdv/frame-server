@@ -37,7 +37,7 @@ async function runServer() {
   if (serveDynamicFiles) serveDynamicFiles.forEach(file => app.get(file.routePaths, file.handler))
 
   // serve static files from defined directories for defined route paths
-  if (serveStaticFiles) serveStaticFiles.forEach(dirMiddleware => applyMiddleware(dirMiddleware, app))
+  if (serveStaticFiles) serveStaticFiles.forEach(staticDirMiddleware => applyMiddleware(staticDirMiddleware, app))
 
   // handle pure static files, limited to specified extensions, if defined
   app.use(wrongRequestHandler)
