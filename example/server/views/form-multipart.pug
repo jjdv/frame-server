@@ -1,0 +1,15 @@
+html
+   head
+      title Multipart Tester
+   body
+      h1 Encoding type: multipart/form-data
+      form(action = "/form/display", method = "POST", enctype="multipart/form-data")
+         div
+            label(for = "say") Say:
+            input(name = "say" value = "Hi")
+         br
+         div
+            label(for = "to") To:
+            input(name = "to" value = "multipart/form data")
+         br
+         button(type = "submit") Send to server

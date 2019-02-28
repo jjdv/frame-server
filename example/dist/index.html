@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Frame-Server basic implementation example</title>
+        <link href="css/index.css" rel="stylesheet">
+    </head>
+    <body>
+        <h1>Frame-Server basic implementation example</h1>
+        <p>This is a basic example of a Frame-Server implementation. This page, consisting of index.html, css and image files, is loaded thanks to the default configuration of the static file handler.</p>
+        <p>The configuration of the static file handler can be defined in the property serveStaticFiles of the server configuration object</p>
+
+        <h2>Available Links</h2>
+        <p>You can test this example server implementation by applying the following urls:</p>
+        <ul>
+            <li>Cookies: <a href="/cookies">/cookies</a></li>
+            <li>Session: <a href="/session">/session</a></li>
+            <li>Url encoded data post: <a href="/form/urlencoded">/form/urlencoded</a></li>
+            <li>Multipart/form data post: <a href="/form/multipart">/form/multipart</a></li>
+            <li>JSON data post: <a href="/form/json">/form/json</a></li>
+            <li>Middlewares and views: the above data post url uses site middlewares and pug views :)</li>
+            <li>Dedicated file served for dynamic links: file 1: <a href="/dyn1">/dyn1</a>, <a href="/dyn2">/dyn2</a>; file 2: <a href="/d1">/d1</a>, <a href="/d2">/d2</a></li>
+            <li>Wrong request: just enter any invalid url ;)</li>
+        </ul>
+        <p id="photo-credit">Photo by Ali Yılmaz on <a href="https://unsplash.com/photos/LqztBrFUkec" referrerpolicy="no-referrer" rel="noreferrer">Unsplash</a></p>
+    </body>
+</html>

@@ -1,0 +1,18 @@
+html
+    head
+        title Cookies Test
+    body
+        if (!cmd)
+            p Cookies received: #{cookies}
+            p Signed cookies received: #{signedCookies}
+            p You can use the following commands in the url:<br/>"/cookies/set/name/value" or <br/>"/cookies/delete/name" ...
+        else if (cmd == 'set' && name && value)
+            p Cookie set. Cookie name: #{name}, Cookie value: #{value}.
+        else if (cmd == 'set')
+            p Please provide a cookie name and value in the url as: "/cookies/set/name/value" ...
+        else if (cmd == 'delete' && name)
+            p Cookie #{name} deleted.
+        else if (cmd == 'delete')
+            p Please provide a cookie name to delete in the url as: "/cookies/delete/name" ...
+        else
+            p Please use a url command as: "/cookies/set/name/value" or "/cookies/delete/name" ...

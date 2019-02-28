@@ -1,0 +1,22 @@
+html {
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    font-size: 15px;
+}
+
+body {
+    margin: 0;
+    padding: 2rem;
+    min-height: 100vh;
+    background-image: linear-gradient(#00000080, #00000080), url('/img/ali-yilmaz-1320636-unsplash.jpg');
+    background-size: cover;
+}
+
+:link, :visited {color: yellow;}
+
+#photo-credit {
+    position: absolute;
+    bottom: 0;
+    right: 1rem;
+    font-size: small;
+}
