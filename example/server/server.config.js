@@ -13,7 +13,7 @@ module.exports =  {
     noHelmet: true,
 
     // available values for middlewares installed by the server are:
-    // [ 'helmet', 'json', 'url', 'multipart', 'cookies', 'session' ]
+    // [ 'helmet', 'json', 'urlencoded', 'multipart', 'cookies', 'session' ]
     serverMiddlewares: [
         //'helmet',
         {
@@ -30,7 +30,7 @@ module.exports =  {
             }
         },
         {  
-            name: 'url',
+            name: 'urlencoded',
             options: { extended: false }
         },
         'json', 'multipart',

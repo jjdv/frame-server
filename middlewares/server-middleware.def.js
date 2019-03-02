@@ -2,11 +2,11 @@
 
 const packageNames = {
     helmet: 'helmet',
-    json: 'express',
-    url: 'express',
-    multipart: 'multer',
     cookies: 'cookie-parser',
-    session: 'express-session'
+    session: 'express-session',
+    json: 'express',
+    urlencoded: 'express',
+    multipart: 'multer'
 }
 
 const validServerMiddlewareIds = Object.keys(packageNames)
@@ -29,7 +29,7 @@ module.exports = { packageNames, validServerMiddlewareIds, getServerMiddleware }
 const middlewares = {
     helmet: (m, options) => m(options),
     json:  (m, options) => m.json(options),
-    url: (m, options) => m.urlencoded(options),
+    urlencoded: (m, options) => m.urlencoded(options),
     multipart: (m, options) => m(options).array(),
     cookies: (m, options) => m(options),
     session: (m, options) => m(options)
