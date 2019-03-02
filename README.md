@@ -2,10 +2,10 @@
 
 ## Table of Content
 <!-- vscode-markdown-toc -->
-* 1. [Overview](#Overview)
-* 2. [Installation](#Installation)
-* 3. [Run the server](#Runtheserver)
-* 4. [Configuration](#Configuration)
+* 1\. [Overview](#Overview)
+* 2\. [Installation](#Installation)
+* 3\. [Run the server](#Runtheserver)
+* 4\. [Configuration](#Configuration)
 	* 4.1. [Reference directories and file/directory resolution](#Referencedirectoriesandfiledirectoryresolution)
 	* 4.2. [Running the server without any configuration file](#Runningtheserverwithoutanyconfigurationfile)
 	* 4.3. [Basic configuration options](#Basicconfigurationoptions)
@@ -16,8 +16,8 @@
 		* 4.4.1. [Server middlewares](#Servermiddlewares)
 		* 4.4.2. [Site middlewares](#Sitemiddlewares)
 		* 4.4.3. [Views definition](#Viewsdefinition)
-* 5. [Automatic Server Reload](#AutomaticServerReload)
-* 6. [License](#License)
+* 5\. [Automatic Server Reload](#AutomaticServerReload)
+* 6\. [License](#License)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
