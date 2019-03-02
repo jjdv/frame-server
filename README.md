@@ -34,7 +34,7 @@ No surprises, just hit in a terminal from your main project directory:
 ```
 npm install frame-server
 ```
-You can also install the Frame Server globally with `npm install frame-server -g` but it's not recommended - it leads to inconsistent dependency structure. In such case you will have to have your server dependencies (like cookie-parse, pugr, multer) installed globally as well.
+You can also install the Frame Server globally with `npm install frame-server -g` but it's not recommended - it leads to inconsistent dependency structure. In such case you will have to have your server dependencies (like cookie-parse, pug, multer) installed globally as well.
 
 ##  3. <a name='Runtheserver'></a>Run the server
 To run the server installed locally put the command `fserver` in the package.json script command like below:
@@ -43,16 +43,16 @@ To run the server installed locally put the command `fserver` in the package.jso
     "start": "fserver"
   },
 ```
-In case of global installation enter in your terminal, in your main project directory, the command `fserver`.
+In case of a global installation enter in your terminal, in your main project directory, the command `fserver`.
 
-To apply a specific configuration file, provide it as an argument:
+##  4. <a name='Configuration'></a>Configuration
+This is where the server ease-of-use and flexibility shows up. There are several scenarios possible, presented in the next sections. You can run the server without any configuration file in the simplest case. If you need a more tailored solution, provide a server configuration definition in the file `server.config.js`. Assuming you will run the server with a terminal, in your main project directory, put your config file there or in any of the following directories relative to it (i.e. relative to CWD when starting the server): `./server`, `./config`, `./server/config` or `./config/server`.
+
+To apply a specific configuration file or use non-standard directory, provide the configuration file as an argument:
 ```
 fserver --conf <path-to-conf-file>
 fserver -c <path-to-conf-file>
 ```
-
-##  4. <a name='Configuration'></a>Configuration
-This is where the server ease-of-use and flexibility shows up. There are several scenarios possible, presented in the next sections. You can run the server without any configuration file in the simplest case. If you need a more tailored solution, provide a server configuration definition in the file `server.config.js`. Assuming you will run the server with a terminal, in your main project directory, put your config file there or in any of the following directories relative to it (i.e. relative to CWD when starting the server): `./server`, `./config`, `./server/config` or `./config/server`.
 
 ###  4.1. <a name='Referencedirectoriesandfiledirectoryresolution'></a>Reference directories and file/directory resolution
 Frame Server uses two reference directories:
@@ -61,7 +61,7 @@ Frame Server uses two reference directories:
 
 Both serverRootDir and siteRootDir can be overwritten in the `server.config.js`.
 
-Any other files and directories specified in the server configuration file can be provided relative to one of these reference directories or as an absolute path. See the description of a specific parameter to make sure which reference directory is used in that parameter.
+Any other files and directories specified in the server configuration file can be provided relative to one of these reference directories or as an absolute path. See the description of a specific parameter to make sure which reference directory is used for that parameter.
 
 ###  4.2. <a name='Runningtheserverwithoutanyconfigurationfile'></a>Running the server without any configuration file
 If you need just a basic server for a development process you don't have to bother with any configuration file. In such case the server defaults are applied and you get:
@@ -102,10 +102,10 @@ Wherever route paths can be specified they may be provided in `routePaths` prope
 - An array of combinations of any of the above.
 
 ####  4.3.2. <a name='Dynamicfiles'></a>Dynamic files
-If you have several route paths for which a given file should be sent it's enough to provide those data in the `serveDynamicFiles` property. Here, as shown above, you define the `routePaths` and your dynamic file to be served. If you have more files to be served that way, provide an array of such definitions.
+In order to serve a specific file for defined route paths it's enough to provide those data in the `serveDynamicFiles` property. In this field, as shown above, you define the `routePaths` and your dynamic file to be served. If you have more files to be served that way, provide an array of such definitions.
 
 ####  4.3.3. <a name='Staticfiles'></a>Static files
-The Frame Server uses [serve-static](https://expressjs.com/en/resources/middleware/serve-static.html) to handle static files. In the `serveStaticFiles` field you can provide not only the parameters for the 'serve-static' middleware, i.e. `dir` as static directory and `options`, but also route paths if you want some url prefix for your static resources. As with dynamic files, you can provide an array of objects if you need to handle a few static route directories.
+The Frame Server uses [serve-static](https://expressjs.com/en/resources/middleware/serve-static.html), provided by Express, to handle static files. In the `serveStaticFiles` field provide the parameters for the 'serve-static' middleware, i.e. `dir` as your static directory and 'serve-static' `options`. You can also provide route paths if you want some url prefix for your static resources. As with dynamic files, you can provide an array of objects if you need to handle static files from a few directories.
 
 ###  4.4. <a name='Advancedoptions'></a>Advanced options
 Finally, in addition to a lightweight, quick server solutions, Frame Server can serve as a frame of an advanced, fully fledged internet server. This is thanks to the additional configuration options described in the following subsections.
@@ -125,7 +125,7 @@ where the mapping to the respective packages is defined as:
     multipart: 'multer'
 ```
 
-Yes, you may provide options to those middlewares by providing an object instead of string with two properties: `name` with values as above and `options` for tailored configuration. Here is an example:
+Yes, you may provide options to those middlewares by providing an object instead of string with two properties: `name` with a middleware name as listed above and `options` for tailored middleware configuration. Here is an example:
 ```
 serverMiddlewares: [
     'helmet', 'cookies',
@@ -151,12 +151,9 @@ Alternatively, start the server with `--no-helmet` argument, i.e. `fserver --no-
 
 ####  4.4.2. <a name='Sitemiddlewares'></a>Site middlewares
 Server middlewares/parsers are provided automatically (based on your config definition) to allow you to focus on your own, specific middlewares needed for your site. To include your own middlewares define them in the `siteMiddlewares` configuration option. Your middleware definition should have one of the three possible forms:
-1. string `'path/to/my/middleware'`, absolute or relative to `serverRootDir` - will be applied with
-```
-app.use( path.resolve(serverRootDir, 'path/to/my/middleware') )
-```
+1. string `'path/to/my/middleware'`, absolute or relative to `serverRootDir` - will be resolved, required and applied with `app.use( yourMiddleware )`
 2. your middleware - will be applied with `app.use( yourMiddleware )`
-3. object `{routePaths: '/route/path', middleware: string|function as in 1-2 above}` - will be applied with `app.use(paths, middleware)`
+3. object `{routePaths: '/route/path', middleware: string|function as in 1-2 above}` - will be applied with `app.use(routePaths, middleware)`
 
 Another form of `siteMiddlewares` value is available to provide more than one middlewares:
 
@@ -164,20 +161,20 @@ Another form of `siteMiddlewares` value is available to provide more than one mi
 
 The middlewares are applied after the server middlewares and before serving dynamic and static files. This way you can overwrite those functions as needed.
 
-If you find convenient to specify a reference directory for the middleware modules provide it in the `siteMiddlewaresDir` property in the config file. The middlewares directory should be specified relative to the `serverRootDir`.
+If you find convenient to specify a reference directory for the middleware modules provide it in the `siteMiddlewaresDir` property in the config file. The middlewares directory should be specified relative to the `serverRootDir` or absolute.
 
 ####  4.4.3. <a name='Viewsdefinition'></a>Views definition
-To complement configuration options the server can configure the views for you in the Express environment. Just add to your config options the `view` property with default `engine` extension and/or `dir` as the directory where the view files are located:
+To complement the configuration options the server can configure the views for you in the Express environment. Just add to your config options the `view` property with default `engine` extension and/or `dir` as the directory where the view files are located:
 ```
 view: {
     engine: 'pug',
     dir: 'server/views'     // relative to serverRootDir or absolute
 }
 ```
-This will be used in `app.set('view engine', view.engine)` and `app.set('views', view.dir)` statements when setting up the server for you.
+This will be used in `app.set('view engine', view.engine)` and `app.set('views', view.dir)` statements when setting up the server for you. The view settings are applied before any middleware to allow making use of them in your code.
 
 ##  5. <a name='AutomaticServerReload'></a>Automatic Server Reload
-For automatic server reload after a file change, you can use [nodemon](https://nodemon.io/). This is a great tool with plenty of configuration options. Once you have the nodemon installed change the script entry in the package.json, which starts Frame Server, to something like:
+For automatic server reload after a file change, you can use [nodemon](https://nodemon.io/). This is a great tool with plenty of configuration options. Once you have the nodemon installed, change the script entry in the package.json, which starts the Frame Server, to something like:
 ```
   "scripts": {
     "start": "nodemon node_modules/frame-server/bin/frame-server.cli.js"
@@ -185,4 +182,4 @@ For automatic server reload after a file change, you can use [nodemon](https://n
 ```
 
 ##  6. <a name='License'></a>License
-The sever is provided under the MIT License.
+The Frame Sever is provided under the MIT License.
