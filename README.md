@@ -48,7 +48,7 @@ In case of a global installation enter in your terminal, in your main project di
 ##  4. <a name='Configuration'></a>Configuration
 This is where the server ease-of-use and flexibility shows up. There are several scenarios possible, presented in the next sections. You can run the server without any configuration file in the simplest case. If you need a more tailored solution, provide a server configuration definition in the file `server.config.js`. Assuming you will run the server with a terminal, in your main project directory, put your config file there or in any of the following directories relative to it (i.e. relative to CWD when starting the server): `./server`, `./config`, `./server/config` or `./config/server`.
 
-To apply a specific configuration file or use non-standard directory, provide the configuration file as an argument:
+To apply a specific configuration file or use a non-standard directory, provide your configuration file as an argument:
 ```
 fserver --conf <path-to-conf-file>
 fserver -c <path-to-conf-file>
@@ -161,7 +161,11 @@ Another form of `siteMiddlewares` value is available to provide more than one mi
 
 The middlewares are applied after the server middlewares and before serving dynamic and static files. This way you can overwrite those functions as needed.
 
-If you find convenient to specify a reference directory for the middleware modules provide it in the `siteMiddlewaresDir` property in the config file. The middlewares directory should be specified relative to the `serverRootDir` or absolute.
+If you find convenient to specify a reference directory for the middleware modules provide it in the `siteMiddlewaresDir` property in the config file:
+```
+siteMiddlewaresDir: 'server/middlewares',
+```
+The middlewares directory should be specified relative to the `serverRootDir` or absolute.
 
 ####  4.4.3. <a name='Viewsdefinition'></a>Views definition
 To complement the configuration options the server can configure the views for you in the Express environment. Just add to your config options the `view` property with default `engine` extension and/or `dir` as the directory where the view files are located:
