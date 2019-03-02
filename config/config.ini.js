@@ -1,23 +1,25 @@
 'use strict';
 
 module.exports = {
+    // parameters of the server configuration file to look for at the site location
     fileName: 'server.config.js',
-    dirs: ['./server', './config', './config/server', '.'],
+    dirs: ['./server', './config', './server/config', './config/server', '.'],
     
     serverConfig: {
 
         // serverRootDir is the starting point in the file resolution process
+        // process.env.INIT_CWD is the original WD where the script was called from
         serverRootDir: process.env.INIT_CWD || process.cwd(),
     
-        // siteRootDir relative to CWD or absolute (path resolution with path.resolve)
+        // siteRootDir relative to serverRootDir or absolute (path resolution with path.resolve)
         siteRootDir: 'dist',
 
-        // view, if defined, must be an object with 'engine' and view 'dir' specifications. The 'dir' is relative to the siteRootDir.
+        // view, if defined, must be an object with 'engine' and view 'dir' specifications. Both properties are optional. The 'dir' is relative to the serverRootDir or absolute.
         view: null,
         /* example view specification:
         view: {
             engine: 'pug',
-            dir: 'views'
+            dir: 'server/views'
         },
         */
 
@@ -25,32 +27,42 @@ module.exports = {
         noHelmet: false,
 
         // available values for middlewares installed by the server are:
-        /*
-        [
-            'helmet', 'json', 'url', 'multipart',
+        // ['helmet', 'cookies', 'session', 'json', 'urlencoded', 'multipart']
+        serverMiddlewares: [],
+        /* example serverMiddlewares specification:
+        serverMiddlewares: [
+            'helmet',
             {
                 name: 'cookies',
                 options: 'Shh, its a secret!'
             },
-            'session'
+            {
+                name: 'session',
+                options: {
+                    secret: 'Shh, its a secret!',
+                    resave: false,
+                    saveUninitialized: false,
+                }
+            },
+            'json', 'urlencoded', 'multipart'
         ]*/
-        serverMiddlewares: [],
         
-        // middlewares / routers to be used prior to the served file and static files
+        // middlewares / routers to be used prior to the dynamic files and static files
         siteMiddlewaresDir: null,
         siteMiddlewares: null,
     
-        // dedicated file to be served for specified route paths
-        // possible formats: falsy, string, object, array. detailed format info in 'files-router.js'
+        // dedicated files to be served for specified route paths
         serveDynamicFiles: null,
-        /*serveDynamicFiles: {
-            routePaths: '/',
+        /* example serveDynamicFiles specification:
+        serveDynamicFiles: {
+            routePaths: ['/', 'users', 'info'],
             name: 'index.html'
         },*/
     
         // static files to be handled with static route paths and directories
         serveStaticFiles: 'dist',
-        /*serveStatic: {
+        /* example serveStaticFiles specification:
+        serveStaticFiles: {
             routePaths: '/public',
             dir: 'dist',
             options: {}
