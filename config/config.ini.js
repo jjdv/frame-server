@@ -59,13 +59,13 @@ module.exports = {
             name: 'index.html'
         },*/
     
-        // static files to be handled with static route paths and directories
-        serveStaticFiles: 'dist',
+        // static files to be served from defined root directories with static route paths 
+        serveStaticFiles: 'dist', // can be just string with the 'dir' value relative to serverRootDir
         /* example serveStaticFiles specification:
         serveStaticFiles: {
-            routePaths: '/public',
-            dir: 'dist',
-            options: {}
+            routePaths: '/public', // optional, only if you need url prefix(es) for static resources
+            dir: 'dist', // mandatory
+            options: {} // optional, when you want some specific 'serve-static' configuration
         },*/
 
         // wrong request handler
