@@ -190,6 +190,7 @@ For automatic server reload after a file change, you can use [nodemon](https://n
     "start": "nodemon node_modules/frame-server/bin/frame-server.cli.js"
   },
 ```
+Please note that the nodemon service, in it's default configuration, restarts the server only after changes of javascript files. Consult [nodemon documentation](https://github.com/remy/nodemon#nodemon) for more tailored configuration.
 
 ##  6. <a name='License'></a>License
 The Frame Sever is provided under the MIT License.
