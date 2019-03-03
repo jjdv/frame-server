@@ -7,8 +7,7 @@
     "fserver": "bin/frame-server.cli.js"
   },
   "scripts": {
-    "postinstall": "node install/postinstall.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "node install/postinstall.js"
   },
   "repository": {
     "type": "git",
