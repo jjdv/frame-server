@@ -16,7 +16,8 @@
 		* 4.4.1. [Server middlewares](#Servermiddlewares)
 		* 4.4.2. [Site middlewares](#Sitemiddlewares)
 		* 4.4.3. [Views definition](#Viewsdefinition)
-* 5\. [Automatic Server Reload](#AutomaticServerReload)
+	* 4.5. [Configuration example](#Configurationexample)
+* 5\. [Automatic server reload](#Automaticserverreload)
 * 6\. [License](#License)
 
 <!-- vscode-markdown-toc-config
@@ -28,6 +29,8 @@
 
 ##  1. <a name='Overview'></a>Overview
 Frame server was built to structure and automate the process of creating Node.js/Express server. Instead of writing (or copying and modifying) a similar frame code every time you can just define your standard server elements in a config file and let the Frame Server build up the server for you. At the same time it's flexible enough to accept your own middlewares specific to your site.
+
+Check out the [frame-server-example](https://github.com/jjdv/frame-server-example) to see the Frame Server in action,
 
 ##  2. <a name='Installation'></a>Installation
 No surprises, just hit in a terminal from your main project directory:
@@ -177,7 +180,10 @@ view: {
 ```
 This will be used in `app.set('view engine', view.engine)` and `app.set('views', view.dir)` statements when setting up the server for you. The view settings are applied before any middleware to allow making use of them in your code.
 
-##  5. <a name='AutomaticServerReload'></a>Automatic Server Reload
+###  4.5. <a name='Configurationexample'></a>Configuration example
+If you'd like to see or play with some example implementations of the Frame Server with advanced configuration options, check out the [frame-server-example](https://github.com/jjdv/frame-server-example).
+
+##  5. <a name='Automaticserverreload'></a>Automatic server reload
 For automatic server reload after a file change, you can use [nodemon](https://nodemon.io/). This is a great tool with plenty of configuration options. Once you have the nodemon installed, change the script entry in the package.json, which starts the Frame Server, to something like:
 ```
   "scripts": {
