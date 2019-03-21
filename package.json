@@ -29,5 +29,8 @@
   "homepage": "https://github.com/jjdv/frame-server#readme",
   "dependencies": {
     "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "eslint": "^5.15.3"
   }
 }
