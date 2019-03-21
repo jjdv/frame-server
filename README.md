@@ -82,7 +82,7 @@ module.exports = {
     // dynamic files to be served for specific paths
     serveDynamicFiles: {
         routePaths: ['/', 'about', 'contact'],    // site urls
-        name: 'my-dynamic-file.html'              // relative to siteRootDir or absolute
+        fileName: 'my-dynamic-file.html'              // relative to siteRootDir or absolute
     },
 
     // static files to be served
@@ -105,10 +105,14 @@ Wherever route paths can be specified they may be provided in `routePaths` prope
 - An array of combinations of any of the above.
 
 ####  4.3.2. <a name='Dynamicfiles'></a>Dynamic files
-In order to serve a specific file for defined route paths it's enough to provide those data in the `serveDynamicFiles` property. In this field, as shown above, you define the `routePaths` and your dynamic file to be served. If you have more files to be served that way, provide an array of such definitions.
+In order to serve a specific file for defined route paths it's enough to provide those data in the `serveDynamicFiles` property. In this field, as shown above, you define the `routePaths` and your dynamic file to be served.
+
+If you have more files to be served that way, provide an array of such definitions.
 
 ####  4.3.3. <a name='Staticfiles'></a>Static files
-The Frame Server uses [serve-static](https://expressjs.com/en/resources/middleware/serve-static.html), provided by Express, to handle static files. In the `serveStaticFiles` field provide the parameters for the 'serve-static' middleware, i.e. `dir` as your static directory and 'serve-static' `options`. You can also provide route paths if you want some url prefix for your static resources. As with dynamic files, you can provide an array of objects if you need to handle static files from a few directories.
+The Frame Server uses [serve-static](https://expressjs.com/en/resources/middleware/serve-static.html), provided by Express, to handle static files. In the `serveStaticFiles` field provide the parameters for the 'serve-static' middleware, i.e. `dir` as your static directory and 'serve-static' `options`. You can also provide route paths if you want some url prefix for your static resources.
+
+As with dynamic files, you can provide an array of objects if you need to handle static files from a few directories.
 
 ###  4.4. <a name='Advancedoptions'></a>Advanced options
 Finally, in addition to a lightweight, quick server solutions, Frame Server can serve as a frame of an advanced, fully fledged internet server. This is thanks to the additional configuration options described in the following subsections.
@@ -156,7 +160,16 @@ Alternatively, start the server with `--no-helmet` argument, i.e. `fserver --no-
 Server middlewares/parsers are provided automatically (based on your config definition) to allow you to focus on your own, specific middlewares needed for your site. To include your own middlewares define them in the `siteMiddlewares` configuration option. Your middleware definition should have one of the three possible forms:
 1. string `'path/to/my/middleware'`, absolute or relative to `serverRootDir` - will be resolved, required and applied with `app.use( yourMiddleware )`
 2. your middleware - will be applied with `app.use( yourMiddleware )`
-3. object `{routePaths: '/route/path', middleware: string|function as in 1-2 above}` - will be applied with `app.use(routePaths, middleware)`
+3. object
+```
+{
+  name: 'myMiddlewareName',         // optional
+  type: 'use'                                   // optional, default 'use'
+  routePaths: '/route/path',              // optional
+  middleware: string|function as in 1-2 above
+}
+```
+    - will be applied with `app[type](routePaths, middleware)`, if `routePaths` is specified, or with `app[type](middleware)` otherwise. `myMiddlewareName` is used in reporting. It will default to 'siteMiddlewares-index', where 'index' is the middleware number in the 'siteMiddlewares' specification.
 
 Another form of `siteMiddlewares` value is available to provide more than one middlewares:
 

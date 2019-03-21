@@ -26,17 +26,16 @@ function getConfPath(confDirs, confFileName) {
         // confPath provided as cli argument
 
         confPath = path.resolve(serverRootDir, confPath)
-        if (fs.existsSync(confPath)) return confPath
-        exit( dirErrMsg(confDirs, confFileName, confPath) )
+        if (!fs.existsSync(confPath)) throw new Error( dirErrMsg(confDirs, confFileName, confPath) )
+        return confPath
     } else {
         // conf file to be found in default directories
 
-        let notFound = true
-        for (let i=0; i<confDirs.length; i++) {
-            confPath = path.resolve(serverRootDir, confDirs[i], confFileName)
-            if (fs.existsSync(confPath)) { notFound = false; break }
+        for (confDir of confDirs) {
+            confPath = path.resolve(serverRootDir, confDir, confFileName)
+            if (fs.existsSync(confPath)) return confPath
         }
-        return notFound ? null : confPath
+        return null
     }
 }
 
@@ -51,5 +50,5 @@ function confPathFromArgs() {
 
 function dirErrMsg(confDirs, confFileName, confPath = null) {
     const searchedDirs = confPath ? ("the dir: '" + confPath + "'") : ("any of the dirs: '" + confDirs.join("', '") + "'")
-    return `Error: No server config file '${confFileName}' found in ${searchedDirs}.`
+    return `No server config file '${confFileName}' found in ${searchedDirs}.`
 }

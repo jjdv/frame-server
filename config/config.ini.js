@@ -28,7 +28,8 @@ module.exports = {
 
         // available values for middlewares installed by the server are:
         // ['helmet', 'cookies', 'session', 'json', 'urlencoded', 'multipart']
-        serverMiddlewares: [],
+        installServerMiddlewares: true,
+        serverMiddlewares: nul,
         /* example serverMiddlewares specification:
         serverMiddlewares: [
             'helmet',
