@@ -41,7 +41,7 @@ Middleware.fromDef = function (middlewareDef, options = {}) {
   return new Middleware(...mArgs)
 }
 
-Middleware.propotype.apply = function (app, report = true) {
+Middleware.prototype.apply = function (app, report = true) {
   if (!app || !this.middlewareFn) return
 
   if (this.routePaths) app[this.type](this.routePaths, this.middlewareFn)
@@ -55,15 +55,16 @@ module.exports = Middleware
 // supporting functions
 // -------------------------------------------------------------------------------
 
-function middlewareArgsErr (middlewareName, middlewareFn, routePaths, type, statusPar) {
-  const status = statusPar || new Status()
+function middlewareArgsErr (middlewareName, middlewareFn, routePaths, type, status) {
+  const intStatus = new Status()
 
-  middlewareNameErrCheck(middlewareName, middlewareFn, status)
-  middlewareFnErrCheck(middlewareFn, middlewareName, status)
-  routePathsErr(routePaths, middlewareName, status)
-  Middleware.typeErrCheck(type, middlewareName, status)
+  middlewareNameErrCheck(middlewareName, middlewareFn, intStatus)
+  middlewareFnErrCheck(middlewareFn, middlewareName, intStatus)
+  if (routePaths) routePathsErr(routePaths, middlewareName, intStatus)
+  Middleware.typeErrCheck(type, middlewareName, intStatus)
 
-  return status.error
+  if (intStatus.error) status.reportErr()
+  return intStatus.error
 }
 
 function middlewareNameErrCheck (middlewareName, middlewareFn, status) {
@@ -72,7 +73,7 @@ function middlewareNameErrCheck (middlewareName, middlewareFn, status) {
 
 function middlewareFnErrCheck (middlewareFn, middlewareName, status) {
   if (!middlewareFn) status.reportErr('No middleware function provided.')
-  else if (middlewareFn.contructor !== Function) {
+  else if (middlewareFn.constructor !== Function) {
     const extraInfo = middlewareName && typeof middlewareName === 'string' ? `provided for the middleware: ${middlewareName}.` : ''
     status.reportErr('Invalid format of middleware function: ', middlewareFn, extraInfo)
   }

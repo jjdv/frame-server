@@ -43,7 +43,7 @@ Middlewares.fromDef = function (middlewaresName, middlewaresDef, options, applyM
   return new Middlewares(middlewaresName, middlewares, applyMsg)
 }
 
-Middlewares.propotype.apply = function (app, groupReporting = true) {
+Middlewares.prototype.apply = function (app, groupReporting = true) {
   if (!app || !this.middlewares) return
 
   const individualReporting = !groupReporting

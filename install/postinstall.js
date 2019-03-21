@@ -5,7 +5,7 @@ let { installServerMiddlewares, serverMiddlewares } = require('../config/server.
 if (installServerMiddlewares && serverMiddlewares) {
   if (typeof serverMiddlewares === 'string') serverMiddlewares = [ serverMiddlewares ]
   if (Array.isArray(serverMiddlewares)) {
-    const { packageNames } = require('../middlewares/server-middlewares.def')
+    const { packageNames } = require('../middlewares/server')
 
     const externalPackages = []; let mName
     for (let mDef of serverMiddlewares) {
@@ -30,7 +30,7 @@ if (installServerMiddlewares && serverMiddlewares) {
 // -------------------------------------------------------------------------------
 
 function installExternalPackages (externalPackages) {
-  console.log('The following server middleware external packages, found in the server configuration file, will be instaled: ', externalPackages.join(','))
+  console.log(`The following server middleware external packages, found in the server configuration file, will be instaled: ${externalPackages.join(', ')}.`)
 
   const { spawn } = require('child_process')
   const spawnArgs = ['install', '--save'].concat(externalPackages)

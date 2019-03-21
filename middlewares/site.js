@@ -1,6 +1,6 @@
 
-const { Middleware } = require('../modules/class-middleware')
-const { Middlewares } = require('../modules/class-middlewares')
+const Middleware = require('../modules/class-middleware')
+const Middlewares = require('../modules/class-middlewares')
 
 function validateSiteMiddlewares (siteMiddlewaresDef, status) {
   Middlewares.validate(siteMiddlewaresDef, validateSiteMiddleware, status)
@@ -21,10 +21,10 @@ function validateSiteMiddleware (siteMiddlewareDef, index, status) {
   if (typeof siteMiddlewareDef !== 'object') {
     siteMiddlewareDef = {
       middleware: siteMiddlewareDef,
-      name: 'siteMiddlewares, item no. ' + (index + 1)
+      name: 'siteMiddlewares, item ' + (index + 1)
     }
   } else if (!siteMiddlewareDef.name || typeof siteMiddlewareDef.name !== 'string') {
-    siteMiddlewareDef.name = 'siteMiddlewares, item no. ' + (index + 1)
+    siteMiddlewareDef.name = 'siteMiddlewares, item ' + (index + 1)
   }
 
   const siteMiddlewaresDir = process.env.siteMiddlewaresDir

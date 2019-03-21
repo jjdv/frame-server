@@ -8,13 +8,13 @@ const Status = require('./class-status')
 function filePath (pathDef, rootDir, varName, status) {
   if (!pathDef) return null
   if (typeof pathDef !== 'string') {
-    status.report(`Error: Wrong file path format of ${varName}.`)
+    status.reportErr(`Error: Wrong file path format of ${varName}.`)
     return null
   }
 
   const filePath = exports.filePath = path.resolve(rootDir, pathDef)
   if (!fs.existsSync(filePath)) {
-    status.report(`Error: Cannot find "${filePath}" specified by the ${varName} as "${pathDef}"`)
+    status.reportErr(`Error: Cannot find "${filePath}" specified by the ${varName} as "${pathDef}"`)
     return null
   }
   return filePath
@@ -23,7 +23,7 @@ function filePath (pathDef, rootDir, varName, status) {
 function filePathNotEmpty (pathDef, rootDir, varName, status) {
   if (pathDef) return filePath(pathDef, rootDir, varName, status)
 
-  status.report(`Error: The specification of the file path in the ${varName} cannot be an empty string.`)
+  status.reportErr(`Error: The specification of the file path in the ${varName} cannot be an empty string.`)
   return null
 }
 
@@ -48,9 +48,9 @@ function checkName (name, varName, varValue, statusPar) {
 }
 
 function isEmpty (val) {
-  if (typeof val === 'object') return !!Object.keys(val).length
-  if (Array.isArray(val)) return !!val.length
-  return !!val
+  if (typeof val === 'object') return !Object.keys(val).length
+  if (Array.isArray(val)) return !val.length
+  return !val
 }
 
 module.exports = { filePath, filePathNotEmpty, routePathsErr, checkName, isEmpty }
@@ -61,9 +61,9 @@ module.exports = { filePath, filePathNotEmpty, routePathsErr, checkName, isEmpty
 
 function routePathErr (path, varName, status) {
   if (typeof path === 'string') {
-    if (!path) status.report(`Error: The specification of the path in ${varName} cannot be an empty string.`)
-    else if (path[0] !== '/') status.report(`Error: Route paths in ${varName} should be absolute, i.e. start with: '/' but is defined as: ${path}`)
-  } else if (!isRegExp(path)) status.report(`Wrong path format in ${varName}.`)
+    if (!path) status.reportErr(`Error: The specification of the path in ${varName} cannot be an empty string.`)
+    else if (path[0] !== '/') status.reportErr(`Error: Route paths in ${varName} should be absolute, i.e. start with: '/' but is defined as: ${path}`)
+  } else if (!isRegExp(path)) status.reportErr(`Wrong path format in ${varName}.`)
 }
 
-const isRegExp = val => val.constructor === RegExp
+const isRegExp = val => typeof val === 'object' && val.constructor === RegExp

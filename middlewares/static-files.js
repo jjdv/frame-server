@@ -1,7 +1,7 @@
 const path = require('path')
 const express = require('express')
 
-const { Middlewares } = require('../modules/class-middlewares')
+const Middlewares = require('../modules/class-middlewares')
 const { filePathNotEmpty, routePathsErr } = require('../modules/helpers-basic')
 
 function validateStaticFilesDef (serveStaticFilesDef, status) {
@@ -24,13 +24,13 @@ function validateDirDef (dirDef, index, status) {
   if (typeof dirDef === 'string') dirDef = { dir: dirDef }
   if (typeof dirDef !== 'object') status.reportErr(`Definition in 'serveStaticFiles' must be an object and not: `, dirDef)
   else {
-    if (!dirDef.dir) status.reportErr(`Missing 'dir' definition in 'serveStaticFiles', item no. ${index + 1}.`)
+    if (!dirDef.dir) status.reportErr(`Missing 'dir' definition in 'serveStaticFiles', item ${index + 1}.`)
     else {
       const serverRootDir = process.env.serverRootDir
-      filePathNotEmpty(dirDef.dir, serverRootDir, `'dir' in 'serveStaticFiles', item no. ${index + 1}`, status)
+      filePathNotEmpty(dirDef.dir, serverRootDir, `'dir' in 'serveStaticFiles', item ${index + 1}`, status)
     }
-    if (dirDef.routePaths) routePathsErr(dirDef.routePaths, `'routePaths' in 'serveStaticFiles', item no. ${index + 1}`, status)
-    if (dirDef.options && typeof dirDef.options !== 'object') { status.reportErr(`'options' definition in 'serveStaticFiles', item no. ${index + 1}, must be an object and not: `, dirDef.options) }
+    if (dirDef.routePaths) routePathsErr(dirDef.routePaths, `'routePaths' in 'serveStaticFiles', item ${index + 1}`, status)
+    if (dirDef.options && typeof dirDef.options !== 'object') { status.reportErr(`'options' definition in 'serveStaticFiles', item ${index + 1}, must be an object and not: `, dirDef.options) }
   }
 }
 
@@ -43,10 +43,9 @@ function normalizeStaticFilesDef (serveStaticFilesDef) {
       name: dirDef.dir,
       middleware: express.static(
         path.resolve(serverRootDir, dirDef.dir),
-        dirDef.options ? dirDef.options : {}
+        dirDef.options || {}
       ),
-      routePaths: dirDef.routePaths,
-      type: 'get'
+      routePaths: dirDef.routePaths
     })
   })
 }

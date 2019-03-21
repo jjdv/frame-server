@@ -34,7 +34,7 @@ module.exports = function validateConfigData (config) {
   validateSiteMiddlewares(config.siteMiddlewares, validationStatus)
 
   // serveDynamicFiles check
-  const { validateDynamicFiles: validateDynamicFilesDef } = require('../middlewares/dynamic-files')
+  const { validateDynamicFilesDef } = require('../middlewares/dynamic-files')
   validateDynamicFilesDef(config.serveDynamicFiles, validationStatus)
 
   // serveStaticFiles check
@@ -62,17 +62,17 @@ function processRequiredDir (dirName, dir, rootDir) {
     if (rootDir) dir = path.resolve(rootDir, dir)
     if (!fs.existsSync(dir)) throw new Error(`Cannot find "${dir}" specified in ${dirName}.`)
   }
+
+  return dir
 }
 
 function processView (view, processStatus) {
   if (view.constructor !== Object) processStatus.reportErr('Wrong format of the view definition in the server config file:', view)
-  if (view.engine) {
-    if (typeof view.engine !== 'string') { processStatus.reportErr('view.engine in the server config file must be a string, not: ', view.engine) }
-  }
+  if (view.engine && typeof view.engine !== 'string') processStatus.reportErr('view.engine in the server config file must be a string, not: ', view.engine)
   if (view.dir) {
     const serverRootDir = process.env.serverRootDir
-    if (typeof view.dir === 'string') view.dir = filePathNotEmpty(view.dir, serverRootDir, 'view.dir', processStatus)
-    else if (Array.isArray(view.dir)) view.dir = view.dir.map(dir => filePathNotEmpty(dir, serverRootDir, 'view.dir', processStatus))
+    if (typeof view.dir === 'string') filePathNotEmpty(view.dir, serverRootDir, 'view.dir', processStatus)
+    else if (Array.isArray(view.dir)) view.dir.forEach(dir => filePathNotEmpty(dir, serverRootDir, 'view.dir', processStatus))
     else processStatus.reportErr('view.dir in the server config file must be a string or an array, not: ', view.dir)
   }
 }

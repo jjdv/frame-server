@@ -1,6 +1,6 @@
 'use strict'
 
-const { Middlewares } = require('../modules/class-middlewares')
+const Middlewares = require('../modules/class-middlewares')
 
 function validateServerMiddlewares (serverMiddlewares, noHelmet, status) {
   if (!serverMiddlewares) return
