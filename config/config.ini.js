@@ -1,36 +1,36 @@
-'use strict';
+'use strict'
 
 module.exports = {
-    // parameters of the server configuration file to look for at the site location
-    fileName: 'server.config.js',
-    dirs: ['./server', './config', './server/config', './config/server', '.'],
-    
-    serverConfig: {
+  // parameters of the server configuration file to look for at the site location
+  fileName: 'server.config.js',
+  dirs: ['./server', './config', './server/config', './config/server', '.'],
 
-        // serverRootDir is the starting point in the file resolution process
-        // process.env.INIT_CWD is the original WD where the script was called from
-        serverRootDir: process.env.INIT_CWD || process.cwd(),
-    
-        // siteRootDir relative to serverRootDir or absolute (path resolution with path.resolve)
-        siteRootDir: 'dist',
+  serverConfig: {
 
-        // view, if defined, must be an object with 'engine' and view 'dir' specifications. Both properties are optional. The 'dir' is relative to the serverRootDir or absolute.
-        view: null,
-        /* example view specification:
+    // serverRootDir is the starting point in the file resolution process
+    // process.env.INIT_CWD is the original WD where the script was called from
+    serverRootDir: process.env.INIT_CWD || process.cwd(),
+
+    // siteRootDir relative to serverRootDir or absolute (path resolution with path.resolve)
+    siteRootDir: 'dist',
+
+    // view, if defined, must be an object with 'engine' and view 'dir' specifications. Both properties are optional. The 'dir' is relative to the serverRootDir or absolute.
+    view: null,
+    /* example view specification:
         view: {
             engine: 'pug',
             dir: 'server/views'
         },
         */
 
-        // 'noHelmet' property can be set to true to get rid of the cli questions about the 'helmet' package
-        noHelmet: false,
+    // 'noHelmet' property can be set to true to get rid of the cli questions about the 'helmet' package
+    noHelmet: false,
 
-        // available values for middlewares installed by the server are:
-        // ['helmet', 'cookies', 'session', 'json', 'urlencoded', 'multipart']
-        installServerMiddlewares: true,
-        serverMiddlewares: nul,
-        /* example serverMiddlewares specification:
+    // available values for middlewares installed by the server are:
+    // ['helmet', 'cookies', 'session', 'json', 'urlencoded', 'multipart']
+    installServerMiddlewares: true,
+    serverMiddlewares: null,
+    /* example serverMiddlewares specification:
         serverMiddlewares: [
             'helmet',
             {
@@ -46,33 +46,33 @@ module.exports = {
                 }
             },
             'json', 'urlencoded', 'multipart'
-        ]*/
-        
-        // middlewares / routers to be used prior to the dynamic files and static files
-        siteMiddlewaresDir: null,
-        siteMiddlewares: null,
-    
-        // dedicated files to be served for specified route paths
-        serveDynamicFiles: null,
-        /* example serveDynamicFiles specification:
+        ] */
+
+    // middlewares / routers to be used prior to the dynamic files and static files
+    siteMiddlewaresDir: null,
+    siteMiddlewares: null,
+
+    // dedicated files to be served for specified route paths
+    serveDynamicFiles: null,
+    /* example serveDynamicFiles specification:
         serveDynamicFiles: {
             routePaths: ['/', 'users', 'info'],
             name: 'index.html'
-        },*/
-    
-        // static files to be served from defined root directories with static route paths 
-        serveStaticFiles: 'dist', // can be just string with the 'dir' value relative to serverRootDir
-        /* example serveStaticFiles specification:
+        }, */
+
+    // static files to be served from defined root directories with static route paths
+    serveStaticFiles: 'dist', // can be just string with the 'dir' value relative to serverRootDir
+    /* example serveStaticFiles specification:
         serveStaticFiles: {
             routePaths: '/public', // optional, only if you need url prefix(es) for static resources
             dir: 'dist', // mandatory
             options: {} // optional, when you want some specific 'serve-static' configuration
-        },*/
+        }, */
 
-        // wrong request handler
-        wrongRequestHandler: null,
-    
-        // server port to be used
-        port: 3000,
-    }
+    // wrong request handler
+    wrongRequestHandler: null,
+
+    // server port to be used
+    port: 3000
+  }
 }

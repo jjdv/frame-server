@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+'use strict'
 
 const app = require('express')()
 
@@ -31,27 +31,28 @@ const PORT = process.env.PORT || serverConfig.port
 const uriDesc = process.env.PORT ? `port: ${PORT}` : `http://localhost:${PORT}`
 app.listen(PORT, () => console.log(`Server listening on ${uriDesc} ...`))
 
+// -------------------------------------------------------------------------------
+// supporting functions
+// -------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------
-// supporting functions 
-//-------------------------------------------------------------------------------
-
-function getServerConfig() {
+function getServerConfig () {
   // get the final server configuration data
-  serverConfig = require('../config/server.config')
-  
+  const serverConfig = require('../config/server.config')
+
   try {
     // 'validateConfigData' validates data, changes file paths to absolute,
     // reports errors and throws an error if there are any errors found
     const validateConfigData = require('../modules/validate-config-data')
-    return validateConfigData(serverConfig)
+
+    validateConfigData(serverConfig)
+    return serverConfig
   } catch (e) {
     console.error(e.toString())
     process.exit(9)
   }
 }
 
-function setView(view) {
+function setView (view) {
   if (!view) return
   if (view.engine) app.set('view engine', view.engine)
   if (view.dir) app.set('views', view.dir)
