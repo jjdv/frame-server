@@ -7,7 +7,7 @@
     "fserver": "bin/frame-server.cli.js"
   },
   "scripts": {
-    "postinstall": "node install/postinstall.js"
+    "postinstall": "node modules/install/postinstall.js"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 'use strict'
 
-const Middlewares = require('../modules/class-middlewares')
+const Middlewares = require('../classes/class-middlewares')
 
 function validateServerMiddlewares (serverMiddlewares, noHelmet, status) {
   if (!serverMiddlewares) return
@@ -31,6 +31,7 @@ function serverMiddlewares (serverMiddlewaresDef) {
 
 module.exports = { validateServerMiddlewares, packageNames, serverMiddlewares }
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const Status = require('./class-status')
+const Status = require('../classes/class-status')
 
 function filePath (pathDef, rootDir, varName, status) {
   if (!pathDef) return null
@@ -55,6 +55,7 @@ function isEmpty (val) {
 
 module.exports = { filePath, filePathNotEmpty, routePathsErr, checkName, isEmpty }
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------

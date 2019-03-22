@@ -3,8 +3,8 @@
 const path = require('path')
 const fs = require('fs')
 
-const { filePath, filePathNotEmpty } = require('./helpers-basic')
-const Status = require('./class-status')
+const { filePath, filePathNotEmpty } = require('../helpers/helpers-basic')
+const Status = require('../classes/class-status')
 
 module.exports = function validateConfigData (config) {
   const serverRootDir = config.serverRootDir
@@ -51,6 +51,7 @@ module.exports = function validateConfigData (config) {
   if (validationStatus.error) throw new Error('Detected errors in the server configuration file. Server initialization aborted.')
 }
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------

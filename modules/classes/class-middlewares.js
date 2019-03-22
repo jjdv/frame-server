@@ -1,5 +1,5 @@
-const { checkName } = require('./helpers-basic')
-const { createGetOnlyProps } = require('./helpers-object')
+const { checkName } = require('../helpers/helpers-basic')
+const { createGetOnlyProps } = require('../helpers/helpers-object')
 const Middleware = require('./class-middleware')
 const Status = require('./class-status')
 
@@ -59,6 +59,7 @@ Middlewares.prototype.apply = function (app, groupReporting = true) {
 
 module.exports = Middlewares
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------

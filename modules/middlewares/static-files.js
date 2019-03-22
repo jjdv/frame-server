@@ -1,8 +1,8 @@
 const path = require('path')
 const express = require('express')
 
-const Middlewares = require('../modules/class-middlewares')
-const { filePathNotEmpty, routePathsErr } = require('../modules/helpers-basic')
+const Middlewares = require('../classes/class-middlewares')
+const { filePathNotEmpty, routePathsErr } = require('../helpers/helpers-basic')
 
 function validateStaticFilesDef (serveStaticFilesDef, status) {
   Middlewares.validate(serveStaticFilesDef, validateDirDef, status)
@@ -16,6 +16,7 @@ function staticFilesMiddlewares (serveStaticFilesDef) {
 
 module.exports = { validateStaticFilesDef, staticFilesMiddlewares }
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------

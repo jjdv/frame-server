@@ -1,5 +1,5 @@
 
-const Middleware = require('../modules/class-middleware')
+const Middleware = require('../classes/class-middleware')
 
 function validateWrongRequestHandlerDef (wrongRequestHandlerDef, status) {
   Middleware.validateDef(getWrongRequestHandlerDef(wrongRequestHandlerDef), {}, status)
@@ -11,6 +11,7 @@ function wrongRequestHandler (wrongRequestHandlerDef) {
 
 module.exports = { validateWrongRequestHandlerDef, wrongRequestHandler }
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------

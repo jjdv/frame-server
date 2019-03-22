@@ -9,7 +9,7 @@ const serverConfig = getServerConfig()
 // set views if defined
 setView(serverConfig.view)
 
-const { middlewares } = require('../middlewares/middlewares')
+const { middlewares } = require('../modules/middlewares/middlewares')
 const { serverMiddlewares, siteMiddlewares, serveDynamicFiles, serveStaticFiles, wrongRequestHandler } = middlewares(serverConfig)
 
 // server middlewares
@@ -32,6 +32,7 @@ const PORT = process.env.PORT || serverConfig.port
 const uriDesc = process.env.PORT ? `port: ${PORT}` : `http://localhost:${PORT}`
 app.listen(PORT, () => console.log(`Server listening on ${uriDesc} ...`))
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------
@@ -40,11 +41,11 @@ function getServerConfig () {
   // get the final server configuration data
   const serverConfig = require('../config/server.config')
 
-  try {
-    // 'validateConfigData' validates data, changes file paths to absolute,
-    // reports errors and throws an error if there are any errors found
-    const validateConfigData = require('../modules/validate-config-data')
+  // 'validateConfigData' validates data, changes file paths to absolute,
+  // reports errors and throws an error if there are any errors found
+  const validateConfigData = require('../modules/validators/validate-config-data')
 
+  try {
     validateConfigData(serverConfig)
     return serverConfig
   } catch (e) {

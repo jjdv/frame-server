@@ -1,6 +1,6 @@
 
-const Middleware = require('../modules/class-middleware')
-const Middlewares = require('../modules/class-middlewares')
+const Middleware = require('../classes/class-middleware')
+const Middlewares = require('../classes/class-middlewares')
 
 function validateSiteMiddlewares (siteMiddlewaresDef, status) {
   Middlewares.validate(siteMiddlewaresDef, validateSiteMiddleware, status)
@@ -13,6 +13,7 @@ function siteMiddlewares (siteMiddlewaresDef) {
 
 module.exports = { validateSiteMiddlewares, siteMiddlewares }
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------

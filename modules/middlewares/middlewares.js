@@ -15,7 +15,3 @@ exports.middlewares = function (config) {
     wrongRequestHandler: wrongRequestHandler(config.wrongRequestHandler)
   }
 }
-
-// -------------------------------------------------------------------------------
-// supporting functions
-// -------------------------------------------------------------------------------

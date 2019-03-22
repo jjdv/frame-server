@@ -1,6 +1,6 @@
 'use strict'
 
-let { installServerMiddlewares, serverMiddlewares } = require('../config/server.config')
+let { installServerMiddlewares, serverMiddlewares } = require('../../config/server.config')
 
 if (installServerMiddlewares && serverMiddlewares) {
   if (typeof serverMiddlewares === 'string') serverMiddlewares = [ serverMiddlewares ]
@@ -25,6 +25,7 @@ if (installServerMiddlewares && serverMiddlewares) {
   }
 }
 
+//
 // -------------------------------------------------------------------------------
 // supporting functions
 // -------------------------------------------------------------------------------
