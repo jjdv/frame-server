@@ -1,6 +1,6 @@
 'use strict'
 
-const { toReadOnlyProps } = require('../helpers/helpers-object')
+const { toReadOnlyProps } = require('../helpers/object')
 
 module.exports = function Status (props) {
   const intV = { error: false }

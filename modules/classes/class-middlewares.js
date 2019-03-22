@@ -1,5 +1,5 @@
-const { checkName } = require('../helpers/helpers-basic')
-const { createGetOnlyProps } = require('../helpers/helpers-object')
+const { checkName } = require('../helpers/basic')
+const { createGetOnlyProps } = require('../helpers/object')
 const Middleware = require('./class-middleware')
 const Status = require('./class-status')
 

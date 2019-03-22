@@ -1,7 +1,7 @@
-const { filePathNotEmpty, routePathsErr, checkName } = require('../helpers/helpers-basic')
-const { createGetOnlyProps, createReadOnlyProps } = require('../helpers/helpers-object')
+const { filePathNotEmpty, routePathsErr, checkName } = require('../helpers/basic')
+const { createGetOnlyProps, createReadOnlyProps } = require('../helpers/object')
 const Status = require('./class-status')
-const { isEmpty } = require('../helpers/helpers-basic')
+const { isEmpty } = require('../helpers/basic')
 
 function Middleware (middlewareName, middlewareFn, routePaths, type = 'use') {
   if (middlewareArgsErr(middlewareName, middlewareFn, routePaths, type)) return

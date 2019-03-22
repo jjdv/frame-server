@@ -3,7 +3,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const { filePath, filePathNotEmpty } = require('../helpers/helpers-basic')
+const { filePath, filePathNotEmpty } = require('../helpers/basic')
 const Status = require('../classes/class-status')
 
 module.exports = function validateConfigData (config) {
