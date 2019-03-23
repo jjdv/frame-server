@@ -8,13 +8,15 @@ const Status = require('../classes/class-status')
 function filePath (pathDef, rootDir, varName, status) {
   if (!pathDef) return null
   if (typeof pathDef !== 'string') {
-    status.reportErr(`Error: Wrong file path format of '${varName}'.`)
+    const extraInfo = varName ? ` of '${varName}'` : ''
+    status.reportErr(`Error: Wrong file path format${extraInfo}:`, pathDef)
     return null
   }
 
-  const filePath = exports.filePath = path.resolve(rootDir, pathDef)
+  const filePath = path.resolve(rootDir, pathDef)
   if (!fs.existsSync(filePath)) {
-    status.reportErr(`Error: Cannot find "${filePath}" specified by the '${varName}' as "${pathDef}"`)
+    const extraInfo = varName ? ` by the '${varName}'` : ''
+    status.reportErr(`Error: Cannot find "${filePath}" specified${extraInfo} as "${pathDef}"`)
     return null
   }
   return filePath
