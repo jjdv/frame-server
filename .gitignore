@@ -1,7 +1,8 @@
 # dependencies
-/node_modules
+node_modules
 
 # temp files
 package-lock.json
+.nyc_output
 *.tgz
 *.old.*
