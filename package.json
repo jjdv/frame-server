@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "mocha",
+    "testc": "nyc mocha",
     "postinstall": "node modules/install/postinstall.js"
   },
   "repository": {
@@ -35,10 +36,11 @@
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
     "mocha": "^6.0.2",
+    "nyc": "^13.3.0",
     "sinon": "^7.3.0",
     "sinon-chai": "^3.3.0"
   },
   "mocha": {
-    "spec": "tests/**/*.test.js"
+    "spec": "modules/**/*.test.js"
   }
 }
