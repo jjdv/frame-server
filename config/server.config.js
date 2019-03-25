@@ -10,9 +10,9 @@ const serverRootDir = serverConfig.serverRootDir
 const localConfPath = getConfPath(dirs, fileName)
 
 // merge default ini config with local server config
-if (localConfPath) serverConfig = { ...serverConfig, ...require(localConfPath) }
+if (localConfPath && localConfPath !== 'error') serverConfig = { ...serverConfig, ...require(localConfPath) }
 
-module.exports = serverConfig
+module.exports = localConfPath !== 'error' ? serverConfig : null
 
 //
 // -------------------------------------------------------------------------------
@@ -26,7 +26,10 @@ function getConfPath (confDirs, confFileName) {
     // confPath provided as cli argument
 
     confPath = path.resolve(serverRootDir, confPath)
-    if (!fs.existsSync(confPath)) throw new Error(dirErrMsg(confDirs, confFileName, confPath))
+    if (!fs.existsSync(confPath)) {
+      console.log(dirErrMsg(confDirs, confFileName, confPath))
+      return 'error'
+    }
     return confPath
   } else {
     // conf file to be found in default directories
