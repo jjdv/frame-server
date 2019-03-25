@@ -8,7 +8,7 @@ const { expect, sinon } = require('../../test-modules/test-env')
 const { filePath } = require('./basic')
 
 // test data
-const { falsy, validDirName, invalidDirName, validFileName, invalidFileName } = require('../../test-modules/data')
+const { falsy, validDirName, invalidDirName, validFileName, invalidFileName } = require('../../test-modules/basic-data')
 let res
 
 // test body

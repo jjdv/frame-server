@@ -1,68 +1,40 @@
 #!/usr/bin/env node
 'use strict'
 
-const path = require('path')
-const app = require('express')()
+// find local server config and merge with ini config data
+let serverConfig = require('../config/server.config')
 
-const serverConfig = getServerConfig()
+// validate the config data
+// if errors are found, they are reported and null is returned
+const validateConfigData = require('../modules/validation/validate-config-data')
+serverConfig = validateConfigData(serverConfig)
 
-// set views if defined
-setView(serverConfig.view)
+if (serverConfig) {
+  const app = require('express')()
 
-const { middlewares } = require('../modules/middlewares/middlewares')
-const { serverMiddlewares, siteMiddlewares, serveDynamicFiles, serveStaticFiles, wrongRequestHandler } = middlewares(serverConfig)
+  // set views if defined
+  const setView = require('../modules/deployment/set-view')
+  setView(app, serverConfig.view)
 
-// server middlewares
-serverMiddlewares.apply(app)
+  const { middlewares } = require('../modules/middlewares/middlewares')
+  const { serverMiddlewares, siteMiddlewares, serveDynamicFiles, serveStaticFiles, wrongRequestHandler } = middlewares(serverConfig)
 
-// deploy site middlewares defined for the site
-siteMiddlewares.apply(app)
+  // deploy server middlewares
+  serverMiddlewares.apply(app)
 
-// serve special files for defined route paths
-serveDynamicFiles.apply(app)
+  // deploy site middlewares defined for the site
+  siteMiddlewares.apply(app)
 
-// serve static files from defined directories for defined route paths
-serveStaticFiles.apply(app)
+  // serve special files for defined route paths
+  serveDynamicFiles.apply(app)
 
-// handle pure static files, limited to specified extensions, if defined
-wrongRequestHandler.apply(app)
+  // serve static files from defined directories for defined route paths
+  serveStaticFiles.apply(app)
 
-// start the server
-const PORT = process.env.PORT || serverConfig.port
-const uriDesc = process.env.PORT ? `port: ${PORT}` : `http://localhost:${PORT}`
-app.listen(PORT, () => console.log(`Server listening on ${uriDesc} ...`))
+  // handle pure static files, limited to specified extensions, if defined
+  wrongRequestHandler.apply(app)
 
-//
-// -------------------------------------------------------------------------------
-// supporting functions
-// -------------------------------------------------------------------------------
-
-function getServerConfig () {
-  // get the final server configuration data
-  const serverConfig = require('../config/server.config')
-
-  // 'validateConfigData' validates data, changes file paths to absolute,
-  // reports errors and throws an error if there are any errors found
-  const validateConfigData = require('../modules/validators/validate-config-data')
-
-  try {
-    validateConfigData(serverConfig)
-    return serverConfig
-  } catch (e) {
-    console.error(e.toString())
-    console.log(e.stack)
-    process.exit(9)
-  }
-}
-
-function setView (view) {
-  if (!view) return
-  if (view.engine) app.set('view engine', view.engine)
-  if (view.dir) app.set('views', getViewDir(view.dir))
-}
-
-function getViewDir (dir) {
-  const serverRootDir = process.env.serverRootDir
-  if (typeof dir === 'string') return path.resolve(serverRootDir, dir)
-  else if (Array.isArray(dir)) return dir.map(dirEl => path.resolve(serverRootDir, dirEl))
+  // start the server
+  const startServer = require('../modules/deployment/start-server')
+  startServer(app, serverConfig.port)
 }
