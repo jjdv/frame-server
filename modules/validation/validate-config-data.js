@@ -8,12 +8,12 @@ module.exports = function validateConfigData (config) {
   const validationStatus = new Status()
 
   // serverRootDir check
-  process.env.serverRootDir = validatePath('serverRootDir', serverRootDir, null, validationStatus)
-  if (!process.env.serverRootDir) return null
+  process.env.SERVER_ROOT_DIR = validatePath('serverRootDir', serverRootDir, null, validationStatus)
+  if (!process.env.SERVER_ROOT_DIR) return null
 
   // siteRootDir changed into absolute path and done validity check
-  process.env.siteRootDir = validatePath('siteRootDir', config.siteRootDir, serverRootDir, validationStatus)
-  if (!process.env.siteRootDir) return null
+  process.env.SITE_ROOT_DIR = validatePath('siteRootDir', config.siteRootDir, serverRootDir, validationStatus)
+  if (!process.env.SITE_ROOT_DIR) return null
 
   // view check
   if (config.view) validateView(config.view, validationStatus)
@@ -30,7 +30,7 @@ module.exports = function validateConfigData (config) {
   // siteMiddlewares check
   if (config.siteMiddlewares) {
     const siteMiddlewaresDir = config.siteMiddlewaresDir && filePath(config.siteMiddlewaresDir, serverRootDir, 'siteMiddlewaresDir', validationStatus)
-    process.env.siteMiddlewaresDir = siteMiddlewaresDir || serverRootDir
+    process.env.SITE_MIDDLEWARES_DIR = siteMiddlewaresDir || serverRootDir
 
     const { validateSiteMiddlewares } = require('../middlewares/site')
     validateSiteMiddlewares(config.siteMiddlewares, validationStatus)
@@ -87,7 +87,7 @@ function validateView (view, processStatus) {
   if (view.constructor !== Object) processStatus.reportErr('Wrong format of the view definition in the server config file:', view)
   if (view.engine && typeof view.engine !== 'string') processStatus.reportErr('view.engine in the server config file must be a string, not: ', view.engine)
   if (view.dir) {
-    const serverRootDir = process.env.serverRootDir
+    const serverRootDir = process.env.SERVER_ROOT_DIR
     if (typeof view.dir === 'string') filePathNotEmpty(view.dir, serverRootDir, 'view.dir', processStatus)
     else if (Array.isArray(view.dir)) view.dir.forEach(dir => filePathNotEmpty(dir, serverRootDir, 'view.dir', processStatus))
     else processStatus.reportErr('view.dir in the server config file must be a string or an array, not: ', view.dir)

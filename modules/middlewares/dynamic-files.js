@@ -26,14 +26,14 @@ function validateDynamicFileDef (fileDef, index, status) {
     else routePathsErr(fileDef.routePaths, `'routePaths' in 'serveDynamicFiles', item ${index + 1}`, status)
     if (!fileDef.fileName) status.reportErr(`Missing 'fileName' definition in 'serveDynamicFiles', item ${index + 1}.`)
     else {
-      const siteRootDir = process.env.siteRootDir
+      const siteRootDir = process.env.SITE_ROOT_DIR
       filePathNotEmpty(fileDef.fileName, siteRootDir, `'fileName' in 'serveDynamicFiles', item ${index + 1}`, status)
     }
   }
 }
 
 function normalizeDynamicFilesDef (serveDynamicFilesDef) {
-  const siteRootDir = process.env.siteRootDir
+  const siteRootDir = process.env.SITE_ROOT_DIR
   if (!Array.isArray(serveDynamicFilesDef)) serveDynamicFilesDef = [ serveDynamicFilesDef ]
   return serveDynamicFilesDef.map(dfDef => ({
     name: mName(dfDef.fileName),

@@ -7,7 +7,7 @@ function validateSiteMiddlewares (siteMiddlewaresDef, status) {
 }
 
 function siteMiddlewares (siteMiddlewaresDef) {
-  const siteMiddlewaresDir = process.env.siteMiddlewaresDir
+  const siteMiddlewaresDir = process.env.SITE_MIDDLEWARES_DIR
   return Middlewares.fromDef('siteMiddlewares', siteMiddlewaresDef, { rootDir: siteMiddlewaresDir })
 }
 
@@ -28,6 +28,6 @@ function validateSiteMiddleware (siteMiddlewareDef, index, status) {
     siteMiddlewareDef.name = 'siteMiddlewares, item ' + (index + 1)
   }
 
-  const siteMiddlewaresDir = process.env.siteMiddlewaresDir
+  const siteMiddlewaresDir = process.env.SITE_MIDDLEWARES_DIR
   Middleware.validateDef(siteMiddlewareDef, { rootDir: siteMiddlewaresDir }, status)
 }

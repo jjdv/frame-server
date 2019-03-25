@@ -15,7 +15,7 @@ module.exports = setView
 const path = require('path')
 
 function getViewDir (dir) {
-  const serverRootDir = process.env.serverRootDir
+  const serverRootDir = process.env.SERVER_ROOT_DIR
   if (typeof dir === 'string') return path.resolve(serverRootDir, dir)
   else if (Array.isArray(dir)) return dir.map(dirEl => path.resolve(serverRootDir, dirEl))
 }

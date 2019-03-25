@@ -81,7 +81,7 @@ function middlewareFnErrCheck (middlewareFn, middlewareName, status) {
 }
 
 function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
-  if (!rootDir) rootDir = process.env.serverRootDir
+  if (!rootDir) rootDir = process.env.SERVER_ROOT_DIR
   switch (middlewareDef.constructor) {
     case String:
       const mPath = filePathNotEmpty(middlewareDef, rootDir, middlewareName, new Status())
