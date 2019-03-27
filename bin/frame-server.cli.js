@@ -4,13 +4,13 @@
 // find local server config and merge with ini config data
 // if errors are found, they are reported and null is returned
 let serverConfig = require('../config/server.config')
-if (!serverConfig) process.exit(0)
+if (!serverConfig) process.exit()
 
 // validate the config data
 // if errors are found, they are reported and null is returned
 const validateConfigData = require('../modules/validation/validate-config-data')
 serverConfig = validateConfigData(serverConfig)
-if (!serverConfig) process.exit(0)
+if (!serverConfig) process.exit()
 
 const app = require('express')()
 
