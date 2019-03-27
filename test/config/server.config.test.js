@@ -41,7 +41,7 @@ describe('config > server.config.js', function () {
     expect(returnConfigData).to.deep.equal(configIni.serverConfig)
   })
 
-  describe('finds config in specified directories', function () {
+  describe("finds config in default directories specified in '(config>config.ini.js).configDirs' and correctly merges ini and local configs", function () {
     let confIndex
     lookupConfigPaths.forEach((configPath, index) => {
       confIndex = index % 2
