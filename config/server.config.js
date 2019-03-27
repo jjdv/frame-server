@@ -1,18 +1,32 @@
 'use strict'
 
+// eslint-disable-next-line no-global-assign
+if (process.env.test === 'server.config') require = require('../test/test-env').stub1
+
 const path = require('path')
 const fs = require('fs')
 
-let { fileName, dirs, serverConfig } = require('./config.ini')
+let { configFileName, configDirs, serverConfig } = require('./config.ini')
 const serverRootDir = serverConfig.serverRootDir
 
 // getConfPath makes sure to provide valid path or null
-const localConfPath = getConfPath(dirs, fileName)
+const localConfPath = getConfPath(configDirs, configFileName)
+console.log('in server.config, localConfPath: ', localConfPath)
 
 // merge default ini config with local server config
-if (localConfPath && localConfPath !== 'error') serverConfig = { ...serverConfig, ...require(localConfPath) }
+if (localConfPath) {
+  if (localConfPath !== 'error') {
+    const localConfig = require(localConfPath)
+    if (typeof localConfig === 'object' && localConfig.constructor === Object) {
+      serverConfig = { ...serverConfig, ...localConfig }
+    } else {
+      console.error('Error: The local server configuration data is not an object but: ', localConfig)
+      serverConfig = null
+    }
+  } else serverConfig = null
+}
 
-module.exports = localConfPath !== 'error' ? serverConfig : null
+module.exports = serverConfig
 
 //
 // -------------------------------------------------------------------------------
@@ -26,11 +40,9 @@ function getConfPath (confDirs, confFileName) {
     // confPath provided as cli argument
 
     confPath = path.resolve(serverRootDir, confPath)
-    if (!fs.existsSync(confPath)) {
-      console.log(dirErrMsg(confDirs, confFileName, confPath))
-      return 'error'
-    }
-    return confPath
+    if (fs.existsSync(confPath)) return confPath
+    console.error(dirErrMsg(confDirs, confFileName, confPath))
+    return 'error'
   } else {
     // conf file to be found in default directories
 
@@ -53,5 +65,5 @@ function confPathFromArgs () {
 
 function dirErrMsg (confDirs, confFileName, confPath = null) {
   const searchedDirs = confPath ? ("the dir: '" + confPath + "'") : ("any of the dirs: '" + confDirs.join("', '") + "'")
-  return `No server config file '${confFileName}' found in ${searchedDirs}.`
+  return `Error: No server config file '${confFileName}' found in ${searchedDirs}.`
 }
