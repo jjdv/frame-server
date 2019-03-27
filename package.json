@@ -41,6 +41,6 @@
     "sinon-chai": "^3.3.0"
   },
   "mocha": {
-    "spec": "modules/**/*.test.js"
+    "spec": "test/**/*.test.js"
   }
 }
