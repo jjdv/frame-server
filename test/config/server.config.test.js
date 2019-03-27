@@ -5,14 +5,15 @@
 const path = require('path')
 const configIni = require('../../config/config.ini')
 const { expect, sinon, stub1 } = require('../../test/test-env')
-const requireStub = stub1 // use more meaningful name
 // const { lookupConfigPaths, /* cliDir, cliPath, */ localConfigData, returnIniConfigData /* , invalidConfigPaths */ } = require('./data')
 const { lookupConfigPaths, localConfigData, returnIniConfigData } = require('./data')
 // console.log('localConfigData: ', localConfigData)
-const serverConfigPath = path.resolve(__dirname, '../../config/server.config.js')
-// console.log('serverConfigPath:', serverConfigPath)
+const serverConfigAbsPath = require.resolve('../../config/server.config.js')
 
-describe('server.config.js', function () {
+// prepare stub for require()
+const requireStub = stub1
+
+describe('config > server.config.js', function () {
   before(function () {
     process.argv = process.argv.slice(0, 2)
     // flag test which replaces 'require()' in server.config.js with a test-env stub1
@@ -24,28 +25,37 @@ describe('server.config.js', function () {
     sinon.restore()
   })
 
-  it('finds config in specified directories', function () {
+  beforeEach(function () {
+    requireStub.resetBehavior()
+    requireStub.returns(null)
+    requireStub.withArgs('path').returns(path)
+    requireStub.withArgs('./config.ini').returns(configIni)
+  })
+
+  it('provides ini config if no local config is found', function () {
+    requireStub.withArgs('fs').returns({
+      existsSync: sinon.fake.returns(false)
+    })
+    delete require.cache[serverConfigAbsPath]
+    const returnConfigData = require('../../config/server.config')
+    expect(returnConfigData).to.deep.equal(configIni.serverConfig)
+  })
+
+  describe('finds config in specified directories', function () {
     let confIndex
     lookupConfigPaths.forEach((configPath, index) => {
-      requireStub.reset()
-      requireStub.withArgs('path').returns(path)
-      requireStub.withArgs('./config.ini').returns(configIni)
       confIndex = index % 2
-      requireStub.withArgs('fs').returns({
-        existsSync: sinon.fake(arg => arg === configPath)
-      })
-      requireStub.withArgs(configPath).returns(localConfigData[confIndex])
-      requireStub.returns(null)
+      it(configPath, function () {
+        requireStub.withArgs('fs').returns({
+          existsSync: sinon.fake(arg => arg === configPath)
+        })
+        requireStub.withArgs(configPath).returns(localConfigData[confIndex])
 
-      // console.log('require.cache: ', require.cache[serverConfigPath])
-      delete require.cache[serverConfigPath]
-      // console.log('require.cache: ', require.cache[serverConfigPath])
-      const returnConfigData = require('../../config/server.config')
-      console.log('index: ', index, 'returnConfigData: ', returnConfigData)
-      const expectedConfigData = Object.assign({}, localConfigData[confIndex], returnIniConfigData[confIndex])
-      // console.log('confIndex: ', confIndex)
-      // console.log('expectedConfigData: ', expectedConfigData)
-      expect(returnConfigData).to.include(expectedConfigData)
+        delete require.cache[serverConfigAbsPath]
+        const returnConfigData = require('../../config/server.config')
+        const expectedConfigData = Object.assign({}, localConfigData[confIndex], returnIniConfigData[confIndex])
+        expect(returnConfigData).to.include(expectedConfigData)
+      })
     })
   })
 
