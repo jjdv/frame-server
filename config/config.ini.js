@@ -1,5 +1,11 @@
 'use strict'
 
+const path = require('path')
+const serverDirs = __dirname.split(path.sep)
+const serverBaseDir = serverDirs[serverDirs.length - 3]
+const serverRootDirIndex = serverDirs.length - ((serverDirs.length > 3 && serverBaseDir === 'node_modules') ? 4 : 3)
+const serverRootDir = serverDirs.slice(0, serverRootDirIndex + 1).join(path.sep)
+
 module.exports = {
   // parameters of the server configuration file to look for at the site location
   configFileName: 'server.config.js',
@@ -8,8 +14,8 @@ module.exports = {
   serverConfig: {
 
     // serverRootDir is the starting point in the file resolution process
-    // process.env.INIT_CWD is the original WD where the script was called from
-    serverRootDir: process.env.INIT_CWD || process.cwd(),
+    // process.env.INIT_CWD is the original WD, set by nmp, where the script was called from
+    serverRootDir: serverRootDir || process.env.INIT_CWD || process.cwd(),
 
     // siteRootDir relative to serverRootDir or absolute (path resolution with path.resolve)
     siteRootDir: 'dist',
