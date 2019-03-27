@@ -2,13 +2,13 @@
 'use strict'
 
 // test environment
-const { expect, sinon } = require('../../test-modules/test-env')
+const { expect, sinon } = require('../../test-env')
 
 // method under tets
-const { filePath } = require('./basic')
+const { filePath } = require('../../../modules/helpers/basic')
 
 // test data
-const { falsy, validDirName, invalidDirName, validFileName, invalidFileName } = require('../../test-modules/basic-data')
+const { falsy, validDirName, invalidDirName, validFileName, invalidFileName } = require('./basic.data')
 let res
 
 // test body
