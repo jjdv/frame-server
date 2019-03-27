@@ -11,7 +11,6 @@ const serverRootDir = serverConfig.serverRootDir
 
 // getConfPath makes sure to provide valid path or null
 const localConfPath = getConfPath(configDirs, configFileName)
-console.log('in server.config, localConfPath: ', localConfPath)
 
 // merge default ini config with local server config
 if (localConfPath) {
