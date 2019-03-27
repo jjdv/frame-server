@@ -2,8 +2,8 @@
 
 module.exports = {
   // parameters of the server configuration file to look for at the site location
-  fileName: 'server.config.js',
-  dirs: ['./server', './config', './server/config', './config/server', '.'],
+  configFileName: 'server.config.js',
+  configDirs: ['server', 'config', 'server/config', 'config/server', '.'],
 
   serverConfig: {
 
@@ -28,7 +28,7 @@ module.exports = {
 
     // available values for middlewares installed by the server are:
     // ['helmet', 'cookies', 'session', 'json', 'urlencoded', 'multipart']
-    installServerMiddlewares: true,
+    installServerMiddlewares: true, // during frame-server nmp installation
     serverMiddlewares: null,
     /* example serverMiddlewares specification:
         serverMiddlewares: [
