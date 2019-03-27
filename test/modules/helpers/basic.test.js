@@ -12,7 +12,7 @@ const { falsy, validDirName, invalidDirName, validFileName, invalidFileName } = 
 let res
 
 // test body
-describe('in basic helpers (modules > helpers > basic.js), ', function () {
+describe('modules > helpers > basic.js', function () {
   describe('#filePath()', function () {
     describe('should return null for', function () {
       it('falsy paths', () => {
