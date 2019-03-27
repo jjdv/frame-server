@@ -2,10 +2,14 @@
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
+chai.use(dirtyChai)
+
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
 chai.use(sinonChai)
 
-module.exports = { expect, sinon }
+const expect = chai.expect
+const stub1 = sinon.stub()
+const stub2 = sinon.stub()
+
+module.exports = { expect, sinon, stub1, stub2 }
