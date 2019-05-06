@@ -16,7 +16,7 @@ const localConfPath = getConfPath(configDirs, configFileName)
 if (localConfPath) {
   if (localConfPath !== 'error') {
     const localConfig = require(localConfPath)
-    if (typeof localConfig === 'object' && localConfig.constructor === Object) {
+    if (typeof localConfig === 'object' && localConfig instanceof Object) {
       serverConfig = { ...serverConfig, ...localConfig }
     } else {
       console.error('Error: The local server configuration data is not an object but: ', localConfig)
@@ -38,9 +38,9 @@ function getConfPath (confDirs, confFileName) {
   if (confPath) {
     // confPath provided as cli argument
 
-    confPath = path.resolve(serverRootDir, confPath)
-    if (fs.existsSync(confPath)) return confPath
-    console.error(dirErrMsg(confDirs, confFileName, confPath))
+    const absConfPath = path.resolve(serverRootDir, confPath)
+    if (fs.existsSync(absConfPath)) return absConfPath
+    console.error(`Error: Server config file '${confPath}' not found. Resolved as "${absConfPath}".`)
     return 'error'
   } else {
     // conf file to be found in default directories
@@ -54,15 +54,12 @@ function getConfPath (confDirs, confFileName) {
 }
 
 function confPathFromArgs () {
+  // console.log('process.argv: ', process.argv)
   if (process.argv.length < 4) return false
 
   // confPath provided as cli argument
   let argIndex = process.argv.indexOf('--conf', 2)
   if (argIndex === -1) argIndex = process.argv.indexOf('-c', 2)
-  return process.argv.length > ++argIndex && process.argv[argIndex]
-}
-
-function dirErrMsg (confDirs, confFileName, confPath = null) {
-  const searchedDirs = confPath ? ("the dir: '" + confPath + "'") : ("any of the dirs: '" + confDirs.join("', '") + "'")
-  return `Error: No server config file '${confFileName}' found in ${searchedDirs}.`
+  // console.log('argIndex results: ', argIndex, process.argv.length, process.argv[argIndex + 1])
+  return ++argIndex && process.argv.length > argIndex && process.argv[argIndex]
 }
