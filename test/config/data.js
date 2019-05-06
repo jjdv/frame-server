@@ -6,7 +6,19 @@ const { configFileName, configDirs } = require('../../config/config.ini')
 const lookupConfigPaths = configDirs.map(dir => path.resolve(serverRootDir, dir, configFileName))
 
 const cliDir = 'testdir'
-const cliPath = path.resolve(serverRootDir, cliDir, configFileName)
+const cliConfigFile = path.join(cliDir, configFileName)
+const cliTest = {
+  dir: cliDir,
+  absPath: path.resolve(serverRootDir, cliDir, configFileName),
+  argv: [
+    ['aaa', '--conf', cliConfigFile],
+    ['aaa', 'bbb', '--conf', cliConfigFile + 'ccc'],
+    ['aaa', '-c', cliConfigFile + 'ddd'],
+    ['aaa', 'bbb', '-c', cliConfigFile]
+  ],
+  validTestArgvIndexes: [0, 3],
+  invalidTestArgvIndexes: [1, 2]
+}
 
 const localConfigData = [
   {
@@ -46,6 +58,6 @@ const returnIniConfigData = [
   }
 ]
 
-const invalidConfigPaths = [ 'abc', 'invalid' ].map(dir => path.resolve(serverRootDir, dir, 'aaa'))
+const __dirnameIndex = 0
 
-module.exports = { lookupConfigPaths, cliDir, cliPath, localConfigData, returnIniConfigData, invalidConfigPaths }
+module.exports = { lookupConfigPaths, cliTest, localConfigData, returnIniConfigData, __dirnameIndex }

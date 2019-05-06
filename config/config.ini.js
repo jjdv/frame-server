@@ -1,5 +1,9 @@
 'use strict'
 
+const { __dirnameIndex } = require('../test/config/data')
+// eslint-disable-next-line no-global-assign
+if (process.env.test === 'config.ini') __dirname = require('../test/test-env').vars[__dirnameIndex]
+
 const path = require('path')
 const serverDirs = __dirname.split(path.sep)
 const serverBaseDir = serverDirs[serverDirs.length - 3]
@@ -14,8 +18,7 @@ module.exports = {
   serverConfig: {
 
     // serverRootDir is the starting point in the file resolution process
-    // process.env.INIT_CWD is the original WD, set by nmp, where the script was called from
-    serverRootDir: serverRootDir || process.env.INIT_CWD || process.cwd(),
+    serverRootDir: serverRootDir,
 
     // siteRootDir relative to serverRootDir or absolute (path resolution with path.resolve)
     siteRootDir: 'dist',

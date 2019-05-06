@@ -11,5 +11,6 @@ chai.use(sinonChai)
 const expect = chai.expect
 const stub1 = sinon.stub()
 const stub2 = sinon.stub()
+const vars = [null, null]
 
-module.exports = { expect, sinon, stub1, stub2 }
+module.exports = { expect, sinon, stub1, stub2, vars }
