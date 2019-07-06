@@ -1,8 +1,8 @@
 
 const path = require('path')
 
-const serverRootDir = path.resolve(__dirname, '../../..')
-const { configFileName, configDirs } = require('../../config/config.ini')
+const serverRootDir = path.resolve(__dirname, '../../../..')
+const { configFileName, configDirs } = require('../../../config/config.ini')
 const lookupConfigPaths = configDirs.map(dir => path.resolve(serverRootDir, dir, configFileName))
 
 const cliDir = 'testdir'
