@@ -7,8 +7,8 @@
     "fserver": "bin/frame-server.cli.js"
   },
   "scripts": {
-    "test": "mocha",
-    "testc": "nyc mocha",
+    "test": "mocha 'test/**/*.test.js'",
+    "testc": "nyc mocha 'test/**/*.test.js'",
     "postinstall": "node modules/install/postinstall.js"
   },
   "repository": {
@@ -35,12 +35,9 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "mocha": "^6.0.2",
-    "nyc": "^13.3.0",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
     "sinon": "^7.3.0",
     "sinon-chai": "^3.3.0"
-  },
-  "mocha": {
-    "spec": "test/**/*.test.js"
   }
 }
