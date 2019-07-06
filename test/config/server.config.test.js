@@ -1,29 +1,35 @@
 /* eslint-env mocha */
 'use strict'
 
-// test environment
 const path = require('path')
-const configIni = require('../../config/config.ini')
-const { expect, sinon, stub1 } = require('../../test/test-env')
-const { lookupConfigPaths, cliTest, localConfigData, returnIniConfigData } = require('./data')
+
+// test environment
+const { expect, sinon } = require('../../test/test-env')
+const { lookupConfigPaths, cliTest, localConfigData, returnIniConfigData } = require('./test-support/data')
+
+// absolute path of 'config.ini.js' for cache cleanup of the node's require function
 const serverConfigAbsPath = require.resolve('../../config/server.config.js')
-
+// cached 'config.ini' required value
+const configIni = require('../../config/config.ini')
 // friendly name for require() stub
-const requireStub = stub1
+const requireStub = sinon.stub()
 
-let argv
 describe('config > server.config.js', function () {
+  let argv
+
   before(function () {
     // save argv
     argv = process.argv
-    // flag test which replaces 'require()' in 'server.config.js' with a test-env stub1
-    process.env.test = 'server.config'
+    // flag test scope being executed
+    process.env.testScope = 'server.config'
+    global.requireStub = requireStub
   })
 
   after(function () {
-    process.argv = argv
-    delete process.env.test
+    delete process.env.testScope
+    delete global.requireStub
     sinon.restore()
+    process.argv = argv
   })
 
   beforeEach(function () {

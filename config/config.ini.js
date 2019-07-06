@@ -1,14 +1,19 @@
 'use strict'
 
-const { __dirnameIndex } = require('../test/config/data')
+if (process.env.testScope === 'config.ini') {
 // eslint-disable-next-line no-global-assign
-if (process.env.test === 'config.ini') __dirname = require('../test/test-env').vars[__dirnameIndex]
+  __dirname = process.env.test__dirname
+}
 
 const path = require('path')
 const serverDirs = __dirname.split(path.sep)
 const serverBaseDir = serverDirs[serverDirs.length - 3]
-const serverRootDirIndex = serverDirs.length - ((serverDirs.length > 3 && serverBaseDir === 'node_modules') ? 4 : 3)
-const serverRootDir = serverDirs.slice(0, serverRootDirIndex + 1).join(path.sep)
+const serverRootDirIndex =
+  serverDirs.length -
+  (serverDirs.length > 3 && serverBaseDir === 'node_modules' ? 4 : 3)
+const serverRootDir = serverDirs
+  .slice(0, serverRootDirIndex + 1)
+  .join(path.sep)
 
 module.exports = {
   // parameters of the server configuration file to look for at the site location
@@ -16,7 +21,6 @@ module.exports = {
   configDirs: ['server', 'config', 'server/config', 'config/server', '.'],
 
   serverConfig: {
-
     // serverRootDir is the starting point in the file resolution process
     serverRootDir: serverRootDir,
 

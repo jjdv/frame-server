@@ -1,7 +1,9 @@
 'use strict'
 
-// eslint-disable-next-line no-global-assign
-if (process.env.test === 'server.config') require = require('../test/test-env').stub1
+if (process.env.testScope === 'server.config') {
+  // eslint-disable-next-line no-global-assign
+  require = global.requireStub
+}
 
 const path = require('path')
 const fs = require('fs')
@@ -40,7 +42,9 @@ function getConfPath (confDirs, confFileName) {
 
     const absConfPath = path.resolve(serverRootDir, confPath)
     if (fs.existsSync(absConfPath)) return absConfPath
-    console.error(`Error: Server config file '${confPath}' not found. Resolved as "${absConfPath}".`)
+    console.error(
+      `Error: Server config file '${confPath}' not found. Resolved as "${absConfPath}".`
+    )
     return 'error'
   } else {
     // conf file to be found in default directories
