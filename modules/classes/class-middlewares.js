@@ -1,4 +1,4 @@
-const { checkName } = require('../helpers/basic')
+const { nameErr } = require('../helpers/basic')
 const { createGetOnlyProps } = require('../helpers/object')
 const Middleware = require('./class-middleware')
 const Status = require('./class-status')
@@ -74,7 +74,7 @@ function middlewaresArgsErr (middlewaresName, middlewares, applyMsg) {
 }
 
 function middlewaresNameErrCheck (middlewaresName, middlewares, status) {
-  return checkName(middlewaresName, 'middlewares group', middlewares, status)
+  return nameErr(middlewaresName, 'middlewares group', middlewares, status)
 }
 
 function middlewaresErrCheck (middlewares, middlewaresName, status) {

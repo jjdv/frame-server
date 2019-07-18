@@ -1,4 +1,4 @@
-const { filePathNotEmpty, routePathsErr, checkName } = require('../helpers/basic')
+const { filePathNotEmpty, routePathsErr, nameErr } = require('../helpers/basic')
 const { createGetOnlyProps, createReadOnlyProps } = require('../helpers/object')
 const Status = require('./class-status')
 const { isEmpty } = require('../helpers/basic')
@@ -69,7 +69,7 @@ function middlewareArgsErr (middlewareName, middlewareFn, routePaths, type, stat
 }
 
 function middlewareNameErrCheck (middlewareName, middlewareFn, status) {
-  return checkName(middlewareName, 'middleware', middlewareFn, status.name)
+  return nameErr(middlewareName, 'middleware', middlewareFn, status.name)
 }
 
 function middlewareFnErrCheck (middlewareFn, middlewareName, status) {
