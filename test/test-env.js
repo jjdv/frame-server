@@ -6,6 +6,7 @@ chai.use(dirtyChai)
 
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
+chai.should()
 chai.use(sinonChai)
 
 const expect = chai.expect
