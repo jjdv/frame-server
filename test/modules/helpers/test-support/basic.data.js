@@ -5,11 +5,14 @@ const path = require('path')
  */
 
 exports.falsy = [false, null, undefined, '']
-exports.nonStringFilePaths = [{}, []]
+exports.stringValues = ['abc', '...', '///\\"']
+exports.nonStringFilePaths = [{}, [], /a/]
 exports.validDirName = __dirname
 exports.invalidDirName = path.join(__dirname, 'aaa')
 exports.validFileName = path.basename(__filename)
 exports.invalidFileName = path.join(__filename, 'aaa')
+exports.emptyVars = [{}, [], '']
+exports.nonEmptyVars = [{ a: 'a' }, ['a'], 'a']
 
 /**
  * test data for routePathsErr

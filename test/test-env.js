@@ -1,14 +1,24 @@
 'use strict'
 
 const chai = require('chai')
+const expect = chai.expect
 const dirtyChai = require('dirty-chai')
-chai.use(dirtyChai)
 
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
-chai.should()
+
+chai.use(dirtyChai)
 chai.use(sinonChai)
+chai.should()
 
-const expect = chai.expect
+class StatusStub {
+  constructor(reportErr) {
+    this.error = false
+    this.reportErr = function(...errMsgs) {
+      this.error = true
+      reportErr(...errMsgs)
+    }
+  }
+}
 
-module.exports = { expect, sinon }
+module.exports = { expect, sinon, StatusStub }

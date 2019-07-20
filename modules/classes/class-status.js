@@ -20,6 +20,7 @@ module.exports = class Status {
           )
           continue
         }
+
         this[prop] = {
           error: false,
           reportErr: (...errMsgs) => {

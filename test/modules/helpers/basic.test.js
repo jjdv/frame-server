@@ -3,9 +3,9 @@
 
 // test environment
 const path = require('path')
-const { expect, sinon } = require('../../test-env')
+const { expect, sinon, StatusStub } = require('../../test-env')
 
-// method under tets
+// methods under test
 const {
   filePath,
   filePathNotEmpty,
@@ -17,26 +17,20 @@ const {
 // test data
 const {
   falsy,
+  stringValues,
   nonStringFilePaths,
   validDirName,
   invalidDirName,
   validFileName,
   invalidFileName,
+  emptyVars,
+  nonEmptyVars,
   testPathsData
 } = require('./test-support/basic.data')
 
 // test variables
 const reportErr = sinon.spy()
-class StatusStub {
-  constructor() {
-    this.error = false
-    this.reportErr = function(...errMsgs) {
-      this.error = true
-      reportErr(...errMsgs)
-    }
-  }
-}
-const status = new StatusStub()
+const status = new StatusStub(reportErr)
 let res
 
 describe('modules > helpers > basic.js', function() {
@@ -89,6 +83,58 @@ describe('modules > helpers > basic.js', function() {
         td.errMsg.forEach((errMsg, indx) => {
           reportErr.getCall(indx).calledWithExactly(errMsg)
         })
+      })
+    })
+  })
+  describe('nameErr()', function() {
+    it('returns true and reports relevant error for empty/falsy values', function() {
+      falsy.forEach(val => {
+        res = nameErr(val, 'testVarName', 'varValue', status)
+        expect(res).to.be.true()
+      })
+      expect(reportErr.callCount).to.equal(falsy.length)
+      reportErr.alwaysCalledWithExactly(
+        "Error: Missing name of the 'testVarName."
+      )
+    })
+
+    it('returns true and reports relevant error for non-string values', function() {
+      nonStringFilePaths.forEach(val => {
+        res = nameErr(val, 'testVarName', 'varValue', status)
+        expect(res).to.be.true()
+      })
+      expect(reportErr.callCount).to.equal(nonStringFilePaths.length)
+      nonStringFilePaths.forEach((val, indx) => {
+        reportErr
+          .getCall(indx)
+          .calledWithExactly(
+            "Error: The name of the 'testVarName' must be a string and not: ",
+            val
+          )
+      })
+    })
+
+    it('returns false for non-empty string values', function() {
+      stringValues.forEach(val => {
+        res = nameErr(val, 'testVarName', 'varValue', status)
+        expect(res).to.be.false()
+      })
+      reportErr.should.have.not.been.called()
+    })
+  })
+
+  describe('isEmpty()', function() {
+    it('returns true for empty variables', function() {
+      emptyVars.forEach(val => {
+        res = isEmpty(val)
+        expect(res).to.be.true()
+      })
+    })
+
+    it('returns false for non-empty variables', function() {
+      nonEmptyVars.forEach(val => {
+        res = isEmpty(val)
+        expect(res).to.be.false()
       })
     })
   })
