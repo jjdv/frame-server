@@ -19,7 +19,13 @@ const setView = require('../modules/deployment/set-view')
 setView(app, serverConfig.view)
 
 const { middlewares } = require('../modules/middlewares/middlewares')
-const { serverMiddlewares, siteMiddlewares, serveDynamicFiles, serveStaticFiles, wrongRequestHandler } = middlewares(serverConfig)
+const {
+  serverMiddlewares,
+  siteMiddlewares,
+  serveDynamicFiles,
+  serveStaticFiles,
+  wrongRequestHandler
+} = middlewares(serverConfig)
 
 // deploy server middlewares
 serverMiddlewares.apply(app)
