@@ -1,19 +1,19 @@
 const { nameErr } = require('../helpers/basic')
 const { createGetOnlyProps } = require('../helpers/object')
-const Middleware = require('./class-middleware')
-const Status = require('./class-status')
+const Middleware = require('./middleware')
+const Status = require('./status')
 
-function Middlewares (middlewaresName, middlewares, applyMsg) {
-  if (!Array.isArray(middlewares)) middlewares = [ middlewares ]
+function Middlewares(middlewaresName, middlewares, applyMsg) {
+  if (!Array.isArray(middlewares)) middlewares = [middlewares]
   if (middlewaresArgsErr(middlewaresName, middlewares, applyMsg)) return
 
   createGetOnlyProps(this, { name: middlewaresName, middlewares, applyMsg })
 }
 
-Middlewares.validate = function (msDef, validateFn, status) {
+Middlewares.validate = function(msDef, validateFn, status) {
   if (!msDef) return
 
-  if (!Array.isArray(msDef)) msDef = [ msDef ]
+  if (!Array.isArray(msDef)) msDef = [msDef]
   let mDef
   for (let index = 0; index < msDef.length; index++) {
     mDef = msDef[index]
@@ -21,10 +21,16 @@ Middlewares.validate = function (msDef, validateFn, status) {
   }
 }
 
-Middlewares.fromDef = function (middlewaresName, middlewaresDef, options, applyMsg) {
-  if (middlewaresNameErrCheck(middlewaresName, middlewaresDef, applyMsg)) return null
+Middlewares.fromDef = function(
+  middlewaresName,
+  middlewaresDef,
+  options,
+  applyMsg
+) {
+  if (middlewaresNameErrCheck(middlewaresName, middlewaresDef, applyMsg))
+    return null
 
-  if (!Array.isArray(middlewaresDef)) middlewaresDef = [ middlewaresDef ]
+  if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
   const middlewares = []
   let mDef, middleware
   for (let index = 0; index < middlewaresDef.length; index++) {
@@ -43,14 +49,16 @@ Middlewares.fromDef = function (middlewaresName, middlewaresDef, options, applyM
   return new Middlewares(middlewaresName, middlewares, applyMsg)
 }
 
-Middlewares.prototype.apply = function (app, groupReporting = true) {
+Middlewares.prototype.apply = function(app, groupReporting = true) {
   if (!app || !this.middlewares) return
 
   const individualReporting = !groupReporting
   if (Array.isArray(this.middlewares)) {
     if (groupReporting) {
       const mNames = this.middlewares.map(m => m.name)
-      const applyMsg = this.applyMsg ? this.applyMsg : `The middlewares applied from the '${this.name}': `
+      const applyMsg = this.applyMsg
+        ? this.applyMsg
+        : `The middlewares applied from the '${this.name}': `
       console.log(applyMsg, mNames)
     }
     this.middlewares.forEach(m => m.apply(app, individualReporting))
@@ -64,27 +72,40 @@ module.exports = Middlewares
 // supporting functions
 // -------------------------------------------------------------------------------
 
-function middlewaresArgsErr (middlewaresName, middlewares, applyMsg) {
+function middlewaresArgsErr(middlewaresName, middlewares, applyMsg) {
   const status = new Status()
   middlewaresNameErrCheck(middlewaresName, middlewares, status)
   middlewaresErrCheck(middlewares, middlewaresName, status)
-  if (applyMsg && typeof applyMsg !== 'string') { status.reportErr(`Error: Format of 'applyMsg' in '${middlewaresName}' should be string and not: `, applyMsg) }
+  if (applyMsg && typeof applyMsg !== 'string') {
+    status.reportErr(
+      `Error: Format of 'applyMsg' in '${middlewaresName}' should be string and not: `,
+      applyMsg
+    )
+  }
 
   return status.error
 }
 
-function middlewaresNameErrCheck (middlewaresName, middlewares, status) {
+function middlewaresNameErrCheck(middlewaresName, middlewares, status) {
   return nameErr(middlewaresName, 'middlewares group', middlewares, status)
 }
 
-function middlewaresErrCheck (middlewares, middlewaresName, status) {
-  if (Array.isArray(middlewares)) middlewares.forEach(m => middlewareErrCheck(m, middlewaresName, status))
+function middlewaresErrCheck(middlewares, middlewaresName, status) {
+  if (Array.isArray(middlewares))
+    middlewares.forEach(m => middlewareErrCheck(m, middlewaresName, status))
   else middlewareErrCheck(middlewares, middlewaresName, status)
 }
 
-function middlewareErrCheck (middlewareObj, middlewaresName, status) {
+function middlewareErrCheck(middlewareObj, middlewaresName, status) {
   if (middlewareObj.constructor !== Middleware) {
-    const extraInfo = middlewaresName && typeof middlewaresName === 'string' ? '' : ` in the middleware group: ${middlewaresName}.`
-    status.reportErr('Wrong format of the middleware: ', middlewareObj, extraInfo)
+    const extraInfo =
+      middlewaresName && typeof middlewaresName === 'string'
+        ? ''
+        : ` in the middleware group: ${middlewaresName}.`
+    status.reportErr(
+      'Wrong format of the middleware: ',
+      middlewareObj,
+      extraInfo
+    )
   }
 }

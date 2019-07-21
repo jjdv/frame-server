@@ -1,7 +1,7 @@
 'use strict'
 
 const { filePath, filePathNotEmpty } = require('../helpers/basic')
-const Status = require('../classes/class-status')
+const Status = require('../classes/status')
 
 module.exports = function validateConfigData (config) {
   const serverRootDir = config.serverRootDir

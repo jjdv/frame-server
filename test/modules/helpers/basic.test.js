@@ -33,14 +33,14 @@ const reportErr = sinon.spy()
 const status = new StatusStub(reportErr)
 let res
 
-describe('modules > helpers > basic.js', function() {
-  beforeEach(function() {
+describe('modules > helpers > basic.js', () => {
+  beforeEach(() => {
     status.error = false
     reportErr.resetHistory()
   })
 
-  describe('filePath()', function() {
-    it('returns null for falsy paths but does not report an error', function() {
+  describe('filePath()', () => {
+    it('returns null for falsy paths but does not report an error', () => {
       falsy.forEach(falsyVal => {
         res = filePath(falsyVal)
         expect(res).to.be.null()
@@ -51,8 +51,8 @@ describe('modules > helpers > basic.js', function() {
     filePathBaseTests(filePath)
   })
 
-  describe('filePathNotEmpty()', function() {
-    it('returns null and reports error for empty/falsy path', function() {
+  describe('filePathNotEmpty()', () => {
+    it('returns null and reports error for empty/falsy path', () => {
       falsy.forEach(falsyVal => {
         res = filePathNotEmpty(falsyVal, null, 'testName', status)
         expect(res).to.be.null()
@@ -65,8 +65,8 @@ describe('modules > helpers > basic.js', function() {
     filePathBaseTests(filePathNotEmpty)
   })
 
-  describe('routePathsErr()', function() {
-    it('returns false for valid paths', function() {
+  describe('routePathsErr()', () => {
+    it('returns false for valid paths', () => {
       testPathsData.valid.forEach(td => {
         const res = routePathsErr(td.paths, td.varName, status)
         expect(res).to.be.false()
@@ -74,7 +74,7 @@ describe('modules > helpers > basic.js', function() {
       })
     })
 
-    it('returns true and reports relevant error for invalid paths', function() {
+    it('returns true and reports relevant error for invalid paths', () => {
       testPathsData.invalid.forEach(td => {
         reportErr.resetHistory()
         const res = routePathsErr(td.paths, td.varName, status)
@@ -86,8 +86,8 @@ describe('modules > helpers > basic.js', function() {
       })
     })
   })
-  describe('nameErr()', function() {
-    it('returns true and reports relevant error for empty/falsy values', function() {
+  describe('nameErr()', () => {
+    it('returns true and reports relevant error for empty/falsy values', () => {
       falsy.forEach(val => {
         res = nameErr(val, 'testVarName', 'varValue', status)
         expect(res).to.be.true()
@@ -98,7 +98,7 @@ describe('modules > helpers > basic.js', function() {
       )
     })
 
-    it('returns true and reports relevant error for non-string values', function() {
+    it('returns true and reports relevant error for non-string values', () => {
       nonStringFilePaths.forEach(val => {
         res = nameErr(val, 'testVarName', 'varValue', status)
         expect(res).to.be.true()
@@ -114,7 +114,7 @@ describe('modules > helpers > basic.js', function() {
       })
     })
 
-    it('returns false for non-empty string values', function() {
+    it('returns false for non-empty string values', () => {
       stringValues.forEach(val => {
         res = nameErr(val, 'testVarName', 'varValue', status)
         expect(res).to.be.false()
@@ -123,15 +123,15 @@ describe('modules > helpers > basic.js', function() {
     })
   })
 
-  describe('isEmpty()', function() {
-    it('returns true for empty variables', function() {
+  describe('isEmpty()', () => {
+    it('returns true for empty variables', () => {
       emptyVars.forEach(val => {
         res = isEmpty(val)
         expect(res).to.be.true()
       })
     })
 
-    it('returns false for non-empty variables', function() {
+    it('returns false for non-empty variables', () => {
       nonEmptyVars.forEach(val => {
         res = isEmpty(val)
         expect(res).to.be.false()
@@ -147,7 +147,7 @@ describe('modules > helpers > basic.js', function() {
 function filePathBaseTests(filePathTestFn) {
   let resolvedFilePath
 
-  it('returns null and reports error for non-string path', function() {
+  it('returns null and reports error for non-string path', () => {
     nonStringFilePaths.forEach(nonStrVal => {
       res = filePathTestFn(nonStrVal, null, 'testName', status)
       expect(res).to.be.null()
@@ -158,7 +158,7 @@ function filePathBaseTests(filePathTestFn) {
     })
   })
 
-  it('returns null and reports error for invalid paths', function() {
+  it('returns null and reports error for invalid paths', () => {
     res = filePathTestFn(invalidFileName, validDirName, 'testName', status)
     expect(res).to.be.null()
     resolvedFilePath = path.resolve(validDirName, invalidFileName)
@@ -174,7 +174,7 @@ function filePathBaseTests(filePathTestFn) {
     )
   })
 
-  it('returns filePath for valid paths', function() {
+  it('returns filePath for valid paths', () => {
     res = filePathTestFn(validFileName, validDirName, 'testName', status)
     resolvedFilePath = path.resolve(validDirName, validFileName)
     expect(res).to.be.equal(resolvedFilePath)

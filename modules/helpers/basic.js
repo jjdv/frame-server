@@ -3,7 +3,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const Status = require('../classes/class-status')
+const Status = require('../classes/status')
 
 /**
  * Builds an absolute filePath. Reports error of path processing via status argument.

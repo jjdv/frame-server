@@ -1,4 +1,43 @@
 
+const classDef1 = {
+  readOnly: {},
+  getSet: {},
+  public: {},
+}
+
+const classDef2 = {
+  private: {
+    privatePropName1: privateVal1,
+    privatePropName2: privateVal2,
+    ...
+  },
+  readOnly: {
+    readOnlyPropName1: ropnVal1,
+    readOnlyPropName2: ropnVal2,
+    ...
+  },
+  functionPropName: (private) => () => {}, // function is considered a read-only value
+  myPropName: { // it is assumed to be a described property if it has at least one of the properties below
+    get: (private) => () => {}, // optional getter; default undefined
+    set: (private) => () => {}, // optional setter; default undefined
+    value: any, // optional value; default undefined
+    writable: true, // optional flag if the value may be changed; default false
+    configurable: true // optional flag if the type of this property descriptor may be changed and if the property may be deleted; default undefined
+    enumerable: true // optional flag if this property shows up during enumeration; default undefined
+  },
+  // a property with a value which is not a function nor an object with any properties of described property
+  // is considered a public, read-write property
+  publicPropName: anyOtherValue
+}
+
+function createClass (classDef) {
+  const private = classDef.private
+
+  createReadOnlyProps(classDef.readOnly)
+    
+  })
+}
+
 // creates getters & (warning) setters in obj for props in (typically private) propsObj
 exports.createGetOnlyProps = function (obj, propsObj) {
   if (createPropsParsErr(obj, propsObj)) return

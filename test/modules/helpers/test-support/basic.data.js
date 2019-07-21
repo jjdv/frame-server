@@ -4,9 +4,9 @@ const path = require('path')
  * test data for filePath and filePathNotEmpty
  */
 
-exports.falsy = [false, null, undefined, '']
+exports.falsy = [false, null, undefined, '', 0]
 exports.stringValues = ['abc', '...', '///\\"']
-exports.nonStringFilePaths = [{}, [], /a/]
+exports.nonStringFilePaths = [{}, [], /a/, 55]
 exports.validDirName = __dirname
 exports.invalidDirName = path.join(__dirname, 'aaa')
 exports.validFileName = path.basename(__filename)
