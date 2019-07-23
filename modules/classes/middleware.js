@@ -10,7 +10,7 @@ function Middleware(middlewareName, middlewareFn, routePaths, type = 'use') {
   createGetOnlyProps(this, { name: middlewareName, routePaths, type })
 }
 
-Middleware.validateDef = function(middlewareDef, options = {}, status) {
+Middleware.defToArgs = function(middlewareDef, options = {}, status) {
   if (!status) status = new Status()
   if (isEmpty(middlewareDef)) {
     status.reportErr('A siteMiddleware definition cannot be empty.')
@@ -38,7 +38,7 @@ Middleware.validateDef = function(middlewareDef, options = {}, status) {
 }
 
 Middleware.fromDef = function(middlewareDef, options = {}) {
-  const mArgs = Middleware.validateDef(middlewareDef, options)
+  const mArgs = Middleware.defToArgs(middlewareDef, options)
   if (!mArgs) return null
   return new Middleware(...mArgs)
 }

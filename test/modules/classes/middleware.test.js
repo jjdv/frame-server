@@ -5,18 +5,14 @@
 const path = require('path')
 const { expect, sinon } = require('../../test-env')
 
+const { isEmpty } = require('../../../modules/helpers/basic')
+
 // class under test
-const Status = require('../../../modules/classes/status')
+const Middleware = require('../../../modules/classes/middleware')
 
 // test variables
-const errMsg = 'error message'
-const errMsgs = Array(3)
-  .fill(1)
-  .map((el, indx) => errMsg + indx)
-const invalidStatusArgs = [{}, [], 'invalid', 33]
-const invalidStatusPropNames = [3, null, undefined, /a/, {}, []]
-const statusProps = ['one', '2', ...invalidStatusPropNames]
-let status, consoleErrorStub
+const middlewareTestData = require('./test-support/middleware.test.data')
+let consoleErrorStub, res
 
 // --------------------------------------------------------
 // ------------ test body -------------------------------
@@ -37,10 +33,47 @@ describe('Middleware', function() {
   })
   // >>>>>> end of setup <<<<<<
 
-  describe('.validateDef()', function() {
-    it('has the initial error property set to false', () => {
-      status = new Status()
-      expect(status.error).to.be.false()
+  describe('.fromDef()', function() {
+    middlewareTestData.forEach(mtd => {
+      it(mtd.title, () => {
+        if (Array.isArray(mtd.definition)) {
+          mtd.definition.forEach(mDef => checkDefinitionResult(mDef, mtd))
+        } else checkDefinitionResult(mtd.definition, mtd)
+      })
     })
   })
 })
+
+// ---------------------------------------------------------------
+// helpers
+//
+
+function checkDefinitionResult(mDef, mtd) {
+  res = argsDefined(mDef)
+    ? Middleware.fromDef(...mDef.args)
+    : Middleware.fromDef(mDef)
+  expect(res).to.deep.equal(mtd.result)
+  if (isEmpty(res)) {
+    if (Array.isArray(mtd.errMsg)) {
+      mtd.errMsg.forEach((errMsg, mIndx) => {
+        if (argsDefined(errMsg))
+          expect(
+            consoleErrorStub
+              .getCall(mIndx)
+              .calledOnceWithExactly(...errMsg.args)
+          ).to.be.true()
+        else expect(consoleErrorStub.calledOnceWithExactly(errMsg)).to.be.true()
+      })
+    } else {
+      if (argsDefined(mtd.errMsg))
+        expect(
+          consoleErrorStub.calledWithExactly(...mtd.errMsg.args)
+        ).to.be.true()
+      else expect(consoleErrorStub.calledWithExactly(mtd.errMsg)).to.be.true()
+    }
+  }
+}
+
+function argsDefined(val) {
+  return val && typeof val === 'object' && val.args
+}

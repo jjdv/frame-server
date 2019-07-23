@@ -26,7 +26,7 @@ const {
   emptyVars,
   nonEmptyVars,
   testPathsData
-} = require('./test-support/basic.data')
+} = require('./test-support/basic.test.data')
 
 // test variables
 const reportErr = sinon.spy()

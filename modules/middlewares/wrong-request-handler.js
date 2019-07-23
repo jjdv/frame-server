@@ -1,7 +1,7 @@
 const Middleware = require('../classes/middleware')
 
 function validateWrongRequestHandlerDef(wrongRequestHandlerDef, status) {
-  Middleware.validateDef(
+  Middleware.defToArgs(
     getWrongRequestHandlerDef(wrongRequestHandlerDef),
     {},
     status

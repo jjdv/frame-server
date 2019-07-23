@@ -96,9 +96,10 @@ function nameErr(name, varName, varValue, status) {
  * @returns {boolean} true if value is empty/falsy, false otherwise
  */
 function isEmpty(val) {
+  if (!val) return true
   if (typeof val === 'object') return !Object.keys(val).length
   if (Array.isArray(val)) return !val.length
-  return !val
+  return false
 }
 
 module.exports = { filePath, filePathNotEmpty, routePathsErr, nameErr, isEmpty }
