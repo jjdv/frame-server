@@ -1,15 +1,18 @@
 const Middleware = require('../classes/middleware')
+const { middlewareArgsErr } = require('../helpers/middleware')
 
 function validateWrongRequestHandlerDef(wrongRequestHandlerDef, status) {
-  Middleware.defToArgs(
-    getWrongRequestHandlerDef(wrongRequestHandlerDef),
-    {},
-    status
+  const mArgs = Middleware.defToArgs(
+    getWrongRequestHandlerDef(wrongRequestHandlerDef)
   )
+  middlewareArgsErr(...mArgs, status)
 }
 
 function wrongRequestHandler(wrongRequestHandlerDef) {
-  return Middleware.fromDef(getWrongRequestHandlerDef(wrongRequestHandlerDef))
+  return Middleware.fromDef({
+    name: 'wrongRequestHandler',
+    middleware: wrongRequestHandlerDef || ((req, res) => res.sendStatus(404))
+  })
 }
 
 module.exports = { validateWrongRequestHandlerDef, wrongRequestHandler }

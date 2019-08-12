@@ -42,7 +42,6 @@ Middlewares.fromDef = function(
       }
     } else if (!mDef.name) mDef.name = `${middlewaresName}-${index}`
     middleware = Middleware.fromDef(mDef, options)
-    if (!middleware) return null
     middlewares.push(middleware)
   }
 

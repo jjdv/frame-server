@@ -19,7 +19,6 @@ let consoleErrorStub, res
 // --------------------------------------------------------
 
 describe('Middleware', function() {
-  // >>>>>>>> setup <<<<<<<<<
   before(() => {
     consoleErrorStub = sinon.stub(console, 'error')
   })
@@ -31,13 +30,15 @@ describe('Middleware', function() {
   after(() => {
     consoleErrorStub.restore()
   })
-  // >>>>>> end of setup <<<<<<
 
   describe('.fromDef()', function() {
     middlewareTestData.forEach(mtd => {
       it(mtd.title, () => {
         if (Array.isArray(mtd.definition)) {
-          mtd.definition.forEach(mDef => checkDefinitionResult(mDef, mtd))
+          mtd.definition.forEach(mDef => {
+            consoleErrorStub.resetHistory()
+            checkDefinitionResult(mDef, mtd)
+          })
         } else checkDefinitionResult(mtd.definition, mtd)
       })
     })
@@ -46,32 +47,37 @@ describe('Middleware', function() {
 
 // ---------------------------------------------------------------
 // helpers
-//
+// ---------------------------------------------------------------
 
 function checkDefinitionResult(mDef, mtd) {
   res = argsDefined(mDef)
     ? Middleware.fromDef(...mDef.args)
     : Middleware.fromDef(mDef)
-  expect(res).to.deep.equal(mtd.result)
-  if (isEmpty(res)) {
-    if (Array.isArray(mtd.errMsg)) {
-      mtd.errMsg.forEach((errMsg, mIndx) => {
-        if (argsDefined(errMsg))
-          expect(
-            consoleErrorStub
-              .getCall(mIndx)
-              .calledOnceWithExactly(...errMsg.args)
-          ).to.be.true()
-        else expect(consoleErrorStub.calledOnceWithExactly(errMsg)).to.be.true()
-      })
-    } else {
-      if (argsDefined(mtd.errMsg))
-        expect(
-          consoleErrorStub.calledWithExactly(...mtd.errMsg.args)
-        ).to.be.true()
-      else expect(consoleErrorStub.calledWithExactly(mtd.errMsg)).to.be.true()
-    }
-  }
+  expect(res.apply).to.exist()
+  expect(mComparable(res)).to.deep.equal(mComparable(mtd.result))
+  if (!res.middlewareFn) checkErrMessages(mtd.errMsg)
+}
+
+// middleware comparable
+function mComparable(m) {
+  const mC = Object.assign({}, m)
+  mC.middlewareFn = mC.middlewareFn
+    ? mC.middlewareFn.toString()
+    : mC.middlewareFn
+}
+
+function checkErrMessages(errMsgs) {
+  if (Array.isArray(errMsgs))
+    errMsgs.forEach((errM, mIndx) =>
+      checkErrMsg(errM, consoleErrorStub.getCall(mIndx))
+    )
+  else checkErrMsg(errMsgs, consoleErrorStub)
+}
+
+function checkErrMsg(errMsg, errMsgStub) {
+  if (argsDefined(errMsg))
+    expect(errMsgStub.calledOnceWithExactly(...errMsg.args)).to.be.true()
+  else expect(errMsgStub.calledOnceWithExactly(errMsg)).to.be.true()
 }
 
 function argsDefined(val) {
