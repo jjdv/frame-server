@@ -35,9 +35,11 @@ describe('Middleware', function() {
     middlewareTestData.forEach(mtd => {
       it(mtd.title, () => {
         if (Array.isArray(mtd.definition)) {
-          mtd.definition.forEach(mDef => {
+          mtd.definition.forEach((mDef, index) => {
             consoleErrorStub.resetHistory()
-            checkDefinitionResult(mDef, mtd)
+            const result = arrElOrArgFn(mtd.result)
+            const errMsg = arrElOrArgFn(mtd.errMsg)
+            checkDefinitionResult(mDef, result(index), errMsg(index))
           })
         } else checkDefinitionResult(mtd.definition, mtd)
       })
@@ -49,13 +51,13 @@ describe('Middleware', function() {
 // helpers
 // ---------------------------------------------------------------
 
-function checkDefinitionResult(mDef, mtd) {
+function checkDefinitionResult(mDef, result, errMsg) {
   res = argsDefined(mDef)
     ? Middleware.fromDef(...mDef.args)
     : Middleware.fromDef(mDef)
   expect(res.apply).to.exist()
-  expect(mComparable(res)).to.deep.equal(mComparable(mtd.result))
-  if (!res.middlewareFn) checkErrMessages(mtd.errMsg)
+  expect(mComparable(res)).to.deep.equal(mComparable(result))
+  if (!res.middlewareFn) checkErrMessages(errMsg)
 }
 
 // middleware comparable
@@ -82,4 +84,8 @@ function checkErrMsg(errMsg, errMsgStub) {
 
 function argsDefined(val) {
   return val && typeof val === 'object' && val.args
+}
+
+function arrElOrArgFn(arg) {
+  return Array.isArray(arg) ? indx => arg[indx] : () => arg
 }
