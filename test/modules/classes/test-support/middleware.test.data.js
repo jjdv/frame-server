@@ -2,7 +2,8 @@ const { middlewareMock } = require('../../../../modules/helpers/middleware')
 
 const middlewareTestData = [
   {
-    title: 'returns empty class in case of empty definition',
+    title:
+      'returns instance with middlewareFn null in case of empty definition',
     definition: [null, false, undefined, {}, [], ''],
     result: middlewareMock,
     errMsg: {
@@ -11,18 +12,32 @@ const middlewareTestData = [
   },
   {
     title: 'returns correct middleware instance if definition is correct',
-    definition: {
-      name: 'myMiddlewareName',
-      type: 'use',
-      routePaths: '/route/path',
-      middleware: () => ''
-    },
-    result: {
-      name: 'myMiddlewareName',
-      type: 'use',
-      routePaths: '/route/path',
-      middlewareFn: () => ''
-    }
+    definition: [
+      {
+        name: 'myMiddlewareName',
+        type: 'use',
+        routePaths: '/route/path',
+        middleware: () => ''
+      },
+      {
+        name: 'myMiddlewareName',
+        middleware: () => ''
+      }
+    ],
+    result: [
+      {
+        name: 'myMiddlewareName',
+        type: 'use',
+        routePaths: '/route/path',
+        middlewareFn: () => ''
+      },
+      {
+        name: 'myMiddlewareName',
+        type: 'use',
+        routePaths: undefined,
+        middlewareFn: () => ''
+      }
+    ]
   }
 ]
 
