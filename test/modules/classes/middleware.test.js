@@ -62,10 +62,12 @@ function checkDefinitionResult(mDef, result, errMsg) {
 
 // middleware comparable
 function mComparable(m) {
-  const mC = Object.assign({}, m)
-  mC.middlewareFn = mC.middlewareFn
-    ? mC.middlewareFn.toString()
-    : mC.middlewareFn
+  if (m.middlewareFn) {
+    const mC = Object.assign({}, m)
+    mC.middlewareFn = mC.middlewareFn.toString()
+    return mC
+  }
+  return m
 }
 
 function checkErrMessages(errMsgs) {
