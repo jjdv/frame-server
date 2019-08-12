@@ -60,7 +60,7 @@ module.exports = { middlewareMock, middlewareArgsErr, middlewareFnFromDef }
 // -------------------------------------------------------------------------------
 
 function middlewareNameErrCheck(middlewareName, middlewareFn, status) {
-  return nameErr(middlewareName, 'middleware', middlewareFn, status.name)
+  return nameErr(middlewareName, 'middleware', middlewareFn, status)
 }
 
 function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
