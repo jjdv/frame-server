@@ -79,7 +79,7 @@ function routePathsErr(paths, varName, status) {
 function nameErr(name, varName, varValue, status) {
   if (!status) status = new Status()
 
-  if (!name) status.reportErr(`Error: Missing name of the '${varName}'.`)
+  if (!name) status.reportErr(`Missing name of the '${varName}'.`)
   else if (typeof name !== 'string') {
     status.reportErr(
       `Error: The name of the '${varName}' must be a string and not: `,
