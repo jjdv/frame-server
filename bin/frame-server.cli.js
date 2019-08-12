@@ -18,7 +18,7 @@ const app = require('express')()
 const setView = require('../modules/deployment/set-view')
 setView(app, serverConfig.view)
 
-const { middlewares } = require('../modules/middlewares/middlewares')
+const middlewares = require('../modules/middlewares/middlewares')
 const {
   serverMiddlewares,
   siteMiddlewares,
