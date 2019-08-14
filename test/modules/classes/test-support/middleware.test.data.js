@@ -22,6 +22,12 @@ const middlewareTestData = [
       {
         name: 'myMiddlewareName',
         middleware: () => ''
+      },
+      {
+        name: 'myMiddlewareName',
+        type: 'get',
+        routePaths: ['/route/path', '/', /abc*/],
+        middleware: __dirname + '/middleware-test-function.js'
       }
     ],
     result: [
@@ -36,6 +42,12 @@ const middlewareTestData = [
         type: 'use',
         routePaths: undefined,
         middlewareFn: () => ''
+      },
+      {
+        name: 'myMiddlewareName',
+        type: 'get',
+        routePaths: ['/route/path', '/', /abc*/],
+        middlewareFn: () => 'test'
       }
     ]
   }
