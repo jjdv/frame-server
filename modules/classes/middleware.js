@@ -9,42 +9,45 @@ const {
   middlewareFnFromDef
 } = require('../helpers/middleware')
 
-function Middleware(middlewareDef, options = {}) {
-  const status = new Status()
+class Middleware {
+  constructor(middlewareDef, options = {}) {
+    const status = new Status()
 
-  if (isEmpty(middlewareDef)) {
-    status.reportErr('A siteMiddleware definition cannot be empty.')
-    for (prop in middlewareMock) {
-      this[prop] = middlewareMock[prop]
+    if (isEmpty(middlewareDef)) {
+      status.reportErr('A siteMiddleware definition cannot be empty.')
+      for (const prop in middlewareMock) {
+        this[prop] = middlewareMock[prop]
+      }
+    } else {
+      const [
+        middlewareName,
+        middlewareFn,
+        routePaths,
+        type
+      ] = middlewareDefToArgs(middlewareDef, options)
+
+      nameErr(middlewareName, 'middleware', middlewareDef, status)
+      middlewareFnErrCheck(middlewareFn, middlewareName, status)
+      if (routePaths) routePathsErr(routePaths, middlewareName, status)
+      middlewareTypeErrCheck(type, middlewareName, status)
+
+      this.name = middlewareName
+      if (status.error) this.middlewareFn = null
+      else {
+        this.middlewareFn = middlewareFn
+        this.routePaths = routePaths
+        this.type = type
+      }
     }
-    return
   }
 
-  const [middlewareName, middlewareFn, routePaths, type] = middlewareDefToArgs(
-    middlewareDef,
-    options
-  )
+  apply(app, report = true) {
+    if (!app || app.constructor !== Function || !this.middlewareFn) return
 
-  nameErr(middlewareName, 'middleware', middlewareDef, status)
-  middlewareFnErrCheck(middlewareFn, middlewareName, status)
-  if (routePaths) routePathsErr(routePaths, middlewareName, status)
-  middlewareTypeErrCheck(type, middlewareName, status)
-
-  if (status.error) {
-    this.name = middlewareName
-    this.middlewareFn = null
-  } else {
-    createReadOnlyProps(this, { middlewareFn })
-    createGetOnlyProps(this, { name: middlewareName, routePaths, type })
+    if (this.routePaths) app[this.type](this.routePaths, this.middlewareFn)
+    else app[this.type](this.middlewareFn)
+    if (report) console.log(`The middleware '${this.name}' has been applied.`)
   }
-}
-
-Middleware.prototype.apply = function(app, report = true) {
-  if (!app || app.constructor !== Function || !this.middlewareFn) return
-
-  if (this.routePaths) app[this.type](this.routePaths, this.middlewareFn)
-  else app[this.type](this.middlewareFn)
-  if (report) console.log(`The middleware '${this.name}' has been applied.`)
 }
 
 module.exports = Middleware
