@@ -26,22 +26,43 @@ function middlewareDefToArgs(middlewareDef, options = {}) {
   return [middlewareName, middlewareFn, routePaths, type]
 }
 
-function middlewareArgsErr(
-  middlewareName,
-  middlewareFn,
-  routePaths,
-  type,
-  status
-) {
-  const intStatus = new Status()
+function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
+  if (!middlewareFn) status.reportErr('No middleware function provided.')
+  else if (middlewareFn.constructor !== Function) {
+    const extraInfo =
+      middlewareName && typeof middlewareName === 'string'
+        ? `provided for the middleware: ${middlewareName}.`
+        : ''
+    status.reportErr(
+      'Invalid format of middleware function: ',
+      middlewareFn,
+      extraInfo
+    )
+  }
+}
 
-  middlewareNameErrCheck(middlewareName, middlewareFn, intStatus)
-  middlewareFnErrCheck(middlewareFn, middlewareName, intStatus)
-  if (routePaths) routePathsErr(routePaths, middlewareName, intStatus)
-  middlewareTypeErrCheck(type, middlewareName, intStatus)
-
-  if (intStatus.error && status) status.reportErr()
-  return intStatus.error
+function middlewareTypeErrCheck(type, middlewareName, status) {
+  const allowedTypes = [
+    'use',
+    'get',
+    'post',
+    'put',
+    'patch',
+    'delete',
+    'delete',
+    'connect',
+    'head',
+    'options',
+    'trace',
+    'all'
+  ]
+  if (!allowedTypes.includes(type)) {
+    const extraInfo =
+      middlewareName && typeof middlewareName === 'string'
+        ? `provided for the middleware: ${middlewareName}.`
+        : ''
+    status.reportErr('Invalid middleware type: ', type, extraInfo)
+  }
 }
 
 function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
@@ -74,54 +95,7 @@ function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
 module.exports = {
   middlewareMock,
   middlewareDefToArgs,
-  middlewareArgsErr,
+  middlewareFnErrCheck,
+  middlewareTypeErrCheck,
   middlewareFnFromDef
-}
-
-//
-// -------------------------------------------------------------------------------
-// supporting functions
-// -------------------------------------------------------------------------------
-
-function middlewareNameErrCheck(middlewareName, middlewareFn, status) {
-  return nameErr(middlewareName, 'middleware', middlewareFn, status)
-}
-
-function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
-  if (!middlewareFn) status.reportErr('No middleware function provided.')
-  else if (middlewareFn.constructor !== Function) {
-    const extraInfo =
-      middlewareName && typeof middlewareName === 'string'
-        ? `provided for the middleware: ${middlewareName}.`
-        : ''
-    status.reportErr(
-      'Invalid format of middleware function: ',
-      middlewareFn,
-      extraInfo
-    )
-  }
-}
-
-middlewareTypeErrCheck = function(type, middlewareName, status) {
-  const allowedTypes = [
-    'use',
-    'get',
-    'post',
-    'put',
-    'patch',
-    'delete',
-    'delete',
-    'connect',
-    'head',
-    'options',
-    'trace',
-    'all'
-  ]
-  if (!allowedTypes.includes(type)) {
-    const extraInfo =
-      middlewareName && typeof middlewareName === 'string'
-        ? `provided for the middleware: ${middlewareName}.`
-        : ''
-    status.reportErr('Invalid middleware type: ', type, extraInfo)
-  }
 }

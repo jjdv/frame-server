@@ -1,16 +1,19 @@
 const { createGetOnlyProps, createReadOnlyProps } = require('../helpers/object')
 const Status = require('./status')
-const { isEmpty } = require('../helpers/basic')
+const { isEmpty, routePathsErr, nameErr } = require('../helpers/basic')
 const {
   middlewareMock,
   middlewareDefToArgs,
-  middlewareArgsErr,
+  middlewareFnErrCheck,
+  middlewareTypeErrCheck,
   middlewareFnFromDef
 } = require('../helpers/middleware')
 
 function Middleware(middlewareDef, options = {}) {
+  const status = new Status()
+
   if (isEmpty(middlewareDef)) {
-    new Status().reportErr('A siteMiddleware definition cannot be empty.')
+    status.reportErr('A siteMiddleware definition cannot be empty.')
     for (prop in middlewareMock) {
       this[prop] = middlewareMock[prop]
     }
@@ -21,7 +24,13 @@ function Middleware(middlewareDef, options = {}) {
     middlewareDef,
     options
   )
-  if (middlewareArgsErr(middlewareName, middlewareFn, routePaths, type)) {
+
+  nameErr(middlewareName, 'middleware', middlewareDef, status)
+  middlewareFnErrCheck(middlewareFn, middlewareName, status)
+  if (routePaths) routePathsErr(routePaths, middlewareName, status)
+  middlewareTypeErrCheck(type, middlewareName, status)
+
+  if (status.error) {
     this.name = middlewareName
     this.middlewareFn = null
   } else {
