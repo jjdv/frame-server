@@ -1,5 +1,15 @@
 const { middlewareMock } = require('../../../../modules/helpers/middleware')
 
+const mCErr1 = {
+  name: '',
+  type: 'get',
+  routePaths: ['/route/path', {}, /abc*/],
+  middleware: '/test',
+  options: {
+    rootDir: 'C:\\testDir'
+  }
+}
+
 const middlewareTestData = [
   {
     title:
@@ -75,44 +85,53 @@ const middlewareTestData = [
         type: 'user',
         routePaths: '/route/path',
         middleware: () => ''
-      }
-      //     {
-      //       name: 'myMiddlewareName',
-      //       middleware: () => ''
-      //     },
-      //     {
-      //       name: 'myMiddlewareName',
-      //       type: 'get',
-      //       routePaths: ['/route/path', '/', /abc*/],
-      //       middleware: __dirname + '/middleware-test-function.js'
-      //     }
+      },
+      mCErr1
     ],
     result: [
       {
         name: 'myMiddlewareName1',
         middlewareFn: null
+      },
+      {
+        name: '',
+        middlewareFn: null
       }
-      //     {
-      //       name: 'myMiddlewareName',
-      //       type: 'use',
-      //       routePaths: undefined,
-      //       middlewareFn: () => ''
-      //     },
-      //     {
-      //       name: 'myMiddlewareName',
-      //       type: 'get',
-      //       routePaths: ['/route/path', '/', /abc*/],
-      //       middlewareFn: () => 'test'
-      //     }
     ],
-    errMsg: {
-      args: [
-        'Error: ',
-        'Invalid middleware type: ',
-        'user',
-        'provided for the middleware: myMiddlewareName1.'
+    errMsg: [
+      {
+        args: [
+          'Error: ',
+          'Invalid middleware type: ',
+          'user',
+          'provided for the middleware: myMiddlewareName1.'
+        ]
+      },
+      [
+        {
+          args: [
+            'Error: ',
+            'Cannot find "C:\\test" specified by the \'\' as "/test"'
+          ]
+        },
+        {
+          args: [
+            'Error: ',
+            "Missing name of the 'middleware' with definition:",
+            mCErr1
+          ]
+        },
+        {
+          args: [
+            'Error: ',
+            "No middleware function provided for the middleware: ''."
+          ]
+        },
+        {
+          args: ['Error: ', "Wrong path format in ''."]
+        }
       ]
-    }
+    ]
   }
 ]
 

@@ -27,18 +27,14 @@ function middlewareDefToArgs(middlewareDef, options = {}) {
 }
 
 function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
-  if (!middlewareFn) status.reportErr('No middleware function provided.')
-  else if (middlewareFn.constructor !== Function) {
-    const extraInfo =
-      middlewareName && typeof middlewareName === 'string'
-        ? `provided for the middleware: ${middlewareName}.`
-        : ''
+  const extraInfo = `provided for the middleware: '${middlewareName}'.`
+  if (!middlewareFn) status.reportErr(`No middleware function ${extraInfo}`)
+  else if (middlewareFn.constructor !== Function)
     status.reportErr(
       'Invalid format of middleware function: ',
       middlewareFn,
       extraInfo
     )
-  }
 }
 
 function middlewareTypeErrCheck(type, middlewareName, status) {
@@ -69,12 +65,7 @@ function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
   if (!rootDir) rootDir = process.env.SERVER_ROOT_DIR
   switch (middlewareDef.constructor) {
     case String:
-      const mPath = filePathNotEmpty(
-        middlewareDef,
-        rootDir,
-        middlewareName,
-        new Status()
-      )
+      const mPath = filePathNotEmpty(middlewareDef, rootDir, middlewareName)
       return mPath ? require(mPath) : null
     case Function:
       return middlewareDef

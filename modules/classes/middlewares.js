@@ -77,7 +77,7 @@ function middlewaresArgsErr(middlewaresName, middlewares, applyMsg) {
   middlewaresErrCheck(middlewares, middlewaresName, status)
   if (applyMsg && typeof applyMsg !== 'string') {
     status.reportErr(
-      `Error: Format of 'applyMsg' in '${middlewaresName}' should be string and not: `,
+      `Format of 'applyMsg' in '${middlewaresName}' should be string and not: `,
       applyMsg
     )
   }

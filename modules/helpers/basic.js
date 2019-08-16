@@ -19,16 +19,14 @@ function filePath(pathDef, rootDir, varName, status) {
   if (!status) status = new Status()
 
   if (typeof pathDef !== 'string') {
-    const extraInfo = varName ? ` of '${varName}'` : ''
-    status.reportErr(`Error: Wrong file path format${extraInfo}:`, pathDef)
+    status.reportErr(`Wrong file path format of '${varName}':`, pathDef)
     return null
   }
 
   const filePath = path.resolve(rootDir, pathDef)
   if (!fs.existsSync(filePath)) {
-    const extraInfo = varName ? ` by the '${varName}'` : ''
     status.reportErr(
-      `Error: Cannot find "${filePath}" specified${extraInfo} as "${pathDef}"`
+      `Cannot find "${filePath}" specified by the '${varName}' as "${pathDef}"`
     )
     return null
   }
@@ -44,7 +42,7 @@ function filePathNotEmpty(pathDef, rootDir, varName, status) {
   if (!status) status = new Status()
 
   status.reportErr(
-    `Error: The specification of the file path in the '${varName}' cannot be an empty string.`
+    `The specification of the file path in the '${varName}' cannot be an empty string.`
   )
   return null
 }
@@ -86,7 +84,7 @@ function nameErr(name, varName, varDef, status) {
     )
   else if (typeof name !== 'string') {
     status.reportErr(
-      `Error: The name of the '${varName}', with definition:`,
+      `The name of the '${varName}', with definition:`,
       varDef,
       ` must be a string and not: `,
       varName
@@ -124,11 +122,11 @@ function routePathErr(path, varName, status) {
   if (typeof path === 'string') {
     if (!path)
       status.reportErr(
-        `Error: The specification of the path in '${varName}' cannot be an empty string.`
+        `The specification of the path in '${varName}' cannot be an empty string.`
       )
     else if (path[0] !== '/')
       status.reportErr(
-        `Error: Route paths in '${varName}' should be absolute, i.e. start with: '/' but is defined as: '${path}'.`
+        `Route paths in '${varName}' should be absolute, i.e. start with: '/' but is defined as: '${path}'.`
       )
   } else if (!isRegExp(path))
     status.reportErr(`Wrong path format in '${varName}'.`)

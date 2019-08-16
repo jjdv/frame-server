@@ -103,7 +103,7 @@ describe('config > server.config.js', function () {
       delete require.cache[serverConfigAbsPath]
       const returnedConfigData = require('../../config/server.config')
       expect(returnedConfigData).to.be.null()
-      expect(console.error.getCall(0).args[0]).to.include(`Error: Server config file '${cliTestArgv[cliTestArgv.length - 1]}' not found.`)
+      expect(console.error.getCall(0).args[0]).to.include(`Server config file '${cliTestArgv[cliTestArgv.length - 1]}' not found.`)
       console.error.restore()
     })
   })

@@ -72,15 +72,19 @@ function mComparable(m) {
 function checkErrMessages(errMsgs) {
   if (Array.isArray(errMsgs))
     errMsgs.forEach((errM, mIndx) =>
-      checkErrMsg(errM, consoleErrorStub.getCall(mIndx))
+      checkErrMsg(errM, consoleErrorStub.getCall(mIndx), false)
     )
   else checkErrMsg(errMsgs, consoleErrorStub)
 }
 
-function checkErrMsg(errMsg, errMsgStub) {
-  if (argsDefined(errMsg))
-    expect(errMsgStub.calledOnceWithExactly(...errMsg.args)).to.be.true()
-  else expect(errMsgStub.calledOnceWithExactly(errMsg)).to.be.true()
+function checkErrMsg(errMsg, errMsgStub, once = true) {
+  const stubMethod = once ? 'calledOnceWithExactly' : 'calledWithExactly'
+  if (argsDefined(errMsg)) {
+    if (!once) {
+      expect(errMsgStub.args).to.deep.equal(errMsg.args)
+      expect(errMsgStub[stubMethod](...errMsg.args)).to.be.true()
+    } else expect(errMsgStub[stubMethod](...errMsg.args)).to.be.true()
+  } else expect(errMsgStub[stubMethod](errMsg)).to.be.true()
 }
 
 function argsDefined(val) {

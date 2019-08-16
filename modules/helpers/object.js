@@ -126,10 +126,10 @@ function createPropsParsErr(obj, propsObj) {
 
 function objectErrCheck(obj, objName, recipientName, status) {
   if (!obj)
-    status.reportErr(`Error: No ${objName} provided to ${recipientName}`)
+    status.reportErr(`No ${objName} provided to ${recipientName}`)
   else if (typeof obj !== 'object')
     status.reportErr(
-      `Error: Invalid ${objName} provided to ${recipientName}: `,
+      `Invalid ${objName} provided to ${recipientName}: `,
       obj
     )
 }
