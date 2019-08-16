@@ -7,6 +7,25 @@ const middlewareMock = {
   apply: () => {}
 }
 
+function middlewareDefToArgs(middlewareDef, options = {}) {
+  const { rootDir, defaultType } = options
+  if (typeof middlewareDef !== 'object')
+    middlewareDef = { middleware: middlewareDef }
+  const {
+    name: middlewareName,
+    middleware: middlewareFnDef,
+    routePaths
+  } = middlewareDef
+  const middlewareFn = middlewareFnFromDef(
+    middlewareFnDef,
+    middlewareName,
+    rootDir
+  )
+  const type = middlewareDef.type ? middlewareDef.type : defaultType || 'use'
+
+  return [middlewareName, middlewareFn, routePaths, type]
+}
+
 function middlewareArgsErr(
   middlewareName,
   middlewareFn,
@@ -52,7 +71,12 @@ function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
   }
 }
 
-module.exports = { middlewareMock, middlewareArgsErr, middlewareFnFromDef }
+module.exports = {
+  middlewareMock,
+  middlewareDefToArgs,
+  middlewareArgsErr,
+  middlewareFnFromDef
+}
 
 //
 // -------------------------------------------------------------------------------

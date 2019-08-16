@@ -53,7 +53,7 @@ describe('Middleware', function() {
 
 function checkDefinitionResult(mDef, result, errMsg) {
   const options = mDef && typeof mDef === 'object' ? mDef.options : null
-  res = Middleware.fromDef(mDef, options)
+  res = new Middleware(mDef, options)
 
   expect(res.apply).to.exist()
   expect(mComparable(res)).to.deep.equal(mComparable(result))
