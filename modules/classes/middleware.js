@@ -36,7 +36,7 @@ Middleware.defToArgs = function(middlewareDef, options = {}) {
   return [middlewareName, middlewareFn, routePaths, type]
 }
 
-Middleware.fromDef = function(middlewareDef, options) {
+Middleware.fromDef = function(middlewareDef, options = {}) {
   if (isEmpty(middlewareDef)) {
     new Status().reportErr('A siteMiddleware definition cannot be empty.')
     return middlewareMock

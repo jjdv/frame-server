@@ -71,18 +71,24 @@ function routePathsErr(paths, varName, status) {
  * Checks if name exists and is a non-empty string
  * @param {string} name - instance name of a variable
  * @param {string} varName - variable name
- * @param {*} varValue - value of a variable instance (for reference purposes only)
+ * @param {*} varDef - value of a variable instance (for reference purposes only)
  * @param {Status} status - status instance for reporting status of name error check
  * @returns {boolean} true if error, false in case of all valid route paths
  */
 
-function nameErr(name, varName, varValue, status) {
+function nameErr(name, varName, varDef, status) {
   if (!status) status = new Status()
 
-  if (!name) status.reportErr(`Missing name of the '${varName}'.`)
+  if (!name)
+    status.reportErr(
+      `Missing name of the '${varName}' with definition:`,
+      varDef
+    )
   else if (typeof name !== 'string') {
     status.reportErr(
-      `Error: The name of the '${varName}' must be a string and not: `,
+      `Error: The name of the '${varName}', with definition:`,
+      varDef,
+      ` must be a string and not: `,
       varName
     )
   }

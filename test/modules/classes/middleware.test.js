@@ -41,7 +41,7 @@ describe('Middleware', function() {
             const errMsg = arrElOrArgFn(mtd.errMsg)
             checkDefinitionResult(mDef, result(index), errMsg(index))
           })
-        } else checkDefinitionResult(mtd.definition, mtd)
+        } else checkDefinitionResult(mtd.definition, mtd.result, mtd.errMsg)
       })
     })
   })
@@ -52,22 +52,21 @@ describe('Middleware', function() {
 // ---------------------------------------------------------------
 
 function checkDefinitionResult(mDef, result, errMsg) {
-  res = argsDefined(mDef)
-    ? Middleware.fromDef(...mDef.args)
-    : Middleware.fromDef(mDef)
+  const options = mDef && typeof mDef === 'object' ? mDef.options : null
+  res = Middleware.fromDef(mDef, options)
+
   expect(res.apply).to.exist()
   expect(mComparable(res)).to.deep.equal(mComparable(result))
-  if (!res.middlewareFn) checkErrMessages(errMsg)
+  if (!res.middlewareFn) {
+    checkErrMessages(errMsg)
+  }
 }
 
 // middleware comparable
 function mComparable(m) {
-  if (m.middlewareFn) {
-    const mC = Object.assign({}, m)
-    mC.middlewareFn = mC.middlewareFn.toString()
-    return mC
-  }
-  return m
+  const mC = Object.assign({}, m)
+  if (m.middlewareFn) mC.middlewareFn = mC.middlewareFn.toString()
+  return mC
 }
 
 function checkErrMessages(errMsgs) {
