@@ -3,7 +3,9 @@
 
 // test environment
 const path = require('path')
-const { expect, sinon, StatusStub } = require('../../test-env')
+const { expect, sinon } = require('../../test-env')
+
+const Status = require('../../../modules/classes/status')
 
 // methods under test
 const {
@@ -29,22 +31,29 @@ const {
 } = require('./test-support/basic.test.data')
 
 // test variables
-const reportErr = sinon.spy()
-const status = new StatusStub(reportErr)
-let res
+let status, consoleErrorStub, res
 
 describe('modules > helpers > basic.js', () => {
-  beforeEach(() => {
-    status.error = false
-    reportErr.resetHistory()
+  before(() => {
+    status = new Status()
+    consoleErrorStub = sinon.stub(console, 'error')
+  })
+
+  beforeEach(async () => {
+    status.reset()
+    consoleErrorStub.resetHistory()
+  })
+
+  after(() => {
+    consoleErrorStub.restore()
   })
 
   describe('filePath()', () => {
     it('returns null for falsy paths but does not report an error', () => {
       falsy.forEach(falsyVal => {
-        res = filePath(falsyVal)
+        res = filePath(falsyVal, __dirname, 'testName', status)
         expect(res).to.be.null()
-        reportErr.should.have.not.been.called()
+        consoleErrorStub.should.have.not.been.called()
       })
     })
 
@@ -54,10 +63,11 @@ describe('modules > helpers > basic.js', () => {
   describe('filePathNotEmpty()', () => {
     it('returns null and reports error for empty/falsy path', () => {
       falsy.forEach(falsyVal => {
-        res = filePathNotEmpty(falsyVal, null, 'testName', status)
+        res = filePathNotEmpty(falsyVal, __dirname, 'testName', status)
         expect(res).to.be.null()
-        reportErr.lastCall.should.have.been.calledWith(
-          "Error: The specification of the file path in the 'testName' cannot be an empty string."
+        consoleErrorStub.lastCall.should.have.been.calledWith(
+          'Error: ',
+          "The specification of the file path in the 'testName' cannot be an empty string."
         )
       })
     })
@@ -70,18 +80,18 @@ describe('modules > helpers > basic.js', () => {
       testPathsData.valid.forEach(td => {
         const res = routePathsErr(td.paths, td.varName, status)
         expect(res).to.be.false()
-        reportErr.should.have.not.been.called()
+        consoleErrorStub.should.have.not.been.called()
       })
     })
 
     it('returns true and reports relevant error for invalid paths', () => {
       testPathsData.invalid.forEach(td => {
-        reportErr.resetHistory()
+        consoleErrorStub.resetHistory()
         const res = routePathsErr(td.paths, td.varName, status)
         expect(res).to.be.true()
-        expect(reportErr.callCount).to.equal(td.errMsg.length)
+        expect(consoleErrorStub.callCount).to.equal(td.errMsg.length)
         td.errMsg.forEach((errMsg, indx) => {
-          reportErr.getCall(indx).calledWithExactly(errMsg)
+          consoleErrorStub.getCall(indx).calledWithExactly(errMsg)
         })
       })
     })
@@ -92,9 +102,10 @@ describe('modules > helpers > basic.js', () => {
         res = nameErr(val, 'testVarName', 'varValue', status)
         expect(res).to.be.true()
       })
-      expect(reportErr.callCount).to.equal(falsy.length)
-      reportErr.alwaysCalledWithExactly(
-        "Error: Missing name of the 'testVarName."
+      expect(consoleErrorStub.callCount).to.equal(falsy.length)
+      consoleErrorStub.alwaysCalledWithExactly(
+        'Error: ',
+        "Missing name of the 'testVarName."
       )
     })
 
@@ -103,12 +114,13 @@ describe('modules > helpers > basic.js', () => {
         res = nameErr(val, 'testVarName', 'varValue', status)
         expect(res).to.be.true()
       })
-      expect(reportErr.callCount).to.equal(nonStringFilePaths.length)
+      expect(consoleErrorStub.callCount).to.equal(nonStringFilePaths.length)
       nonStringFilePaths.forEach((val, indx) => {
-        reportErr
+        consoleErrorStub
           .getCall(indx)
           .calledWithExactly(
-            "Error: The name of the 'testVarName' must be a string and not: ",
+            'Error: ',
+            "The name of the 'testVarName' must be a string and not: ",
             val
           )
       })
@@ -119,7 +131,7 @@ describe('modules > helpers > basic.js', () => {
         res = nameErr(val, 'testVarName', 'varValue', status)
         expect(res).to.be.false()
       })
-      reportErr.should.have.not.been.called()
+      consoleErrorStub.should.have.not.been.called()
     })
   })
 
@@ -151,8 +163,9 @@ function filePathBaseTests(filePathTestFn) {
     nonStringFilePaths.forEach(nonStrVal => {
       res = filePathTestFn(nonStrVal, null, 'testName', status)
       expect(res).to.be.null()
-      reportErr.lastCall.should.have.been.calledWith(
-        "Error: Wrong file path format of 'testName':",
+      consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+        'Error: ',
+        "Wrong file path format of 'testName':",
         nonStrVal
       )
     })
@@ -162,15 +175,17 @@ function filePathBaseTests(filePathTestFn) {
     res = filePathTestFn(invalidFileName, validDirName, 'testName', status)
     expect(res).to.be.null()
     resolvedFilePath = path.resolve(validDirName, invalidFileName)
-    reportErr.lastCall.should.have.been.calledWith(
-      `Error: Cannot find "${resolvedFilePath}" specified by the 'testName' as "${invalidFileName}"`
+    consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+      'Error: ',
+      `Cannot find "${resolvedFilePath}" specified by the 'testName' as "${invalidFileName}"`
     )
 
     res = filePathTestFn(validFileName, invalidDirName, 'testName', status)
     expect(res).to.be.null()
     resolvedFilePath = path.resolve(invalidDirName, validFileName)
-    reportErr.lastCall.should.have.been.calledWith(
-      `Error: Cannot find "${resolvedFilePath}" specified by the 'testName' as "${validFileName}"`
+    consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+      'Error: ',
+      `Cannot find "${resolvedFilePath}" specified by the 'testName' as "${validFileName}"`
     )
   })
 
