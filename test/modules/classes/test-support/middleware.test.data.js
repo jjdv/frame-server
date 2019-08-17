@@ -1,13 +1,10 @@
 const { middlewareMock } = require('../../../../modules/helpers/middleware')
 
-const mCErr1 = {
+const wrongMDef1 = {
   name: '',
   type: 'get',
   routePaths: ['/route/path', {}, /abc*/],
-  middleware: '/test',
-  options: {
-    rootDir: 'C:\\testDir'
-  }
+  middleware: '/test'
 }
 
 const middlewareTestData = [
@@ -27,17 +24,35 @@ const middlewareTestData = [
         name: 'myMiddlewareName1',
         type: 'use',
         routePaths: '/route/path',
-        middleware: () => ''
+        middleware: () => '',
+        result: {
+          name: 'myMiddlewareName1',
+          type: 'use',
+          routePaths: '/route/path',
+          middlewareFn: () => ''
+        }
       },
       {
         name: 'myMiddlewareName2',
-        middleware: () => ''
+        middleware: () => '',
+        result: {
+          name: 'myMiddlewareName2',
+          type: 'use',
+          routePaths: undefined,
+          middlewareFn: () => ''
+        }
       },
       {
         name: 'myMiddlewareName3',
         type: 'get',
         routePaths: ['/route/path', '/', /abc*/],
-        middleware: __dirname + '/middleware-test-function.js'
+        middleware: __dirname + '/middleware-test-function.js',
+        result: {
+          name: 'myMiddlewareName3',
+          type: 'get',
+          routePaths: ['/route/path', '/', /abc*/],
+          middlewareFn: () => 'test'
+        }
       },
       {
         name: 'myMiddlewareName4',
@@ -46,33 +61,13 @@ const middlewareTestData = [
         options: {
           rootDir: __dirname,
           defaultType: 'put'
+        },
+        result: {
+          name: 'myMiddlewareName4',
+          type: 'put',
+          routePaths: /abc*/,
+          middlewareFn: () => 'test'
         }
-      }
-    ],
-    result: [
-      {
-        name: 'myMiddlewareName1',
-        type: 'use',
-        routePaths: '/route/path',
-        middlewareFn: () => ''
-      },
-      {
-        name: 'myMiddlewareName2',
-        type: 'use',
-        routePaths: undefined,
-        middlewareFn: () => ''
-      },
-      {
-        name: 'myMiddlewareName3',
-        type: 'get',
-        routePaths: ['/route/path', '/', /abc*/],
-        middlewareFn: () => 'test'
-      },
-      {
-        name: 'myMiddlewareName4',
-        type: 'put',
-        routePaths: /abc*/,
-        middlewareFn: () => 'test'
       }
     ]
   },
@@ -84,53 +79,54 @@ const middlewareTestData = [
         name: 'myMiddlewareName1',
         type: 'user',
         routePaths: '/route/path',
-        middleware: () => ''
-      },
-      mCErr1
-    ],
-    result: [
-      {
-        name: 'myMiddlewareName1',
-        middlewareFn: null
-      },
-      {
-        name: '',
-        middlewareFn: null
-      }
-    ],
-    errMsg: [
-      {
-        args: [
-          'Error: ',
-          'Invalid middleware type: ',
-          'user',
-          'provided for the middleware: myMiddlewareName1.'
-        ]
-      },
-      [
-        {
+        middleware: () => '',
+        result: {
+          name: 'myMiddlewareName1',
+          middlewareFn: null
+        },
+        errMsg: {
           args: [
             'Error: ',
-            'Cannot find "C:\\test" specified by the \'\' as "/test"'
+            'Invalid middleware type: ',
+            'user',
+            'provided for the middleware: myMiddlewareName1.'
           ]
-        },
-        {
-          args: [
-            'Error: ',
-            "Missing name of the 'middleware' with definition:",
-            mCErr1
-          ]
-        },
-        {
-          args: [
-            'Error: ',
-            "No middleware function provided for the middleware: ''."
-          ]
-        },
-        {
-          args: ['Error: ', "Wrong path format in ''."]
         }
-      ]
+      },
+      {
+        ...wrongMDef1,
+        options: {
+          rootDir: 'C:\\testDir'
+        },
+        result: {
+          name: '',
+          middlewareFn: null
+        },
+        errMsg: [
+          {
+            args: [
+              'Error: ',
+              'Cannot find "C:\\test" specified by the \'\' as "/test"'
+            ]
+          },
+          {
+            args: [
+              'Error: ',
+              "Missing name of the 'middleware' with definition:",
+              wrongMDef1
+            ]
+          },
+          {
+            args: [
+              'Error: ',
+              "No middleware function provided for the middleware: ''."
+            ]
+          },
+          {
+            args: ['Error: ', "Wrong path format in ''."]
+          }
+        ]
+      }
     ]
   }
 ]

@@ -37,9 +37,10 @@ describe('Middleware', function() {
         if (Array.isArray(mtd.definition)) {
           mtd.definition.forEach((mDef, index) => {
             consoleErrorStub.resetHistory()
-            const result = arrElOrArgFn(mtd.result)
-            const errMsg = arrElOrArgFn(mtd.errMsg)
-            checkDefinitionResult(mDef, result(index), errMsg(index))
+            // const result = arrElOrArgFn(mtd.result)
+            // const errMsg = arrElOrArgFn(mtd.errMsg)
+            // checkDefinitionResult(mDef, result(index), errMsg(index))
+            checkDefinitionResult(mDef, mtd.result, mtd.errMsg)
           })
         } else checkDefinitionResult(mtd.definition, mtd.result, mtd.errMsg)
       })
@@ -52,14 +53,31 @@ describe('Middleware', function() {
 // ---------------------------------------------------------------
 
 function checkDefinitionResult(mDef, result, errMsg) {
-  const options = mDef && typeof mDef === 'object' ? mDef.options : null
-  res = new Middleware(mDef, options)
+  let options
+  if (mDef) {
+    if (typeof mDef === 'object') {
+      options = mDef.options
+      if (mDef.result) result = mDef.result
+      if (mDef.errMsg) errMsg = mDef.errMsg
+    }
+    mDef = cleanMDef(mDef)
+  }
 
+  res = new Middleware(mDef, options)
   expect(res.apply).to.exist()
   expect(mComparable(res)).to.deep.equal(mComparable(result))
   if (!res.middlewareFn) {
     checkErrMessages(errMsg)
   }
+}
+
+function cleanMDef(mDef) {
+  const validMDefProps = ['name', 'type', 'routePaths', 'middleware']
+  const mDefInt = Object.assign({}, mDef)
+  for (const prop in mDefInt) {
+    if (!validMDefProps.includes(prop)) delete mDefInt[prop]
+  }
+  return mDefInt
 }
 
 // middleware comparable

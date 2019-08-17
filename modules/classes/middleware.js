@@ -10,10 +10,10 @@ const {
 } = require('../helpers/middleware')
 
 class Middleware {
-  constructor(middlewareDef, options = {}) {
+  constructor(mDef, options = {}) {
     const status = new Status()
 
-    if (isEmpty(middlewareDef)) {
+    if (isEmpty(mDef)) {
       status.reportErr('A siteMiddleware definition cannot be empty.')
       for (const prop in middlewareMock) {
         this[prop] = middlewareMock[prop]
@@ -24,9 +24,9 @@ class Middleware {
         middlewareFn,
         routePaths,
         type
-      ] = middlewareDefToArgs(middlewareDef, options)
+      ] = middlewareDefToArgs(mDef, options)
 
-      nameErr(middlewareName, 'middleware', middlewareDef, status)
+      nameErr(middlewareName, 'middleware', mDef, status)
       middlewareFnErrCheck(middlewareFn, middlewareName, status)
       if (routePaths) routePathsErr(routePaths, middlewareName, status)
       middlewareTypeErrCheck(type, middlewareName, status)
