@@ -7,7 +7,7 @@ module.exports = class Status {
     if (!props) setupGlobalProps.call(this)
     else if (Array.isArray(props) && props.length) {
       setupGlobalProps.call(this)
-      for (let prop of props) {
+      for (const prop of props) {
         if (!prop || typeof prop !== 'string') {
           console.error(
             'Error: Invalid property name for creating Status instance: ',
@@ -22,7 +22,8 @@ module.exports = class Status {
           reportErr: (...errMsgs) => {
             reportError.apply(this, errMsgs)
             this[prop].error = true
-          }
+          },
+          reset: () => (this[prop].error = false)
         }
       }
     } else
@@ -31,6 +32,13 @@ module.exports = class Status {
         props,
         '\nExpected a non-empty string array ...'
       )
+  }
+
+  reset() {
+    this.error = false
+    for (const prop in this) {
+      if (!['error', 'reportErr', 'reset'].includes(prop)) this[prop].reset()
+    }
   }
 }
 
