@@ -70,10 +70,9 @@ function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
     case Function:
       return middlewareDef
     default:
-      const extraInfo =
-        middlewareName && typeof middlewareName === 'string'
-          ? `in the middleware: ${middlewareName}`
-          : null
+      const extraInfo = middlewareName
+        ? `in the middleware: '${middlewareName}'`
+        : null
       console.error(
         'Error: Invalid format of the middleware: ',
         middlewareDef,

@@ -5,6 +5,66 @@ const wrongMDef1 = {
   middleware: '/test'
 }
 
+const errMsg1 = [
+  {
+    args: ['Error: ', 'Cannot find "C:\\test" specified by the \'\' as "/test"']
+  },
+  {
+    args: [
+      'Error: ',
+      "Missing name of the 'middleware' with definition:",
+      wrongMDef1
+    ]
+  },
+  {
+    args: ['Error: ', "No middleware function provided for the middleware: ''."]
+  },
+  {
+    args: ['Error: ', "Wrong path format in ''."]
+  }
+]
+
+const wrongMDef2 = {
+  name: { name: 'wrongDef2' },
+  routePaths: [],
+  middleware: {}
+}
+
+const errMsg2 = [
+  {
+    args: [
+      'Error: Invalid format of the middleware: ',
+      {},
+      `in the middleware: '${{ name: 'wrongDef2' }}'`
+    ]
+  },
+  {
+    args: [
+      'Error: ',
+      "The name of the 'middleware', with definition:",
+      wrongMDef2,
+      ' must be a string and not: ',
+      { name: 'wrongDef2' }
+    ]
+  },
+  {
+    args: [
+      'Error: ',
+      `No middleware function provided for the middleware: '${{
+        name: 'wrongDef2'
+      }}'.`
+    ]
+  },
+  {
+    args: [
+      'Error: ',
+      `Empty array as routePaths in the middleware: '${{
+        name: 'wrongDef2'
+      }}'.`
+    ]
+  }
+]
+
 const incorrectDefinitions = {
   title:
     'returns instance with middlewareFn null and reports error(s) in case of incorrect definition',
@@ -36,30 +96,15 @@ const incorrectDefinitions = {
         name: '',
         middlewareFn: null
       },
-      errMsg: [
-        {
-          args: [
-            'Error: ',
-            'Cannot find "C:\\test" specified by the \'\' as "/test"'
-          ]
-        },
-        {
-          args: [
-            'Error: ',
-            "Missing name of the 'middleware' with definition:",
-            wrongMDef1
-          ]
-        },
-        {
-          args: [
-            'Error: ',
-            "No middleware function provided for the middleware: ''."
-          ]
-        },
-        {
-          args: ['Error: ', "Wrong path format in ''."]
-        }
-      ]
+      errMsg: errMsg1
+    },
+    {
+      ...wrongMDef2,
+      result: {
+        name: { name: 'wrongDef2' },
+        middlewareFn: null
+      },
+      errMsg: errMsg2
     }
   ]
 }

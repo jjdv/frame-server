@@ -59,6 +59,10 @@ function routePathsErr(paths, varName, status) {
   if (!status) status = new Status()
 
   if (Array.isArray(paths)) {
+    if (!paths.length)
+      status.reportErr(
+        `Empty array as routePaths in the middleware: '${varName}'.`
+      )
     for (let path of paths) routePathErr(path, varName, status)
   } else routePathErr(paths, varName, status)
 
@@ -86,8 +90,8 @@ function nameErr(name, varName, varDef, status) {
     status.reportErr(
       `The name of the '${varName}', with definition:`,
       varDef,
-      ` must be a string and not: `,
-      varName
+      ' must be a string and not: ',
+      name
     )
   }
 
