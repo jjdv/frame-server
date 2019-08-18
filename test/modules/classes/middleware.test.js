@@ -12,58 +12,122 @@ const Middleware = require('../../../modules/classes/middleware')
 
 // test variables
 const middlewareTestData = require('./test-support/middleware-test-data')
-let consoleErrorStub, res
+let consoleErrorStub, res, appSpy
 
-// --------------------------------------------------------
-// ------------ test body -------------------------------
-// --------------------------------------------------------
+// -----------------------------------------------------------------------
+// test body
+// -----------------------------------------------------------------------
 
 describe('Middleware', function() {
   before(() => {
     consoleErrorStub = sinon.stub(console, 'error')
-  })
-
-  beforeEach(async () => {
-    consoleErrorStub.resetHistory()
+    appSpy = { use: sinon.spy() }
   })
 
   after(() => {
     consoleErrorStub.restore()
   })
 
-  describe('.fromDef()', function() {
-    middlewareTestData.forEach(mtd => {
-      it(mtd.title, () => {
-        if (Array.isArray(mtd.definition)) {
-          mtd.definition.forEach((mDef, index) => {
-            consoleErrorStub.resetHistory()
-            // const result = arrElOrArgFn(mtd.result)
-            // const errMsg = arrElOrArgFn(mtd.errMsg)
-            // checkDefinitionResult(mDef, result(index), errMsg(index))
-            checkDefinitionResult(mDef, mtd.result, mtd.errMsg)
-          })
-        } else checkDefinitionResult(mtd.definition, mtd.result, mtd.errMsg)
-      })
-    })
+  describe('creation', function() {
+    testCreation()
+  })
+
+  describe('.apply()', () => {
+    testApply()
   })
 })
 
-// ---------------------------------------------------------------
+// -----------------------------------------------------------------------
 // helpers
-// ---------------------------------------------------------------
+// -----------------------------------------------------------------------
 
-function checkDefinitionResult(mDef, result, errMsg) {
-  let options
-  if (mDef) {
-    if (typeof mDef === 'object') {
-      options = mDef.options
-      if (mDef.result) result = mDef.result
-      if (mDef.errMsg) errMsg = mDef.errMsg
-    }
-    mDef = cleanMDef(mDef)
+function testCreation() {
+  beforeEach(async () => {
+    consoleErrorStub.resetHistory()
+  })
+
+  middlewareTestData.forEach(mtd => {
+    it(mtd.title, () => {
+      if (Array.isArray(mtd.definition)) {
+        mtd.definition.forEach((mtdEl, index) => {
+          consoleErrorStub.resetHistory()
+          checkDefinitionResult(mtdEl, mtd)
+        })
+      } else checkDefinitionResult(mtd.definition, mtd)
+    })
+  })
+}
+
+function testApply() {
+  beforeEach(async () => {
+    appSpy.use.resetHistory()
+  })
+
+  it('does not call app if the middlewareFn is falsy', () => {
+    const mdlw = new Middleware({
+      name: 'testName',
+      middleware: null
+    })
+    mdlw.apply(appSpy, false)
+    appSpy.use.should.have.not.been.called()
+  })
+
+  it('invokes app[this.type](this.middlewareFn) if this.routePaths does not exist', () => {
+    const mdlw = new Middleware({
+      name: 'testName',
+      middleware: () => 'testResult'
+    })
+    mdlw.apply(appSpy, false)
+    appSpy.use.calledOnceWithExactly(() => 'testResult')
+  })
+
+  it('invokes app[this.type](this.routePaths, this.middlewareFn) if this.routePaths exists', () => {
+    const mdlw = new Middleware({
+      name: 'testName',
+      middleware: () => 'testResult',
+      routePaths: '/api'
+    })
+    const consoleLogStub = sinon.stub(console, 'log')
+    mdlw.apply(appSpy, false)
+    consoleLogStub.restore()
+    appSpy.use.calledOnceWithExactly('/api', () => 'testResult')
+  })
+
+  it('reports middleware use if invoked with 2nd argument true as .apply(app, true)', () => {
+    const mdlw = new Middleware({
+      name: 'testName',
+      middleware: () => 'testResult'
+    })
+    const consoleLogStub = sinon.stub(console, 'log')
+    mdlw.apply(appSpy, true)
+    mdlw.apply(appSpy)
+    consoleLogStub.calledTwice
+    consoleLogStub.alwaysCalledWithExactly(
+      "The middleware 'testName' has been applied."
+    )
+    consoleLogStub.restore()
+    appSpy.use.calledTwice
+    appSpy.use.alwaysCalledWithExactly('/api', () => 'testResult')
+  })
+}
+
+function checkDefinitionResult(mtdEl, mtd) {
+  let definition, options, result, errMsg
+  if (
+    mtdEl &&
+    mtdEl.constructor === Object &&
+    Object.keys(mtdEl).includes('definition')
+  ) {
+    ;({ definition, options, result, errMsg } = mtdEl)
+    if (!result) result = mtd.result
+    if (!errMsg) errMsg = mtd.errMsg
+  } else {
+    definition = mtdEl
+    result = mtd.result
+    errMsg = mtd.errMsg
   }
 
-  res = new Middleware(mDef, options)
+  res = new Middleware(definition, options)
   expect(res.apply).to.exist()
   expect(mComparable(res)).to.deep.equal(mComparable(result))
   if (!res.middlewareFn) {
@@ -71,19 +135,10 @@ function checkDefinitionResult(mDef, result, errMsg) {
   }
 }
 
-function cleanMDef(mDef) {
-  const validMDefProps = ['name', 'type', 'routePaths', 'middleware']
-  const mDefInt = Object.assign({}, mDef)
-  for (const prop in mDefInt) {
-    if (!validMDefProps.includes(prop)) delete mDefInt[prop]
-  }
-  return mDefInt
-}
-
 // middleware comparable
 function mComparable(m) {
   const mC = Object.assign({}, m)
-  if (m.middlewareFn) mC.middlewareFn = mC.middlewareFn.toString()
+  if (mC.middlewareFn) mC.middlewareFn = mC.middlewareFn.toString()
   return mC
 }
 
@@ -102,7 +157,9 @@ function checkErrMsg(errMsg, errMsgStub, once = true) {
       expect(errMsgStub.args).to.deep.equal(errMsg.args)
       expect(errMsgStub[stubMethod](...errMsg.args)).to.be.true()
     } else expect(errMsgStub[stubMethod](...errMsg.args)).to.be.true()
-  } else expect(errMsgStub[stubMethod](errMsg)).to.be.true()
+  } else {
+    expect(errMsgStub[stubMethod](errMsg)).to.be.true()
+  }
 }
 
 function argsDefined(val) {

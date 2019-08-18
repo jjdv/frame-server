@@ -70,10 +70,12 @@ const incorrectDefinitions = {
     'returns instance with middlewareFn null and reports error(s) in case of incorrect definition',
   definition: [
     {
-      name: 'myMiddlewareName1',
-      type: 'user',
-      routePaths: '/route/path',
-      middleware: () => '',
+      definition: {
+        name: 'myMiddlewareName1',
+        type: 'user',
+        routePaths: '/route/path',
+        middleware: () => ''
+      },
       result: {
         name: 'myMiddlewareName1',
         middlewareFn: null
@@ -88,10 +90,8 @@ const incorrectDefinitions = {
       }
     },
     {
-      ...wrongMDef1,
-      options: {
-        rootDir: 'C:\\testDir'
-      },
+      definition: wrongMDef1,
+      options: { rootDir: 'C:\\testDir' },
       result: {
         name: '',
         middlewareFn: null
@@ -99,7 +99,7 @@ const incorrectDefinitions = {
       errMsg: errMsg1
     },
     {
-      ...wrongMDef2,
+      definition: wrongMDef2,
       result: {
         name: { name: 'wrongDef2' },
         middlewareFn: null

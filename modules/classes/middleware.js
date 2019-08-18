@@ -13,8 +13,8 @@ class Middleware {
   constructor(mDef, options = {}) {
     const status = new Status()
 
-    if (isEmpty(mDef)) {
-      status.reportErr('A siteMiddleware definition cannot be empty.')
+    if (!mDef || mDef.constructor !== Object || isEmpty(mDef)) {
+      status.reportErr('Invalid middleware definition: ', mDef)
       for (const prop in middlewareMock) {
         this[prop] = middlewareMock[prop]
       }
@@ -42,7 +42,7 @@ class Middleware {
   }
 
   apply(app, report = true) {
-    if (!app || app.constructor !== Function || !this.middlewareFn) return
+    if (!app || !this.middlewareFn) return
 
     if (this.routePaths) app[this.type](this.routePaths, this.middlewareFn)
     else app[this.type](this.middlewareFn)

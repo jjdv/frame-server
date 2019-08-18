@@ -3,14 +3,11 @@ const Status = require('../classes/status')
 
 const middlewareMock = {
   name: undefined,
-  middlewareFn: null,
-  apply: () => {}
+  middlewareFn: null
 }
 
 function middlewareDefToArgs(middlewareDef, options = {}) {
   const { rootDir, defaultType } = options
-  if (typeof middlewareDef !== 'object')
-    middlewareDef = { middleware: middlewareDef }
   const {
     name: middlewareName,
     middleware: middlewareFnDef,
@@ -27,14 +24,10 @@ function middlewareDefToArgs(middlewareDef, options = {}) {
 }
 
 function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
-  const extraInfo = `provided for the middleware: '${middlewareName}'.`
-  if (!middlewareFn) status.reportErr(`No middleware function ${extraInfo}`)
-  else if (middlewareFn.constructor !== Function)
-    status.reportErr(
-      'Invalid format of middleware function: ',
-      middlewareFn,
-      extraInfo
-    )
+  if (!middlewareFn) {
+    const extraInfo = `provided for the middleware: '${middlewareName}'.`
+    status.reportErr(`No middleware function ${extraInfo}`)
+  }
 }
 
 function middlewareTypeErrCheck(type, middlewareName, status) {
@@ -63,7 +56,7 @@ function middlewareTypeErrCheck(type, middlewareName, status) {
 
 function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
   if (!rootDir) rootDir = process.env.SERVER_ROOT_DIR
-  switch (middlewareDef.constructor) {
+  switch (middlewareDef && middlewareDef.constructor) {
     case String:
       const mPath = filePathNotEmpty(middlewareDef, rootDir, middlewareName)
       return mPath ? require(mPath) : null
