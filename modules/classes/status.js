@@ -12,7 +12,7 @@ module.exports = class Status {
           console.error(
             'Error: Invalid property name for creating Status instance: ',
             prop,
-            'Expected non-empty string ... Property skipped.'
+            '\nExpected non-empty string ... Property skipped.'
           )
           continue
         }
@@ -20,15 +20,15 @@ module.exports = class Status {
         this[prop] = {
           error: false,
           reportErr: (...errMsgs) => {
-            reportError.apply(this, errMsgs)
             this[prop].error = true
+            reportError.apply(this, errMsgs)
           },
           reset: () => (this[prop].error = false)
         }
       }
     } else
       console.error(
-        'Error: Invalid arguments for creating Status instance: ',
+        'Error: Invalid arguments for creating Status instance:',
         props,
         '\nExpected a non-empty string array ...'
       )
