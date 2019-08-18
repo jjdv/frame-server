@@ -143,23 +143,18 @@ function mComparable(m) {
 }
 
 function checkErrMessages(errMsgs) {
-  if (Array.isArray(errMsgs))
+  if (Array.isArray(errMsgs)) {
+    expect(errMsgs.length).to.equal(consoleErrorStub.args.length)
     errMsgs.forEach((errM, mIndx) =>
-      checkErrMsg(errM, consoleErrorStub.getCall(mIndx), false)
+      checkErrMsg(errM, consoleErrorStub.getCall(mIndx))
     )
-  else checkErrMsg(errMsgs, consoleErrorStub)
+  } else checkErrMsg(errMsgs, consoleErrorStub.getCall(0))
 }
 
-function checkErrMsg(errMsg, errMsgStub, once = true) {
-  const stubMethod = once ? 'calledOnceWithExactly' : 'calledWithExactly'
-  if (argsDefined(errMsg)) {
-    if (!once) {
-      expect(errMsgStub.args).to.deep.equal(errMsg.args)
-      expect(errMsgStub[stubMethod](...errMsg.args)).to.be.true()
-    } else expect(errMsgStub[stubMethod](...errMsg.args)).to.be.true()
-  } else {
-    expect(errMsgStub[stubMethod](errMsg)).to.be.true()
-  }
+function checkErrMsg(errMsg, errMsgStub) {
+  if (argsDefined(errMsg))
+    errMsgStub.should.have.been.calledWithExactly(...errMsg.args)
+  else errMsgStub.should.have.been.calledWithExactly(errMsg)
 }
 
 function argsDefined(val) {

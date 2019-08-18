@@ -46,11 +46,11 @@ function middlewareTypeErrCheck(type, middlewareName, status) {
     'all'
   ]
   if (!allowedTypes.includes(type)) {
-    const extraInfo =
-      middlewareName && typeof middlewareName === 'string'
-        ? `provided for the middleware: ${middlewareName}.`
-        : ''
-    status.reportErr('Invalid middleware type: ', type, extraInfo)
+    status.reportErr(
+      'Invalid middleware type: ',
+      type,
+      `provided for the middleware: '${middlewareName}'.`
+    )
   }
 }
 
@@ -63,13 +63,10 @@ function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
     case Function:
       return middlewareDef
     default:
-      const extraInfo = middlewareName
-        ? `in the middleware: '${middlewareName}'`
-        : null
       console.error(
         'Error: Invalid format of the middleware: ',
         middlewareDef,
-        extraInfo
+        `in the middleware: '${middlewareName}'`
       )
       return null
   }
