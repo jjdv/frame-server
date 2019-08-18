@@ -136,6 +136,13 @@ describe('modules > helpers > basic.js', () => {
   })
 
   describe('isEmpty()', () => {
+    it('returns true for falsy variables', () => {
+      falsy.forEach(val => {
+        res = isEmpty(val)
+        expect(res).to.be.true()
+      })
+    })
+
     it('returns true for empty variables', () => {
       emptyVars.forEach(val => {
         res = isEmpty(val)
