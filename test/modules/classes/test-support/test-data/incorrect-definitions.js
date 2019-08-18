@@ -1,6 +1,5 @@
 const wrongMDef1 = {
   name: '',
-  type: 'get',
   routePaths: ['/route/path', {}, /abc*/],
   middleware: '/test'
 }
@@ -21,11 +20,20 @@ const errMsg1 = [
   },
   {
     args: ['Error: ', "Wrong path format in ''."]
+  },
+  {
+    args: [
+      'Error: ',
+      'Invalid middleware type: ',
+      {},
+      "provided for the middleware: ''."
+    ]
   }
 ]
 
 const wrongMDef2 = {
   name: { name: 'wrongDef2' },
+  type: [],
   routePaths: [],
   middleware: {}
 }
@@ -62,6 +70,14 @@ const errMsg2 = [
         name: 'wrongDef2'
       }}'.`
     ]
+  },
+  {
+    args: [
+      'Error: ',
+      'Invalid middleware type: ',
+      [],
+      `provided for the middleware: '${{ name: 'wrongDef2' }}'.`
+    ]
   }
 ]
 
@@ -85,13 +101,16 @@ const incorrectDefinitions = {
           'Error: ',
           'Invalid middleware type: ',
           'user',
-          'provided for the middleware: myMiddlewareName1.'
+          "provided for the middleware: 'myMiddlewareName1'."
         ]
       }
     },
     {
       definition: wrongMDef1,
-      options: { rootDir: 'C:\\testDir' },
+      options: {
+        rootDir: 'C:\\testDir',
+        defaultType: {}
+      },
       result: {
         name: '',
         middlewareFn: null
