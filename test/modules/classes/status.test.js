@@ -45,7 +45,7 @@ describe('instance of Status', function() {
     testInvalidProps()
   })
 
-  describe('with props', function() {
+  describe('with valid and invalid props', function() {
     testMixedProps()
   })
 })
@@ -67,7 +67,13 @@ function testNoProps() {
   it("reporting error sets error property to true and logs error to console.error('Error: ', ...args)", () => {
     status.reportErr(errMsg)
     expect(status.error).to.be.true()
-    consoleErrorStub.calledOnceWithExactly('Error: ', errMsg)
+    consoleErrorStub.should.have.been.calledOnceWithExactly('Error: ', errMsg)
+  })
+
+  it('does not try report error if the error message is missing', () => {
+    status.reportErr()
+    expect(status.error).to.be.true()
+    expect(consoleErrorStub.notCalled).to.be.true()
   })
 
   it('resetting status sets error property to false', () => {
@@ -82,7 +88,7 @@ function testNoProps() {
       consoleErrorStub.resetHistory()
       status.reportErr(errMsg)
       expect(status.error).to.be.true()
-      consoleErrorStub.calledOnceWithExactly('Error: ', errMsg)
+      consoleErrorStub.should.have.been.calledOnceWithExactly('Error: ', errMsg)
     })
   })
 }
@@ -93,10 +99,10 @@ function testInvalidProps() {
       consoleErrorStub.resetHistory()
       status = new Status(arg)
       expect(Object.keys(status).length).to.equal(0)
-      consoleErrorStub.calledOnceWithExactly(
-        'Error: Invalid arguments for creating Status instance: ',
+      consoleErrorStub.should.have.been.calledOnceWithExactly(
+        'Error: Invalid arguments for creating Status instance:',
         arg,
-        '\nExpected array ...'
+        '\nExpected a non-empty string array ...'
       )
     })
   })
@@ -116,10 +122,10 @@ function testMixedProps() {
   it('reports all invalid property names provided in array to Status constructor', () => {
     status = new Status(statusProps)
     invalidStatusPropNames.forEach(invalidSProp => {
-      consoleErrorStub.calledOnceWithExactly(
+      consoleErrorStub.should.have.been.calledWithExactly(
         'Error: Invalid property name for creating Status instance: ',
         invalidSProp,
-        'Expected non-empty string ... Property skipped.'
+        '\nExpected non-empty string ... Property skipped.'
       )
     })
   })
@@ -129,7 +135,7 @@ function testMixedProps() {
       consoleErrorStub.resetHistory()
       status.reportErr(errMsg)
       expect(status.error).to.be.true()
-      consoleErrorStub.calledOnceWithExactly('Error: ', errMsg)
+      consoleErrorStub.should.have.been.calledOnceWithExactly('Error: ', errMsg)
     })
   })
 
@@ -141,13 +147,23 @@ function testMixedProps() {
       expect(status.error).to.be.true()
       expect(status['one'].error).to.be.true()
       expect(status['2'].error).to.be.false()
-      consoleErrorStub.calledOnceWithExactly('Error: ', errMsg)
+      consoleErrorStub.should.have.been.calledOnceWithExactly('Error: ', errMsg)
       status['2'].reportErr(errMsg)
       expect(status.error).to.be.true()
       expect(status['one'].error).to.be.true()
       expect(status['2'].error).to.be.true()
-      consoleErrorStub.lastCall.calledWithExactly('Error: ', errMsg)
+      consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+        'Error: ',
+        errMsg
+      )
     })
+  })
+
+  it('does not try report error if the error message is missing', () => {
+    status['one'].reportErr()
+    status['2'].reportErr()
+    expect(status.error).to.be.true()
+    expect(consoleErrorStub.notCalled).to.be.true()
   })
 
   it('resetting error on status[property} sets status[property].error to false but not resets status.error to false', () => {
@@ -157,12 +173,15 @@ function testMixedProps() {
       expect(status.error).to.be.true()
       expect(status['one'].error).to.be.true()
       expect(status['2'].error).to.be.false()
-      consoleErrorStub.calledOnceWithExactly('Error: ', errMsg)
+      consoleErrorStub.should.have.been.calledOnceWithExactly('Error: ', errMsg)
       status['2'].reportErr(errMsg)
       expect(status.error).to.be.true()
       expect(status['one'].error).to.be.true()
       expect(status['2'].error).to.be.true()
-      consoleErrorStub.lastCall.calledWithExactly('Error: ', errMsg)
+      consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+        'Error: ',
+        errMsg
+      )
       status['one'].reset()
       expect(status.error).to.be.true()
       expect(status['one'].error).to.be.false()
@@ -182,7 +201,10 @@ function testMixedProps() {
       expect(status.error).to.be.true()
       expect(status['one'].error).to.be.true()
       expect(status['2'].error).to.be.true()
-      consoleErrorStub.lastCall.calledWithExactly('Error: ', errMsg)
+      consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+        'Error: ',
+        errMsg
+      )
       status.reset()
       expect(status.error).to.be.false()
       expect(status['one'].error).to.be.false()
