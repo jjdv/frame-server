@@ -11,4 +11,4 @@ chai.use(dirtyChai)
 chai.use(sinonChai)
 chai.should()
 
-module.exports = { expect, sinon, StatusStub }
+module.exports = { expect, sinon }
