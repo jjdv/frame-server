@@ -39,8 +39,8 @@ function filePath(pathDef, rootDir, varName, status) {
 
 function filePathNotEmpty(pathDef, rootDir, varName, status) {
   if (pathDef) return filePath(pathDef, rootDir, varName, status)
-  if (!status) status = new Status()
 
+  if (!status) status = new Status()
   status.reportErr(
     `The specification of the file path in the '${varName}' cannot be an empty string.`
   )
@@ -105,8 +105,8 @@ function nameErr(name, varName, varDef, status) {
  */
 function isEmpty(val) {
   if (!val) return true
-  if (typeof val === 'object') return !Object.keys(val).length
   if (Array.isArray(val)) return !val.length
+  if (typeof val === 'object') return !Object.keys(val).length
   return false
 }
 
