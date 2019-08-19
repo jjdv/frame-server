@@ -10,17 +10,6 @@ function Middlewares(middlewaresName, middlewares, applyMsg) {
   createGetOnlyProps(this, { name: middlewaresName, middlewares, applyMsg })
 }
 
-Middlewares.validate = function(msDef, validateFn, status) {
-  if (!msDef) return
-
-  if (!Array.isArray(msDef)) msDef = [msDef]
-  let mDef
-  for (const index = 0; index < msDef.length; index++) {
-    mDef = msDef[index]
-    validateFn(mDef, index, status)
-  }
-}
-
 Middlewares.fromDef = function(
   middlewaresName,
   middlewaresDef,
@@ -66,10 +55,9 @@ Middlewares.prototype.apply = function(app, groupReporting = true) {
 
 module.exports = Middlewares
 
-//
-// -------------------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // supporting functions
-// -------------------------------------------------------------------------------
+// -----------------------------------------------------------------------
 
 function middlewaresArgsErr(middlewaresName, middlewares, applyMsg) {
   const status = new Status()
