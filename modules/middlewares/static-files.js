@@ -3,9 +3,10 @@ const express = require('express')
 
 const Middlewares = require('../classes/middlewares')
 const { filePathNotEmpty, routePathsErr } = require('../helpers/basic')
+const { validateMiddlewares } = require('../helpers/middlewares')
 
 function validateStaticFilesDef(serveStaticFilesDef, status) {
-  Middlewares.validate(serveStaticFilesDef, validateDirDef, status)
+  validateMiddlewares(serveStaticFilesDef, validateDirDef, status)
 }
 
 function staticFilesMiddlewares(serveStaticFilesDef) {
