@@ -15,29 +15,28 @@ class Middleware {
 
     if (!mDef || mDef.constructor !== Object || isEmpty(mDef)) {
       status.reportErr('Invalid middleware definition: ', mDef)
-      for (const prop in middlewareMock) {
-        this[prop] = middlewareMock[prop]
-      }
-    } else {
-      const [
-        middlewareName,
-        middlewareFn,
-        routePaths,
-        type
-      ] = middlewareDefToArgs(mDef, options)
+      for (const prop in middlewareMock) this[prop] = middlewareMock[prop]
+      return
+    }
 
-      nameErr(middlewareName, 'middleware', mDef, status)
-      middlewareFnErrCheck(middlewareFn, middlewareName, status)
-      if (routePaths) routePathsErr(routePaths, middlewareName, status)
-      middlewareTypeErrCheck(type, middlewareName, status)
+    const [
+      middlewareName,
+      middlewareFn,
+      routePaths,
+      type
+    ] = middlewareDefToArgs(mDef, options)
 
-      this.name = middlewareName
-      if (status.error) this.middlewareFn = null
-      else {
-        this.middlewareFn = middlewareFn
-        this.routePaths = routePaths
-        this.type = type
-      }
+    nameErr(middlewareName, 'middleware', mDef, status)
+    middlewareFnErrCheck(middlewareFn, middlewareName, status)
+    if (routePaths) routePathsErr(routePaths, middlewareName, status)
+    middlewareTypeErrCheck(type, middlewareName, status)
+
+    this.name = middlewareName
+    if (status.error) this.middlewareFn = null
+    else {
+      this.middlewareFn = middlewareFn
+      this.routePaths = routePaths
+      this.type = type
     }
   }
 
