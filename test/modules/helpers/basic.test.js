@@ -31,7 +31,7 @@ const {
 } = require('./test-support/basic.test.data')
 
 // test variables
-let status, consoleErrorStub, res
+let status, consoleErrorStub, res, varName, varDef
 
 describe('modules > helpers > basic.js', () => {
   before(() => {
@@ -65,11 +65,12 @@ describe('modules > helpers > basic.js', () => {
       falsy.forEach(falsyVal => {
         res = filePathNotEmpty(falsyVal, __dirname, 'testName', status)
         expect(res).to.be.null()
-        consoleErrorStub.lastCall.should.have.been.calledWith(
-          'Error: ',
-          "The specification of the file path in the 'testName' cannot be an empty string."
-        )
       })
+      consoleErrorStub.should.have.callCount(falsy.length)
+      consoleErrorStub.should.always.have.been.calledWithExactly(
+        'Error: ',
+        "The specification of the file path in the 'testName' cannot be an empty string."
+      )
     })
 
     filePathBaseTests(filePathNotEmpty)
@@ -89,38 +90,49 @@ describe('modules > helpers > basic.js', () => {
         consoleErrorStub.resetHistory()
         const res = routePathsErr(td.paths, td.varName, status)
         expect(res).to.be.true()
-        expect(consoleErrorStub.callCount).to.equal(td.errMsg.length)
+        consoleErrorStub.should.have.callCount(td.errMsg.length)
         td.errMsg.forEach((errMsg, indx) => {
-          consoleErrorStub.getCall(indx).calledWithExactly(errMsg)
+          consoleErrorStub
+            .getCall(indx)
+            .should.have.been.calledWithExactly('Error: ', errMsg)
         })
       })
     })
   })
+
   describe('nameErr()', () => {
+    before(() => {
+      varName = 'testVarName'
+      varDef = { varDef: 'varDef' }
+    })
+
     it('returns true and reports relevant error for empty/falsy values', () => {
       falsy.forEach(val => {
-        res = nameErr(val, 'testVarName', 'varValue', status)
+        res = nameErr(val, varName, varDef, status)
         expect(res).to.be.true()
       })
-      expect(consoleErrorStub.callCount).to.equal(falsy.length)
-      consoleErrorStub.alwaysCalledWithExactly(
+      consoleErrorStub.should.have.callCount(falsy.length)
+      consoleErrorStub.should.always.have.been.calledWithExactly(
         'Error: ',
-        "Missing name of the 'testVarName."
+        `Missing name of the '${varName}' with definition:`,
+        varDef
       )
     })
 
     it('returns true and reports relevant error for non-string values', () => {
       nonStringFilePaths.forEach(val => {
-        res = nameErr(val, 'testVarName', 'varValue', status)
+        res = nameErr(val, varName, varDef, status)
         expect(res).to.be.true()
       })
-      expect(consoleErrorStub.callCount).to.equal(nonStringFilePaths.length)
+      consoleErrorStub.should.have.callCount(nonStringFilePaths.length)
       nonStringFilePaths.forEach((val, indx) => {
         consoleErrorStub
           .getCall(indx)
-          .calledWithExactly(
+          .should.have.been.calledWithExactly(
             'Error: ',
-            "The name of the 'testVarName' must be a string and not: ",
+            `The name of the '${varName}', with definition:`,
+            varDef,
+            ' must be a string and not: ',
             val
           )
       })
@@ -168,9 +180,10 @@ function filePathBaseTests(filePathTestFn) {
 
   it('returns null and reports error for non-string path', () => {
     nonStringFilePaths.forEach(nonStrVal => {
+      consoleErrorStub.resetHistory()
       res = filePathTestFn(nonStrVal, null, 'testName', status)
       expect(res).to.be.null()
-      consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+      consoleErrorStub.should.have.been.calledOnceWithExactly(
         'Error: ',
         "Wrong file path format of 'testName':",
         nonStrVal
@@ -182,15 +195,16 @@ function filePathBaseTests(filePathTestFn) {
     res = filePathTestFn(invalidFileName, validDirName, 'testName', status)
     expect(res).to.be.null()
     resolvedFilePath = path.resolve(validDirName, invalidFileName)
-    consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+    consoleErrorStub.should.have.been.calledOnceWithExactly(
       'Error: ',
       `Cannot find "${resolvedFilePath}" specified by the 'testName' as "${invalidFileName}"`
     )
 
+    consoleErrorStub.resetHistory()
     res = filePathTestFn(validFileName, invalidDirName, 'testName', status)
     expect(res).to.be.null()
     resolvedFilePath = path.resolve(invalidDirName, validFileName)
-    consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+    consoleErrorStub.should.have.been.calledOnceWithExactly(
       'Error: ',
       `Cannot find "${resolvedFilePath}" specified by the 'testName' as "${validFileName}"`
     )
@@ -200,5 +214,6 @@ function filePathBaseTests(filePathTestFn) {
     res = filePathTestFn(validFileName, validDirName, 'testName', status)
     resolvedFilePath = path.resolve(validDirName, validFileName)
     expect(res).to.be.equal(resolvedFilePath)
+    consoleErrorStub.should.have.not.been.called()
   })
 }

@@ -73,7 +73,7 @@ function testNoProps() {
   it('does not try report error if the error message is missing', () => {
     status.reportErr()
     expect(status.error).to.be.true()
-    expect(consoleErrorStub.notCalled).to.be.true()
+    consoleErrorStub.should.have.not.been.called()
   })
 
   it('resetting status sets error property to false', () => {
@@ -163,7 +163,7 @@ function testMixedProps() {
     status['one'].reportErr()
     status['2'].reportErr()
     expect(status.error).to.be.true()
-    expect(consoleErrorStub.notCalled).to.be.true()
+    consoleErrorStub.should.have.not.been.called()
   })
 
   it('resetting error on status[property} sets status[property].error to false but not resets status.error to false', () => {
@@ -201,7 +201,7 @@ function testMixedProps() {
       expect(status.error).to.be.true()
       expect(status['one'].error).to.be.true()
       expect(status['2'].error).to.be.true()
-      consoleErrorStub.lastCall.should.have.been.calledWithExactly(
+      consoleErrorStub.should.always.have.been.calledWithExactly(
         'Error: ',
         errMsg
       )

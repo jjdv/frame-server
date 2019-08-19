@@ -51,9 +51,9 @@ function testCreation() {
       if (Array.isArray(mtd.definition)) {
         mtd.definition.forEach((mtdEl, index) => {
           consoleErrorStub.resetHistory()
-          checkDefinitionResult(mtdEl, mtd)
+          checkMiddlewareFromDef(mtdEl, mtd)
         })
-      } else checkDefinitionResult(mtd.definition, mtd)
+      } else checkMiddlewareFromDef(mtd.definition, mtd)
     })
   })
 }
@@ -78,7 +78,13 @@ function testApply() {
       middleware: () => 'testResult'
     })
     mdlw.apply(appSpy, false)
-    appSpy.use.calledOnceWithExactly(() => 'testResult')
+    appSpy.use.should.have.callCount(1)
+    expect(appSpy.use.getCall(0).args.length).to.equal(1)
+    appSpy.use.should.have.been.calledOnce()
+    expect(appSpy.use.getCall(0).args.length).to.equal(1)
+    expect(appSpy.use.args[0][0].toString()).to.equal(
+      (() => 'testResult').toString()
+    )
   })
 
   it('invokes app[this.type](this.routePaths, this.middlewareFn) if this.routePaths exists', () => {
@@ -90,7 +96,12 @@ function testApply() {
     const consoleLogStub = sinon.stub(console, 'log')
     mdlw.apply(appSpy, false)
     consoleLogStub.restore()
-    appSpy.use.calledOnceWithExactly('/api', () => 'testResult')
+    appSpy.use.should.have.callCount(1)
+    expect(appSpy.use.getCall(0).args.length).to.equal(2)
+    expect(appSpy.use.args[0][0]).to.equal('/api')
+    expect(appSpy.use.args[0][1].toString()).to.equal(
+      (() => 'testResult').toString()
+    )
   })
 
   it('reports middleware use if invoked with 2nd argument true as .apply(app, true)', () => {
@@ -101,17 +112,24 @@ function testApply() {
     const consoleLogStub = sinon.stub(console, 'log')
     mdlw.apply(appSpy, true)
     mdlw.apply(appSpy)
-    consoleLogStub.calledTwice
-    consoleLogStub.alwaysCalledWithExactly(
+    consoleLogStub.should.have.been.calledTwice()
+    consoleLogStub.should.always.have.been.calledWithExactly(
       "The middleware 'testName' has been applied."
     )
     consoleLogStub.restore()
-    appSpy.use.calledTwice
-    appSpy.use.alwaysCalledWithExactly('/api', () => 'testResult')
+    appSpy.use.should.have.been.calledTwice()
+    expect(appSpy.use.getCall(1).args.length).to.equal(1)
+    expect(appSpy.use.args[0][0].toString()).to.equal(
+      (() => 'testResult').toString()
+    )
+    expect(appSpy.use.getCall(1).args.length).to.equal(1)
+    expect(appSpy.use.args[1][0].toString()).to.equal(
+      (() => 'testResult').toString()
+    )
   })
 }
 
-function checkDefinitionResult(mtdEl, mtd) {
+function checkMiddlewareFromDef(mtdEl, mtd) {
   let definition, options, result, errMsg
   if (
     mtdEl &&
