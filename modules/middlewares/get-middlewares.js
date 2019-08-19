@@ -6,7 +6,7 @@ const { dynamicFilesMiddlewares } = require('./dynamic-files')
 const { staticFilesMiddlewares } = require('./static-files')
 const { wrongRequestHandler } = require('./wrong-request-handler')
 
-module.exports = function(config) {
+function getMiddlewares(config) {
   return {
     serverMiddlewares: serverMiddlewares(config.serverMiddlewares),
     siteMiddlewares: siteMiddlewares(config.siteMiddlewares),
@@ -15,3 +15,5 @@ module.exports = function(config) {
     wrongRequestHandler: wrongRequestHandler(config.wrongRequestHandler)
   }
 }
+
+module.exports = getMiddlewares

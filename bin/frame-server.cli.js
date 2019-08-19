@@ -18,14 +18,15 @@ const app = require('express')()
 const setView = require('../modules/deployment/set-view')
 setView(app, serverConfig.view)
 
-const middlewares = require('../modules/middlewares/middlewares')
+// get server middlewares
+const getMiddlewares = require('../modules/middlewares/get-middlewares')
 const {
   serverMiddlewares,
   siteMiddlewares,
   serveDynamicFiles,
   serveStaticFiles,
   wrongRequestHandler
-} = middlewares(serverConfig)
+} = getMiddlewares(serverConfig)
 
 // deploy server middlewares
 serverMiddlewares.apply(app)
