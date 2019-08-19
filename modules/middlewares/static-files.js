@@ -3,22 +3,17 @@ const express = require('express')
 
 const Middlewares = require('../classes/middlewares')
 const { filePathNotEmpty, routePathsErr } = require('../helpers/basic')
-const { validateMiddlewares } = require('../helpers/middlewares')
+const { validateDefs } = require('../helpers/middlewares')
 
 function validateStaticFilesDef(serveStaticFilesDef, status) {
-  validateMiddlewares(serveStaticFilesDef, validateDirDef, status)
+  validateDefs(serveStaticFilesDef, validateDirDef, status)
 }
 
 function staticFilesMiddlewares(serveStaticFilesDef) {
   serveStaticFilesDef = normalizeStaticFilesDef(serveStaticFilesDef)
   const applyMsg =
     "Static files, definded by 'serveStaticFiles', will be provided from directories: "
-  return Middlewares.fromDef(
-    'serveStaticFiles',
-    serveStaticFilesDef,
-    {},
-    applyMsg
-  )
+  return new Middlewares('serveStaticFiles', serveStaticFilesDef, {}, applyMsg)
 }
 
 module.exports = { validateStaticFilesDef, staticFilesMiddlewares }

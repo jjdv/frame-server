@@ -1,12 +1,8 @@
-validateMiddlewares = function(msDef, validateFn, status) {
-  if (!msDef) return
+validateDefs = function(defs, validateFn, status) {
+  if (!defs) return
 
-  if (!Array.isArray(msDef)) msDef = [msDef]
-  let mDef
-  for (const index = 0; index < msDef.length; index++) {
-    mDef = msDef[index]
-    validateFn(mDef, index, status)
-  }
+  if (!Array.isArray(defs)) defs = [defs]
+  defs.forEach((def, index) => validateFn(def, index, status))
 }
 
-module.exports = { validateMiddlewares }
+module.exports = { validateDefs }

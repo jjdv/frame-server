@@ -34,7 +34,7 @@ function serverMiddlewares(serverMiddlewaresDef) {
   serverMiddlewaresDef = serverMiddlewaresDef.map(mDef =>
     getServerMiddleware(mDef)
   )
-  return Middlewares.fromDef('serverMiddlewares', serverMiddlewaresDef)
+  return new Middlewares('serverMiddlewares', serverMiddlewaresDef)
 }
 
 module.exports = { validateServerMiddlewares, packageNames, serverMiddlewares }

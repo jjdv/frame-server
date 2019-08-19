@@ -2,15 +2,15 @@ const path = require('path')
 
 const Middlewares = require('../classes/middlewares')
 const { filePathNotEmpty, routePathsErr } = require('../helpers/basic')
-const { validateMiddlewares } = require('../helpers/middlewares')
+const { validateDefs } = require('../helpers/middlewares')
 
 function validateDynamicFilesDef(serveDynamicFilesDef, status) {
-  validateMiddlewares(serveDynamicFilesDef, validateDynamicFileDef, status)
+  validateDefs(serveDynamicFilesDef, validateDynamicFileDef, status)
 }
 
 function dynamicFilesMiddlewares(serveDynamicFilesDef) {
   serveDynamicFilesDef = normalizeDynamicFilesDef(serveDynamicFilesDef)
-  return Middlewares.fromDef('serveDynamicFiles', serveDynamicFilesDef)
+  return new Middlewares('serveDynamicFiles', serveDynamicFilesDef)
 }
 
 module.exports = { validateDynamicFilesDef, dynamicFilesMiddlewares }
