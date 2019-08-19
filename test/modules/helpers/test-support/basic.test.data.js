@@ -39,7 +39,7 @@ exports.testPathsData = {
       varName: 'testVarName',
       result: true,
       errMsg: [
-        "Error: The specification of the path in 'testVarName' cannot be an empty string."
+        "The specification of the path in 'testVarName' cannot be an empty string."
       ]
     },
     {
@@ -47,8 +47,8 @@ exports.testPathsData = {
       varName: 'testVarName',
       result: true,
       errMsg: [
-        "Error: The specification of the path in 'testVarName' cannot be an empty string.",
-        "Error: Route paths in 'testVarName' should be absolute, i.e. start with: '/' but is defined as: 'some/path'.",
+        "The specification of the path in 'testVarName' cannot be an empty string.",
+        "Route paths in 'testVarName' should be absolute, i.e. start with: '/' but is defined as: 'some/path'.",
         "Wrong path format in 'testVarName'."
       ]
     }
