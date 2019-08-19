@@ -21,7 +21,10 @@ if (localConfPath) {
     if (typeof localConfig === 'object' && localConfig instanceof Object) {
       serverConfig = { ...serverConfig, ...localConfig }
     } else {
-      console.error('Error: The local server configuration data is not an object but: ', localConfig)
+      console.error(
+        'Error: The local server configuration data is not an object but: ',
+        localConfig
+      )
       serverConfig = null
     }
   } else serverConfig = null
@@ -34,7 +37,7 @@ module.exports = serverConfig
 // supporting functions
 // -------------------------------------------------------------------------------
 
-function getConfPath (confDirs, confFileName) {
+function getConfPath(confDirs, confFileName) {
   let confPath = confPathFromArgs()
 
   if (confPath) {
@@ -49,7 +52,7 @@ function getConfPath (confDirs, confFileName) {
   } else {
     // conf file to be found in default directories
 
-    for (let confDir of confDirs) {
+    for (const confDir of confDirs) {
       confPath = path.resolve(serverRootDir, confDir, confFileName)
       if (fs.existsSync(confPath)) return confPath
     }
@@ -57,7 +60,7 @@ function getConfPath (confDirs, confFileName) {
   }
 }
 
-function confPathFromArgs () {
+function confPathFromArgs() {
   // console.log('process.argv: ', process.argv)
   if (process.argv.length < 4) return false
 

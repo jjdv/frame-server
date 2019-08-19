@@ -38,7 +38,7 @@ function createClass(classDef) {
 exports.createGetOnlyProps = function(obj, propsObj) {
   if (createPropsParsErr(obj, propsObj)) return
 
-  for (let propName in propsObj) {
+  for (const propName in propsObj) {
     Object.defineProperty(obj, propName, {
       enumerable: true,
       get: function() {
@@ -57,7 +57,7 @@ exports.createGetOnlyProps = function(obj, propsObj) {
 exports.createReadOnlyProps = function(obj, propsObj) {
   if (createPropsParsErr(obj, propsObj)) return
 
-  for (let propName in propsObj) {
+  for (const propName in propsObj) {
     Object.defineProperty(obj, propName, {
       enumerable: true,
       value: propsObj[propName]
@@ -72,7 +72,7 @@ exports.toReadOnlyProps = function(obj, props) {
   objectErrCheck(obj, "base object ('obj')", 'toReadOnlyProps', status)
   if (status.error) return
 
-  if (!props) for (let prop in obj) toReadOnlyProp(obj, prop)
+  if (!props) for (const prop in obj) toReadOnlyProp(obj, prop)
   else {
     if (typeof props === 'string') toReadOnlyProp(obj, props)
     else if (!Array.isArray(props)) {
@@ -125,13 +125,9 @@ function createPropsParsErr(obj, propsObj) {
 }
 
 function objectErrCheck(obj, objName, recipientName, status) {
-  if (!obj)
-    status.reportErr(`No ${objName} provided to ${recipientName}`)
+  if (!obj) status.reportErr(`No ${objName} provided to ${recipientName}`)
   else if (typeof obj !== 'object')
-    status.reportErr(
-      `Invalid ${objName} provided to ${recipientName}: `,
-      obj
-    )
+    status.reportErr(`Invalid ${objName} provided to ${recipientName}: `, obj)
 }
 
 // changes prop in obj to read only

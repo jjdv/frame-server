@@ -63,7 +63,7 @@ function routePathsErr(paths, varName, status) {
       status.reportErr(
         `Empty array as routePaths in the middleware: '${varName}'.`
       )
-    for (let path of paths) routePathErr(path, varName, status)
+    for (const path of paths) routePathErr(path, varName, status)
   } else routePathErr(paths, varName, status)
 
   return status.error

@@ -1,27 +1,41 @@
 'use strict'
 
-let { installServerMiddlewares, serverMiddlewares } = require('../../config/server.config')
+let {
+  installServerMiddlewares,
+  serverMiddlewares
+} = require('../../config/server.config')
 
 if (installServerMiddlewares && serverMiddlewares) {
-  if (typeof serverMiddlewares === 'string') serverMiddlewares = [ serverMiddlewares ]
+  if (typeof serverMiddlewares === 'string')
+    serverMiddlewares = [serverMiddlewares]
   if (Array.isArray(serverMiddlewares)) {
     const { packageNames } = require('../middlewares/server')
 
-    const externalPackages = []; let mName
-    for (let mDef of serverMiddlewares) {
+    const externalPackages = []
+    let mName
+    for (const mDef of serverMiddlewares) {
       if (!mDef) continue
       switch (typeof mDef) {
-        case 'string': mName = mDef; break
-        case 'object': mName = typeof mDef.name === 'string' ? mDef.name : ''; break
-        default: continue
+        case 'string':
+          mName = mDef
+          break
+        case 'object':
+          mName = typeof mDef.name === 'string' ? mDef.name : ''
+          break
+        default:
+          continue
       }
       const packageName = packageNames[mName]
-      if (packageName && packageName !== 'express') externalPackages.push(packageName)
+      if (packageName && packageName !== 'express')
+        externalPackages.push(packageName)
     }
 
     // install server middleware dependencies if any
     if (externalPackages.length) installExternalPackages(externalPackages)
-    else console.log('No server middleware external packages found in the server configuration file.')
+    else
+      console.log(
+        'No server middleware external packages found in the server configuration file.'
+      )
   }
 }
 
@@ -30,8 +44,12 @@ if (installServerMiddlewares && serverMiddlewares) {
 // supporting functions
 // -------------------------------------------------------------------------------
 
-function installExternalPackages (externalPackages) {
-  console.log(`The following server middleware external packages, found in the server configuration file, will be instaled: ${externalPackages.join(', ')}.`)
+function installExternalPackages(externalPackages) {
+  console.log(
+    `The following server middleware external packages, found in the server configuration file, will be instaled: ${externalPackages.join(
+      ', '
+    )}.`
+  )
 
   const { spawn } = require('child_process')
   const spawnArgs = ['install', '--save'].concat(externalPackages)

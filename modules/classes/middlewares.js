@@ -15,7 +15,7 @@ Middlewares.validate = function(msDef, validateFn, status) {
 
   if (!Array.isArray(msDef)) msDef = [msDef]
   let mDef
-  for (let index = 0; index < msDef.length; index++) {
+  for (const index = 0; index < msDef.length; index++) {
     mDef = msDef[index]
     validateFn(mDef, index, status)
   }
@@ -33,7 +33,7 @@ Middlewares.fromDef = function(
   if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
   const middlewares = []
   let mDef, middleware
-  for (let index = 0; index < middlewaresDef.length; index++) {
+  for (const index = 0; index < middlewaresDef.length; index++) {
     mDef = middlewaresDef[index]
     if (mDef.constructor !== Object) {
       mDef = {
