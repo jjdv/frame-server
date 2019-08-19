@@ -39,10 +39,9 @@ function serverMiddlewares(serverMiddlewaresDef) {
 
 module.exports = { validateServerMiddlewares, packageNames, serverMiddlewares }
 
-//
-// -------------------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // supporting functions
-// -------------------------------------------------------------------------------
+// -----------------------------------------------------------------------
 
 function checkHelmet(serverMiddlewareNames, noHelmet, status) {
   const helmetIndex = serverMiddlewareNames.indexOf('helmet')
@@ -75,15 +74,11 @@ function getServerMiddleware(mDef) {
 
   return {
     name: mId,
-    middleware: middlewares[mId](m, mOptions)
+    middleware: getServerMiddlewareFn[mId](m, mOptions)
   }
 }
 
-// -------------------------------------------------------------------------------
-// supporting middleware build definitions
-// -------------------------------------------------------------------------------
-
-const middlewares = {
+const getServerMiddlewareFn = {
   helmet: (m, options) => m(options),
   json: (m, options) => m.json(options),
   urlencoded: (m, options) => m.urlencoded(options),
