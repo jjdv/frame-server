@@ -3,54 +3,52 @@ const { createGetOnlyProps } = require('../helpers/object')
 const Middleware = require('./middleware')
 const Status = require('./status')
 
-function Middlewares(middlewaresName, middlewares, applyMsg) {
-  if (!Array.isArray(middlewares)) middlewares = [middlewares]
-  if (middlewaresArgsErr(middlewaresName, middlewares, applyMsg)) return
+// function Middlewares(middlewaresName, middlewares, applyMsg) {
+//   if (!Array.isArray(middlewares)) middlewares = [middlewares]
+//   if (middlewaresArgsErr(middlewaresName, middlewares, applyMsg)) return
 
-  createGetOnlyProps(this, { name: middlewaresName, middlewares, applyMsg })
-}
+//   createGetOnlyProps(this, { name: middlewaresName, middlewares, applyMsg })
+// }
 
-Middlewares.fromDef = function(
-  middlewaresName,
-  middlewaresDef,
-  options,
-  applyMsg
-) {
-  if (middlewaresNameErrCheck(middlewaresName, middlewaresDef, applyMsg))
-    return null
+class Middlewares {
+  constructor(middlewaresName, middlewaresDef, options, applyMsg) {
+    const status = new Status()
 
-  if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
-  const middlewares = []
-  let mDef, middleware
-  for (const index = 0; index < middlewaresDef.length; index++) {
-    mDef = middlewaresDef[index]
-    if (mDef.constructor !== Object) {
-      mDef = {
-        name: `${middlewaresName}-${index}`,
-        middleware: mDef
-      }
-    } else if (!mDef.name) mDef.name = `${middlewaresName}-${index}`
-    middleware = Middleware.fromDef(mDef, options)
-    middlewares.push(middleware)
+    if (nameErr(middlewaresName, 'middlewares group', middlewares, status))
+      return null
+
+    if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
+    const middlewares = []
+    middlewaresDef.forEach((mDef, index) => {
+      if (mDef.constructor !== Object) {
+        mDef = {
+          name: `${middlewaresName}-${index}`,
+          middleware: mDef
+        }
+      } else if (!mDef.name) mDef.name = `${middlewaresName}-${index}`
+      middlewares.push(new Middleware(mDef, options))
+    })
+
+    this.name = middlewaresName
+    this.middlewares = middlewares
+    this.applyMsg = applyMsg
   }
 
-  return new Middlewares(middlewaresName, middlewares, applyMsg)
-}
+  apply(app, groupReporting = true) {
+    if (!app || !this.middlewares) return
 
-Middlewares.prototype.apply = function(app, groupReporting = true) {
-  if (!app || !this.middlewares) return
-
-  const individualReporting = !groupReporting
-  if (Array.isArray(this.middlewares)) {
-    if (groupReporting) {
-      const mNames = this.middlewares.map(m => m.name)
-      const applyMsg = this.applyMsg
-        ? this.applyMsg
-        : `The middlewares applied from the '${this.name}': `
-      console.log(applyMsg, mNames)
-    }
-    this.middlewares.forEach(m => m.apply(app, individualReporting))
-  } else this.middlewares.apply(app)
+    const individualReporting = !groupReporting
+    if (Array.isArray(this.middlewares)) {
+      if (groupReporting) {
+        const mNames = this.middlewares.map(m => m.name)
+        const applyMsg = this.applyMsg
+          ? this.applyMsg
+          : `The middlewares applied from the '${this.name}': `
+        console.log(applyMsg, mNames)
+      }
+      this.middlewares.forEach(m => m.apply(app, individualReporting))
+    } else this.middlewares.apply(app)
+  }
 }
 
 module.exports = Middlewares
@@ -61,7 +59,7 @@ module.exports = Middlewares
 
 function middlewaresArgsErr(middlewaresName, middlewares, applyMsg) {
   const status = new Status()
-  middlewaresNameErrCheck(middlewaresName, middlewares, status)
+  nameErr(middlewaresName, 'middlewares group', middlewares, status)
   middlewaresErrCheck(middlewares, middlewaresName, status)
   if (applyMsg && typeof applyMsg !== 'string') {
     status.reportErr(
@@ -71,10 +69,6 @@ function middlewaresArgsErr(middlewaresName, middlewares, applyMsg) {
   }
 
   return status.error
-}
-
-function middlewaresNameErrCheck(middlewaresName, middlewares, status) {
-  return nameErr(middlewaresName, 'middlewares group', middlewares, status)
 }
 
 function middlewaresErrCheck(middlewares, middlewaresName, status) {
