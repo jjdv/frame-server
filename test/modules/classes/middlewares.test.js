@@ -8,17 +8,17 @@ const { expect, sinon } = require('../../test-env')
 const { isEmpty } = require('../../../modules/helpers/basic')
 
 // class under test
-const Middleware = require('../../../modules/classes/middleware')
+const Middlewares = require('../../../modules/classes/middlewares')
 
 // test variables
-const middlewareTestData = require('./test-support/middleware-test-data')
+const middlewaresTestData = require('./test-support/middlewares-test-data')
 let consoleErrorStub, res, appSpy
 
 // -----------------------------------------------------------------------
 // test body
 // -----------------------------------------------------------------------
 
-describe('Middleware', function() {
+describe('Middlewares', function() {
   before(() => {
     consoleErrorStub = sinon.stub(console, 'error')
     appSpy = { use: sinon.spy() }
@@ -27,6 +27,8 @@ describe('Middleware', function() {
   after(() => {
     consoleErrorStub.restore()
   })
+
+  it('generates class with no propperties and just apply method if invalid middlewares name or definition is provided', () => {})
 
   describe('creation', function() {
     testCreation()
@@ -46,14 +48,14 @@ function testCreation() {
     consoleErrorStub.resetHistory()
   })
 
-  middlewareTestData.forEach(mtd => {
+  middlewaresTestData.forEach(mtd => {
     it(mtd.title, () => {
       if (Array.isArray(mtd.definition)) {
         mtd.definition.forEach((mtdEl, index) => {
           consoleErrorStub.resetHistory()
-          checkMiddlewareFromDef(mtdEl, mtd)
+          checkMiddlewaresFromDef(mtdEl, mtd)
         })
-      } else checkMiddlewareFromDef(mtd.definition, mtd)
+      } else checkMiddlewaresFromDef(mtd.definition, mtd)
     })
   })
 }
@@ -129,7 +131,7 @@ function testApply() {
   })
 }
 
-function checkMiddlewareFromDef(mtdEl, mtd) {
+function checkMiddlewaresFromDef(mtdEl, mtd) {
   let definition, options, result, errMsg
   if (
     mtdEl &&
@@ -145,7 +147,7 @@ function checkMiddlewareFromDef(mtdEl, mtd) {
     errMsg = mtd.errMsg
   }
 
-  res = new Middleware(definition, options)
+  res = new Middlewares(definition, options)
   expect(res.apply).to.exist()
   expect(mComparable(res)).to.deep.equal(mComparable(result))
   if (!res.middlewareFn) {
@@ -153,7 +155,7 @@ function checkMiddlewareFromDef(mtdEl, mtd) {
   }
 }
 
-// middleware comparable
+// middlewares comparable
 function mComparable(m) {
   const mC = Object.assign({}, m)
   if (mC.middlewareFn) mC.middlewareFn = mC.middlewareFn.toString()

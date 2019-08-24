@@ -8,14 +8,17 @@ class Middlewares {
   constructor(middlewaresName, middlewaresDef, options, applyMsg) {
     const status = new Status()
 
-    if (
-      nameErr(middlewaresName, 'middlewares group', middlewares, status) ||
-      isEmpty(middlewaresDef)
-    )
-      return
+    if (nameErr(middlewaresName, 'middlewares group', middlewares)) return
+    if (isEmpty(middlewaresDef)) {
+      status.reportErr(
+        'Invalid middlewares definition: ',
+        middlewaresDef,
+        `in the middleware '${middlewaresName}'.`
+      )
+    }
 
-    if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
     const middlewares = []
+    if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
     middlewaresDef.forEach((mDef, index) => {
       if (mDef.constructor !== Object) {
         mDef = {

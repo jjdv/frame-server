@@ -1,12 +1,11 @@
-const { filePathNotEmpty, routePathsErr, nameErr } = require('./basic')
-const Status = require('../classes/status')
+const { filePathRequired } = require('./basic')
 
 const middlewareMock = {
   name: undefined,
   middlewareFn: null
 }
 
-function middlewareDefToArgs(middlewareDef, options = {}) {
+function middlewareDefToArgs (middlewareDef, options = {}) {
   const { rootDir, defaultType } = options
   const {
     name: middlewareName,
@@ -23,14 +22,14 @@ function middlewareDefToArgs(middlewareDef, options = {}) {
   return [middlewareName, middlewareFn, routePaths, type]
 }
 
-function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
+function middlewareFnErrCheck (middlewareFn, middlewareName, status) {
   if (!middlewareFn) {
     const extraInfo = `provided for the middleware: '${middlewareName}'.`
     status.reportErr(`No middleware function ${extraInfo}`)
   }
 }
 
-function middlewareTypeErrCheck(type, middlewareName, status) {
+function middlewareTypeErrCheck (type, middlewareName, status) {
   const allowedTypes = [
     'use',
     'get',
@@ -54,11 +53,11 @@ function middlewareTypeErrCheck(type, middlewareName, status) {
   }
 }
 
-function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
+function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
   if (!rootDir) rootDir = process.env.SERVER_ROOT_DIR
   switch (middlewareDef && middlewareDef.constructor) {
     case String:
-      const mPath = filePathNotEmpty(middlewareDef, rootDir, middlewareName)
+      const mPath = filePathRequired(middlewareDef, rootDir, middlewareName)
       return mPath ? require(mPath) : null
     case Function:
       return middlewareDef

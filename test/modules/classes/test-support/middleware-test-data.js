@@ -1,6 +1,6 @@
-const emptyDefinitions = require('./test-data/empty-definitions')
-const correctDefinitions = require('./test-data/correct-definitions')
-const incorrectDefinitions = require('./test-data/incorrect-definitions')
+const emptyDefinitions = require('./test-data/middleware/empty-definitions')
+const correctDefinitions = require('./test-data/middleware/correct-definitions')
+const incorrectDefinitions = require('./test-data/middleware/incorrect-definitions')
 
 const middlewareTestData = [
   emptyDefinitions,

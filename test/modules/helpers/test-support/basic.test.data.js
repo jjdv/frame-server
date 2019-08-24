@@ -1,24 +1,27 @@
 const path = require('path')
 
 /**
- * test data for filePath and filePathNotEmpty
+ * test data for filePath and filePathRequired
  */
 
-exports.falsy = [false, null, undefined, '', 0]
-exports.stringValues = ['abc', '...', '///\\"']
-exports.nonStringFilePaths = [{}, [], /a/, 55]
-exports.validDirName = __dirname
-exports.invalidDirName = path.join(__dirname, 'aaa')
-exports.validFileName = path.basename(__filename)
-exports.invalidFileName = path.join(__filename, 'aaa')
-exports.emptyVars = [{}, [], '']
-exports.nonEmptyVars = [{ a: 'a' }, ['a'], 'a']
+const falsyVars = [false, null, undefined, '', 0]
+const emptyVars = [{}, [], '']
+const falsyEmptyVars = [...falsyVars, {}, []]
+const nonEmptyVars = [{ a: 'a' }, ['a'], 'a']
+const stringValues = ['abc', '...', '///\\"']
+const nonObjectValues = [[], /a/, 55]
+const nonStringValues = [{}, ...nonObjectValues]
+const validDirPath = __dirname
+const validFilePath = __filename
+const validFileNameStr = path.basename(__filename)
+const invalidDirPath = path.join(__dirname, 'aaa')
+const invalidFilePath = path.join(__filename, 'aaa')
 
 /**
  * test data for routePathsErr
  */
 
-exports.testPathsData = {
+const testPathsData = {
   valid: [
     {
       paths: '/',
@@ -39,7 +42,7 @@ exports.testPathsData = {
       varName: 'testVarName',
       result: true,
       errMsg: [
-        "The specification of the path in 'testVarName' cannot be an empty string."
+        "The specification of the path in 'testVarName' cannot be empty."
       ]
     },
     {
@@ -47,10 +50,26 @@ exports.testPathsData = {
       varName: 'testVarName',
       result: true,
       errMsg: [
-        "The specification of the path in 'testVarName' cannot be an empty string.",
+        "The specification of the path in 'testVarName' cannot be empty.",
         "Route paths in 'testVarName' should be absolute, i.e. start with: '/' but is defined as: 'some/path'.",
         "Wrong path format in 'testVarName'."
       ]
     }
   ]
+}
+
+module.exports = {
+  falsyVars,
+  emptyVars,
+  falsyEmptyVars,
+  nonEmptyVars,
+  stringValues,
+  nonObjectValues,
+  nonStringValues,
+  validDirPath,
+  validFilePath,
+  validFileNameStr,
+  invalidDirPath,
+  invalidFilePath,
+  testPathsData
 }
