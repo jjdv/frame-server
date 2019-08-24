@@ -15,8 +15,10 @@ if (!serverConfig) process.exit()
 const app = require('express')()
 
 // set views if defined
-const setView = require('../modules/deployment/set-view')
-setView(app, serverConfig.view)
+if (serverConfig.view) {
+  const setView = require('../modules/deployment/set-view')
+  setView(app, serverConfig.view)
+}
 
 // get server middlewares
 const getMiddlewares = require('../modules/middlewares/get-middlewares')
