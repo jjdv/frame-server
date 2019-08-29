@@ -5,7 +5,7 @@ const middlewareMock = {
   middlewareFn: null
 }
 
-function middlewareDefToArgs(middlewareDef, options = {}) {
+function middlewareDefToArgs (middlewareDef, options = {}) {
   const { rootDir, defaultType } = options
   const {
     name: middlewareName,
@@ -23,14 +23,14 @@ function middlewareDefToArgs(middlewareDef, options = {}) {
   return [middlewareName, middlewareFn, routePaths, type]
 }
 
-function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
+function middlewareFnErrCheck (middlewareFn, middlewareName, status) {
   if (!middlewareFn) {
     const extraInfo = `provided for the middleware: '${middlewareName}'.`
     status.reportErr(`No middleware function ${extraInfo}`)
   }
 }
 
-function middlewareTypeErrCheck(type, middlewareName, status) {
+function middlewareTypeErrCheck (type, middlewareName, status) {
   const allowedTypes = [
     'use',
     'get',
@@ -54,7 +54,7 @@ function middlewareTypeErrCheck(type, middlewareName, status) {
   }
 }
 
-function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
+function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
   if (!rootDir) rootDir = process.env.ROOT_DIR
   switch (middlewareDef && middlewareDef.constructor) {
     case String:

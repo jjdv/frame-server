@@ -16,6 +16,7 @@ const path = require('path')
 function getViewDir (dir) {
   const rootDir = process.env.ROOT_DIR
   if (typeof dir === 'string') return path.resolve(rootDir, dir)
-  else if (Array.isArray(dir))
-    {return dir.map(dirEl => path.resolve(rootDir, dirEl))}
+  else if (Array.isArray(dir)) {
+    return dir.map(dirEl => path.resolve(rootDir, dirEl))
+  }
 }
