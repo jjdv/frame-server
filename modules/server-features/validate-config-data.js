@@ -5,23 +5,23 @@ const { filePath } = require('../helpers/basic')
 const Status = require('../classes/status')
 
 module.exports = function validateConfigData (config) {
-  const serverRootDir = config.serverRootDir
+  const rootDir = config.rootDir
   const validationStatus = new Status()
 
-  // serverRootDir check
-  process.env.SERVER_ROOT_DIR = validatedDirectory(
-    'serverRootDir',
-    serverRootDir,
+  // rootDir check
+  process.env.ROOT_DIR = validatedDirectory(
+    'rootDir',
+    rootDir,
     null,
     validationStatus
   )
-  if (!process.env.SERVER_ROOT_DIR) return null
+  if (!process.env.ROOT_DIR) return null
 
   // siteRootDir changed into absolute path and done validity check
   process.env.SITE_ROOT_DIR = validatedDirectory(
     'siteRootDir',
     config.siteRootDir,
-    serverRootDir,
+    rootDir,
     validationStatus
   )
   if (!process.env.SITE_ROOT_DIR) return null
@@ -39,7 +39,7 @@ module.exports = function validateConfigData (config) {
 
   // serverMiddlewares check
   if (config.serverMiddlewares) {
-    const { validateServerMiddlewares } = require('../middlewares/server')
+    const { validateServerMiddlewares } = require('./server-middlewares')
     validateServerMiddlewares(
       config.serverMiddlewares,
       config.noHelmet,
@@ -53,25 +53,25 @@ module.exports = function validateConfigData (config) {
       config.siteMiddlewaresDir &&
       filePath(
         config.siteMiddlewaresDir,
-        serverRootDir,
+        rootDir,
         'siteMiddlewaresDir',
         validationStatus
       )
-    process.env.SITE_MIDDLEWARES_DIR = siteMiddlewaresDir || serverRootDir
+    process.env.SITE_MIDDLEWARES_DIR = siteMiddlewaresDir || rootDir
 
-    const { validateSiteMiddlewares } = require('../middlewares/site')
+    const { validateSiteMiddlewares } = require('./site-middlewares')
     validateSiteMiddlewares(config.siteMiddlewares, validationStatus)
   }
 
   // serveDynamicFiles check
   if (config.serveDynamicFiles) {
-    const { validateDynamicFilesDef } = require('../middlewares/dynamic-files')
+    const { validateDynamicFilesDef } = require('./serve-dynamic-files')
     validateDynamicFilesDef(config.serveDynamicFiles, validationStatus)
   }
 
   // serveStaticFiles check
   if (config.serveStaticFiles) {
-    const { validateStaticFilesDef } = require('../middlewares/static-files')
+    const { validateStaticFilesDef } = require('./serve-static-files')
     validateStaticFilesDef(config.serveStaticFiles, validationStatus)
   }
 
@@ -79,7 +79,7 @@ module.exports = function validateConfigData (config) {
   if (config.wrongRequestHandler) {
     const {
       validateWrongRequestHandlerDef
-    } = require('../middlewares/wrong-request-handler')
+    } = require('./wrong-request-handler')
     validateWrongRequestHandlerDef(config.wrongRequestHandler, validationStatus)
   }
 

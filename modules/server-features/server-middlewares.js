@@ -2,11 +2,53 @@
 
 const Middlewares = require('../classes/middlewares')
 
-function validateServerMiddlewares(serverMiddlewares, noHelmet, status) {
+const packageNames = {
+  helmet: 'helmet',
+  cookies: 'cookie-parser',
+  session: 'express-session',
+  json: 'express',
+  urlencoded: 'express',
+  multipart: 'multer'
+}
+
+function getServerMiddlewares (config, status) {
+  // noHelmet check
+  if (typeof config.noHelmet !== 'boolean') {
+    validationStatus.reportErr(
+      "The 'noHelmet' parameter in the server config file is not boolean but:",
+      config.noHelmet
+    )
+  }
+
+  // serverMiddlewares check
+  if (config.serverMiddlewares) {
+    const { validateServerMiddlewares } = require('./server-middlewares')
+    validateServerMiddlewares(
+      config.serverMiddlewares,
+      config.noHelmet,
+      validationStatus
+    )
+  }
+}
+
+function serverMiddlewares (serverMiddlewaresDef) {
+  serverMiddlewaresDef = serverMiddlewaresDef.map(mDef =>
+    getServerMiddleware(mDef)
+  )
+  return new Middlewares('serverMiddlewares', serverMiddlewaresDef)
+}
+
+module.exports = { validateServerMiddlewares, packageNames, serverMiddlewares }
+
+// -----------------------------------------------------------------------
+// supporting functions
+// -----------------------------------------------------------------------
+
+function validateServerMiddlewares (serverMiddlewares, noHelmet, status) {
   if (!serverMiddlewares) return
-  if (typeof serverMiddlewares === 'string')
+  if (typeof serverMiddlewares === 'string') {
     serverMiddlewares = [serverMiddlewares]
-  else if (!Array.isArray(serverMiddlewares)) {
+  } else if (!Array.isArray(serverMiddlewares)) {
     status.reportErr(
       "The value of 'serverMiddlewares' is not a string nor an array but is: ",
       serverMiddlewares
@@ -21,29 +63,7 @@ function validateServerMiddlewares(serverMiddlewares, noHelmet, status) {
   checkPackageValidity(serverMiddlewareNames, status)
 }
 
-const packageNames = {
-  helmet: 'helmet',
-  cookies: 'cookie-parser',
-  session: 'express-session',
-  json: 'express',
-  urlencoded: 'express',
-  multipart: 'multer'
-}
-
-function serverMiddlewares(serverMiddlewaresDef) {
-  serverMiddlewaresDef = serverMiddlewaresDef.map(mDef =>
-    getServerMiddleware(mDef)
-  )
-  return new Middlewares('serverMiddlewares', serverMiddlewaresDef)
-}
-
-module.exports = { validateServerMiddlewares, packageNames, serverMiddlewares }
-
-// -----------------------------------------------------------------------
-// supporting functions
-// -----------------------------------------------------------------------
-
-function checkHelmet(serverMiddlewareNames, noHelmet, status) {
+function checkHelmet (serverMiddlewareNames, noHelmet, status) {
   const helmetIndex = serverMiddlewareNames.indexOf('helmet')
 
   if (helmetIndex === -1) {
@@ -59,14 +79,15 @@ function checkHelmet(serverMiddlewareNames, noHelmet, status) {
   }
 }
 
-function checkPackageValidity(serverMiddlewareNames, status) {
+function checkPackageValidity (serverMiddlewareNames, status) {
   serverMiddlewareNames.forEach(mName => {
-    if (!packageNames[mName])
+    if (!packageNames[mName]) {
       status.reportErr('Invalid server middleware specification: ', mName)
+    }
   })
 }
 
-function getServerMiddleware(mDef) {
+function getServerMiddleware (mDef) {
   const isMDefStr = typeof mDef === 'string'
   const mId = isMDefStr ? mDef : mDef.name
   const mOptions = isMDefStr ? {} : mDef.options

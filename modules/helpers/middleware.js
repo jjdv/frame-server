@@ -1,17 +1,18 @@
-const { filePathRequired } = require('./basic')
+const { filePathRequired } = require('./validators')
 
 const middlewareMock = {
   name: undefined,
   middlewareFn: null
 }
 
-function middlewareDefToArgs (middlewareDef, options = {}) {
+function middlewareDefToArgs(middlewareDef, options = {}) {
   const { rootDir, defaultType } = options
   const {
     name: middlewareName,
     middleware: middlewareFnDef,
     routePaths
   } = middlewareDef
+
   const middlewareFn = middlewareFnFromDef(
     middlewareFnDef,
     middlewareName,
@@ -22,14 +23,14 @@ function middlewareDefToArgs (middlewareDef, options = {}) {
   return [middlewareName, middlewareFn, routePaths, type]
 }
 
-function middlewareFnErrCheck (middlewareFn, middlewareName, status) {
+function middlewareFnErrCheck(middlewareFn, middlewareName, status) {
   if (!middlewareFn) {
     const extraInfo = `provided for the middleware: '${middlewareName}'.`
     status.reportErr(`No middleware function ${extraInfo}`)
   }
 }
 
-function middlewareTypeErrCheck (type, middlewareName, status) {
+function middlewareTypeErrCheck(type, middlewareName, status) {
   const allowedTypes = [
     'use',
     'get',
@@ -53,8 +54,8 @@ function middlewareTypeErrCheck (type, middlewareName, status) {
   }
 }
 
-function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
-  if (!rootDir) rootDir = process.env.SERVER_ROOT_DIR
+function middlewareFnFromDef(middlewareDef, middlewareName, rootDir) {
+  if (!rootDir) rootDir = process.env.ROOT_DIR
   switch (middlewareDef && middlewareDef.constructor) {
     case String:
       const mPath = filePathRequired(middlewareDef, rootDir, middlewareName)

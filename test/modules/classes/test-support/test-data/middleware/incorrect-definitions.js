@@ -1,12 +1,15 @@
 const wrongMDef1 = {
   name: '',
   routePaths: ['/route/path', {}, /abc*/],
-  middleware: '/test'
+  middleware: 'test'
 }
 
 const errMsg1 = [
   {
-    args: ['Error: ', 'Cannot find "C:\\test" specified by the \'\' as "/test"']
+    args: [
+      'Error: ',
+      'Cannot find file "C:\\testDir\\test" specified by the \'\' as "test"'
+    ]
   },
   {
     args: [

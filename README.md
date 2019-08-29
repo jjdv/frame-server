@@ -60,10 +60,10 @@ fserver -c <path-to-conf-file>
 
 ###  4.1. <a name='Referencedirectoriesandfiledirectoryresolution'></a>Reference directories and file/directory resolution
 Frame Server uses two reference directories:
-- serverRootDir - the server starting point in the file resolution process. Defaults to CWD when starting the server.
-- siteRootDir - where the site files to be served are located. Defaults to serverRootDir + '/dist'
+- rootDir - the server starting point in the file resolution process. Defaults to CWD when starting the server.
+- siteRootDir - where the site files to be served are located. Defaults to rootDir + '/dist'
 
-Both serverRootDir and siteRootDir can be overwritten in the `server.config.js`.
+Both rootDir and siteRootDir can be overwritten in the `server.config.js`.
 
 Any other files and directories specified in the server configuration file can be provided relative to one of these reference directories or as an absolute path. See the description of a specific parameter to make sure which reference directory is used for that parameter.
 
@@ -77,8 +77,8 @@ If you need just a basic server for a development process you don't have to both
 If you need the basic functionality described above but you have some other parameters to be applied, put them in the config file like this:
 ```
 module.exports = {
-    serverRootDir: 'my/absolute/server/dir',
-    siteRootDir: 'site-dir',        // relative to serverRootDir or absolute
+    rootDir: 'my/absolute/server/dir',
+    siteRootDir: 'site-dir',        // relative to rootDir or absolute
 
     // dynamic files to be served for specific paths
     serveDynamicFiles: {
@@ -89,7 +89,7 @@ module.exports = {
     // static files to be served
     serveStaticFiles: {
         routePaths: '/public',     // url prefix used for static files
-        dir: 'site-dir/static',    // relative to serverRootDir or absolute
+        dir: 'site-dir/static',    // relative to rootDir or absolute
         options: {}                // you can specify options for the 'serve-static' middleware
     },
 
@@ -159,7 +159,7 @@ Alternatively, start the server with `--no-helmet` argument, i.e. `fserver --no-
 
 ####  4.4.2. <a name='Sitemiddlewares'></a>Site middlewares
 Server middlewares/parsers are provided automatically (based on your config definition) to allow you to focus on your own, specific middlewares needed for your site. To include your own middlewares define them in the `siteMiddlewares` configuration option. Your middleware definition should have one of the three possible forms:
-1. string `'path/to/my/middleware'`, absolute or relative to `serverRootDir` - will be resolved, required and applied with `app.use( yourMiddleware )`
+1. string `'path/to/my/middleware'`, absolute or relative to `rootDir` - will be resolved, required and applied with `app.use( yourMiddleware )`
 2. your middleware - will be applied with `app.use( yourMiddleware )`
 3. object
 ```
@@ -182,14 +182,14 @@ If you find convenient to specify a reference directory for the middleware modul
 ```
 siteMiddlewaresDir: 'server/middlewares',
 ```
-The middlewares directory should be specified relative to the `serverRootDir` or absolute.
+The middlewares directory should be specified relative to the `rootDir` or absolute.
 
 ####  4.4.3. <a name='Viewsdefinition'></a>Views definition
 To complement the configuration options the server can configure the views for you in the Express environment. Just add to your config options the `view` property with default `engine` extension and/or `dir` as the directory where the view files are located:
 ```
 view: {
     engine: 'pug',
-    dir: 'server/views'     // relative to serverRootDir or absolute
+    dir: 'server/views'     // relative to rootDir or absolute
 }
 ```
 This will be used in `app.set('view engine', view.engine)` and `app.set('views', view.dir)` statements when setting up the server for you. The view settings are applied before any middleware to allow making use of them in your code.

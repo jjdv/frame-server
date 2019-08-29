@@ -35,7 +35,7 @@ const correctDefinitions = {
         middleware: 'middleware-test-function.js'
       },
       options: {
-        rootDir: __dirname + '/..'
+        rootDir: __dirname + '/../..'
       },
       result: {
         name: 'myMiddlewareName3',
@@ -51,7 +51,7 @@ const correctDefinitions = {
         middleware: 'middleware-test-function.js'
       },
       options: {
-        rootDir: __dirname + '/..',
+        rootDir: __dirname + '/../..',
         defaultType: 'put'
       },
       result: {

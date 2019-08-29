@@ -1,15 +1,15 @@
 
 const path = require('path')
 
-const serverRootDir = path.resolve(__dirname, '../../../..')
+const rootDir = path.resolve(__dirname, '../../../..')
 const { configFileName, configDirs } = require('../../../config/config.ini')
-const lookupConfigPaths = configDirs.map(dir => path.resolve(serverRootDir, dir, configFileName))
+const lookupConfigPaths = configDirs.map(dir => path.resolve(rootDir, dir, configFileName))
 
 const cliDir = 'testdir'
 const cliConfigFile = path.join(cliDir, configFileName)
 const cliTest = {
   dir: cliDir,
-  absPath: path.resolve(serverRootDir, cliDir, configFileName),
+  absPath: path.resolve(rootDir, cliDir, configFileName),
   argv: [
     ['aaa', '--conf', cliConfigFile],
     ['aaa', 'bbb', '--conf', cliConfigFile + 'ccc'],
@@ -22,7 +22,7 @@ const cliTest = {
 
 const localConfigData = [
   {
-    serverRootDir: 'testRootDir',
+    rootDir: 'testRootDir',
     view: {
       test: 'testView'
     },
@@ -50,7 +50,7 @@ const returnIniConfigData = [
     wrongRequestHandler: null
   },
   {
-    serverRootDir: serverRootDir,
+    rootDir: rootDir,
     view: null,
     noHelmet: false,
     serveDynamicFiles: null,

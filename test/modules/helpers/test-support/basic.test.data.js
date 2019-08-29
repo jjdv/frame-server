@@ -16,6 +16,13 @@ const validFilePath = __filename
 const validFileNameStr = path.basename(__filename)
 const invalidDirPath = path.join(__dirname, 'aaa')
 const invalidFilePath = path.join(__filename, 'aaa')
+const invalidPaths = [
+  ...falsyEmptyVars,
+  ...stringValues,
+  ...nonStringValues,
+  invalidDirPath,
+  invalidFilePath
+]
 
 /**
  * test data for routePathsErr
@@ -71,5 +78,6 @@ module.exports = {
   validFileNameStr,
   invalidDirPath,
   invalidFilePath,
+  invalidPaths,
   testPathsData
 }

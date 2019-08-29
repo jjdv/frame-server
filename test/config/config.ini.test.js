@@ -7,7 +7,7 @@ const path = require('path')
 const { expect } = require('../test-env')
 
 // some root directory of a project where 'frame-server' is used
-const serverRootDir = path.resolve(__dirname, '../../..')
+const rootDir = path.resolve(__dirname, '../../..')
 // absolute path of 'config.ini.js' for cache cleanup of the node's require function
 const configIniAbsPath = require.resolve('../../config/config.ini.js')
 
@@ -22,24 +22,24 @@ describe('config > config.ini.js', function () {
     delete process.env.test__dirname
   })
 
-  it("provides correct 'serverConfig.serverRootDir' if package located directly in the server root directory", function () {
+  it("provides correct 'serverConfig.rootDir' if package located directly in the server root directory", function () {
     // set __dirname in 'config > config.ini.js'
     process.env.test__dirname = path.resolve(
-      serverRootDir,
+      rootDir,
       'frame-server',
       'config'
     )
 
     delete require.cache[configIniAbsPath]
     const returnedServerRootDir = require('../../config/config.ini')
-      .serverConfig.serverRootDir
-    expect(returnedServerRootDir).to.equal(serverRootDir)
+      .serverConfig.rootDir
+    expect(returnedServerRootDir).to.equal(rootDir)
   })
 
-  it("provides correct 'serverConfig.serverRootDir' if package located in 'node_modules' in the server root directory", function () {
+  it("provides correct 'serverConfig.rootDir' if package located in 'node_modules' in the server root directory", function () {
     // set __dirname in 'config > config.ini.js'
     process.env.test__dirname = path.resolve(
-      serverRootDir,
+      rootDir,
       'node_modules',
       'frame-server',
       'config'
@@ -47,7 +47,7 @@ describe('config > config.ini.js', function () {
 
     delete require.cache[configIniAbsPath]
     const returnedServerRootDir = require('../../config/config.ini')
-      .serverConfig.serverRootDir
-    expect(returnedServerRootDir).to.equal(serverRootDir)
+      .serverConfig.rootDir
+    expect(returnedServerRootDir).to.equal(rootDir)
   })
 })

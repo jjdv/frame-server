@@ -2,10 +2,8 @@
 'use strict'
 
 // test environment
-const path = require('path')
 const { expect, sinon } = require('../../test-env')
-
-const { isEmpty } = require('../../../modules/helpers/basic')
+const Middleware = require('../../../modules/classes/middleware')
 
 // class under test
 const Middlewares = require('../../../modules/classes/middlewares')
@@ -18,7 +16,7 @@ let consoleErrorStub, res, appSpy
 // test body
 // -----------------------------------------------------------------------
 
-describe('Middlewares', function() {
+describe('Middlewares', function () {
   before(() => {
     consoleErrorStub = sinon.stub(console, 'error')
     appSpy = { use: sinon.spy() }
@@ -30,7 +28,7 @@ describe('Middlewares', function() {
 
   it('generates class with no propperties and just apply method if invalid middlewares name or definition is provided', () => {})
 
-  describe('creation', function() {
+  describe('creation', function () {
     testCreation()
   })
 
@@ -43,7 +41,7 @@ describe('Middlewares', function() {
 // helpers
 // -----------------------------------------------------------------------
 
-function testCreation() {
+function testCreation () {
   beforeEach(async () => {
     consoleErrorStub.resetHistory()
   })
@@ -60,7 +58,7 @@ function testCreation() {
   })
 }
 
-function testApply() {
+function testApply () {
   beforeEach(async () => {
     appSpy.use.resetHistory()
   })
@@ -131,7 +129,7 @@ function testApply() {
   })
 }
 
-function checkMiddlewaresFromDef(mtdEl, mtd) {
+function checkMiddlewaresFromDef (mtdEl, mtd) {
   let definition, options, result, errMsg
   if (
     mtdEl &&
@@ -156,13 +154,13 @@ function checkMiddlewaresFromDef(mtdEl, mtd) {
 }
 
 // middlewares comparable
-function mComparable(m) {
+function mComparable (m) {
   const mC = Object.assign({}, m)
   if (mC.middlewareFn) mC.middlewareFn = mC.middlewareFn.toString()
   return mC
 }
 
-function checkErrMessages(errMsgs) {
+function checkErrMessages (errMsgs) {
   if (Array.isArray(errMsgs)) {
     expect(errMsgs.length).to.equal(consoleErrorStub.args.length)
     errMsgs.forEach((errM, mIndx) =>
@@ -171,16 +169,12 @@ function checkErrMessages(errMsgs) {
   } else checkErrMsg(errMsgs, consoleErrorStub.getCall(0))
 }
 
-function checkErrMsg(errMsg, errMsgStub) {
-  if (argsDefined(errMsg))
+function checkErrMsg (errMsg, errMsgStub) {
+  if (argsDefined(errMsg)) {
     errMsgStub.should.have.been.calledWithExactly(...errMsg.args)
-  else errMsgStub.should.have.been.calledWithExactly(errMsg)
+  } else errMsgStub.should.have.been.calledWithExactly(errMsg)
 }
 
-function argsDefined(val) {
+function argsDefined (val) {
   return val && typeof val === 'object' && val.args
-}
-
-function arrElOrArgFn(arg) {
-  return Array.isArray(arg) ? indx => arg[indx] : () => arg
 }

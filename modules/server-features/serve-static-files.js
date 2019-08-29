@@ -36,10 +36,10 @@ function validateDirDef (dirDef, index, status) {
         `Missing 'dir' definition in 'serveStaticFiles', item ${index + 1}.`
       )
     } else {
-      const serverRootDir = process.env.SERVER_ROOT_DIR
+      const rootDir = process.env.ROOT_DIR
       filePathRequired(
         dirDef.dir,
-        serverRootDir,
+        rootDir,
         `'dir' in 'serveStaticFiles', item ${index + 1}`,
         status
       )
@@ -62,7 +62,7 @@ function validateDirDef (dirDef, index, status) {
 }
 
 function normalizeStaticFilesDef (serveStaticFilesDef) {
-  const serverRootDir = process.env.SERVER_ROOT_DIR
+  const rootDir = process.env.ROOT_DIR
   if (!Array.isArray(serveStaticFilesDef)) {
     serveStaticFilesDef = [serveStaticFilesDef]
   }
@@ -71,7 +71,7 @@ function normalizeStaticFilesDef (serveStaticFilesDef) {
     return {
       name: dirDef.dir,
       middleware: express.static(
-        path.resolve(serverRootDir, dirDef.dir),
+        path.resolve(rootDir, dirDef.dir),
         dirDef.options || {}
       ),
       routePaths: dirDef.routePaths

@@ -15,29 +15,55 @@ function isEmpty (val) {
 }
 
 function isDirectory (filePath) {
-  return fsStatMethodResult('isDirectory', filePath)
+  if (!filePath || typeof filePath !== 'string') return false
+  return fsStatMethodResultSync('isDirectory', filePath)
 }
 
 function isFile (filePath) {
-  return fsStatMethodResult('isFile', filePath)
+  if (!filePath || typeof filePath !== 'string') return false
+  return fsStatMethodResultSync('isFile', filePath)
+}
+
+function argValue (argName, argNameAlt) {
+  if (!argName || process.argv.length < 4) return undefined
+
+  let argIndex = process.argv.indexOf(argName, 2)
+  if (argIndex === -1 && argNameAlt) {
+    argIndex = process.argv.indexOf(argNameAlt, 2)
+  }
+  const argValue =
+    ++argIndex && process.argv.length > argIndex && process.argv[argIndex]
+
+  return argValue || undefined
+}
+
+function findFileInDirs (root, dirs, fileName) {
+  let confPath
+  for (const dir of dirs) {
+    confPath = path.resolve(root, dir, fileName)
+    if (isFile(confPath)) return confPath
+  }
+  return undefined
 }
 
 module.exports = {
   isEmpty,
   isDirectory,
-  isFile
+  isFile,
+  argValue,
+  findFileInDirs
 }
 
 // -----------------------------------------------------------------------
 // helpers
 // -----------------------------------------------------------------------
 
-function fsStatSyncResult (filePath) {
+function fsStatResultSync (filePath) {
   if (!fs.existsSync(filePath)) return false
   return fs.statSync(filePath)
 }
 
-function fsStatMethodResult (method, filePath) {
-  const stat = fsStatSyncResult(filePath)
+function fsStatMethodResultSync (method, filePath) {
+  const stat = fsStatResultSync(filePath)
   return stat ? stat[method]() : false
 }

@@ -2,11 +2,11 @@ const Middleware = require('../classes/middleware')
 const Middlewares = require('../classes/middlewares')
 const { validateDefs } = require('../helpers/middlewares')
 
-function validateSiteMiddlewares(siteMiddlewaresDef, status) {
+function validateSiteMiddlewares (siteMiddlewaresDef, status) {
   validateDefs(siteMiddlewaresDef, validateSiteMiddleware, status)
 }
 
-function siteMiddlewares(siteMiddlewaresDef) {
+function siteMiddlewares (siteMiddlewaresDef) {
   const siteMiddlewaresDir = process.env.SITE_MIDDLEWARES_DIR
   return new Middlewares('siteMiddlewares', siteMiddlewaresDef, {
     rootDir: siteMiddlewaresDir
@@ -20,7 +20,7 @@ module.exports = { validateSiteMiddlewares, siteMiddlewares }
 // supporting functions
 // -------------------------------------------------------------------------------
 
-function validateSiteMiddleware(siteMiddlewareDef, index, status) {
+function validateSiteMiddleware (siteMiddlewareDef, index, status) {
   if (typeof siteMiddlewareDef !== 'object') {
     siteMiddlewareDef = {
       middleware: siteMiddlewareDef,

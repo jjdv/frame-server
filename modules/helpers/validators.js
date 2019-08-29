@@ -6,6 +6,8 @@ const { isDirectory, isFile } = require('./basic')
 const Status = require('../classes/status')
 
 function validatedDirectory (dirName, dir, rootDir, status) {
+  if (!status) status = new Status()
+
   if (!dir) status.reportErr(`Missing directory '${dirName}'.`)
   else if (typeof dir !== 'string') {
     status.reportErr(`Wrong directory format of '${dirName}':`, dir)
@@ -19,37 +21,6 @@ function validatedDirectory (dirName, dir, rootDir, status) {
   }
 
   return status.error ? null : dir
-}
-
-function validateView (view, status) {
-  if (view.constructor !== Object) {
-    status.reportErr(
-      'Wrong format of the view definition in the server config file:',
-      view
-    )
-    return
-  }
-  if (view.engine && typeof view.engine !== 'string') {
-    status.reportErr(
-      'view.engine in the server config file must be a string, not: ',
-      view.engine
-    )
-  }
-  if (view.dir) {
-    const serverRootDir = process.env.SERVER_ROOT_DIR
-    if (typeof view.dir === 'string') {
-      validatedDirectory('view.dir', view.dir, serverRootDir, status)
-    } else if (Array.isArray(view.dir)) {
-      view.dir.forEach(dir =>
-        validatedDirectory('view.dir', dir, serverRootDir, status)
-      )
-    } else {
-      status.reportErr(
-        'view.dir in the server config file must be a string or an array of strings, not: ',
-        view.dir
-      )
-    }
-  }
 }
 
 /**
@@ -148,7 +119,6 @@ function nameErr (name, varName, varDef, status) {
 
 module.exports = {
   validatedDirectory,
-  validateView,
   filePath,
   filePathRequired,
   routePathsErr,

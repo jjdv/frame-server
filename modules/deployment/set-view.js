@@ -1,4 +1,3 @@
-
 function setView (app, view) {
   if (!view) return
   if (view.engine) app.set('view engine', view.engine)
@@ -15,7 +14,8 @@ module.exports = setView
 const path = require('path')
 
 function getViewDir (dir) {
-  const serverRootDir = process.env.SERVER_ROOT_DIR
-  if (typeof dir === 'string') return path.resolve(serverRootDir, dir)
-  else if (Array.isArray(dir)) return dir.map(dirEl => path.resolve(serverRootDir, dirEl))
+  const rootDir = process.env.ROOT_DIR
+  if (typeof dir === 'string') return path.resolve(rootDir, dir)
+  else if (Array.isArray(dir))
+    {return dir.map(dirEl => path.resolve(rootDir, dirEl))}
 }
