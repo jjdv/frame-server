@@ -5,12 +5,17 @@ const path = require('path')
 
 // test environment
 const { expect, sinon } = require('../../test/test-env')
-const { lookupConfigPaths, cliTest, localConfigData, returnIniConfigData } = require('./test-support/data')
+const {
+  lookupConfigPaths,
+  cliTest,
+  localConfigData,
+  returnIniConfigData
+} = require('./test-support/data')
 
 // absolute path of 'config.ini.js' for cache cleanup of the node's require function
 const serverConfigAbsPath = require.resolve('../../config/server.config.js')
 // cached 'config.ini' required value
-const configIni = require('../../config/config.ini')
+const configIni = require('../../config/server.config.ini')
 // friendly name for require() stub
 const requireStub = sinon.stub()
 
@@ -40,7 +45,7 @@ describe('config > server.config.js', function () {
     requireStub.resetBehavior()
     requireStub.returns(null)
     requireStub.withArgs('path').returns(path)
-    requireStub.withArgs('./config.ini').returns(configIni)
+    requireStub.withArgs('./server.config.ini').returns(configIni)
   })
 
   it('provides ini config if no local config is found', function () {
@@ -63,7 +68,11 @@ describe('config > server.config.js', function () {
 
       delete require.cache[serverConfigAbsPath]
       const returnedConfigData = require('../../config/server.config')
-      const expectedConfigData = Object.assign({}, localConfigData[confIndex], returnIniConfigData[confIndex])
+      const expectedConfigData = Object.assign(
+        {},
+        localConfigData[confIndex],
+        returnIniConfigData[confIndex]
+      )
       expect(returnedConfigData).to.include(expectedConfigData)
     })
   })
@@ -82,7 +91,11 @@ describe('config > server.config.js', function () {
 
       delete require.cache[serverConfigAbsPath]
       const returnedConfigData = require('../../config/server.config')
-      const expectedConfigData = Object.assign({}, localConfigData[confIndex], returnIniConfigData[confIndex])
+      const expectedConfigData = Object.assign(
+        {},
+        localConfigData[confIndex],
+        returnIniConfigData[confIndex]
+      )
       expect(returnedConfigData).to.include(expectedConfigData)
     })
   })
@@ -103,7 +116,9 @@ describe('config > server.config.js', function () {
       delete require.cache[serverConfigAbsPath]
       const returnedConfigData = require('../../config/server.config')
       expect(returnedConfigData).to.be.null()
-      expect(console.error.getCall(0).args[0]).to.include(`Server config file '${cliTestArgv[cliTestArgv.length - 1]}' not found.`)
+      expect(console.error.getCall(0).args[0]).to.include(
+        `Server config file '${cliTestArgv[cliTestArgv.length - 1]}' not found.`
+      )
       console.error.restore()
     })
   })
@@ -124,7 +139,9 @@ describe('config > server.config.js', function () {
       delete require.cache[serverConfigAbsPath]
       const returnedConfigData = require('../../config/server.config')
       expect(returnedConfigData).to.be.null()
-      expect(console.error.getCall(0).args[0]).to.include('Error: The local server configuration data is not an object but: ')
+      expect(console.error.getCall(0).args[0]).to.include(
+        'Error: The local server configuration data is not an object but: '
+      )
       console.error.restore()
     })
   })

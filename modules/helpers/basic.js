@@ -1,6 +1,12 @@
 'use strict'
 
+if (process.env.testScope === 'server.config.ini') {
+  // eslint-disable-next-line no-global-assign
+  __dirname = process.env.testDirname
+}
+
 const fs = require('fs')
+const path = require('path')
 
 /**
  * Gives info if a given value is empty/falsy
@@ -37,6 +43,12 @@ function argValue (argName, argNameAlt) {
   return argValue || undefined
 }
 
+function getServerRootDir () {
+  const serverDirs = path.resolve(__dirname, '../../..').split(path.sep)
+  if (serverDirs[serverDirs.length - 1] === 'node_modules') serverDirs.pop()
+  return serverDirs.join(path.sep)
+}
+
 function findFileInDirs (root, dirs, fileName) {
   let confPath
   for (const dir of dirs) {
@@ -51,6 +63,7 @@ module.exports = {
   isDirectory,
   isFile,
   argValue,
+  getServerRootDir,
   findFileInDirs
 }
 
