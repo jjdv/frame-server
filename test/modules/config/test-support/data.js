@@ -1,10 +1,10 @@
 const path = require('path')
 
-const rootDir = path.resolve(__dirname, '../../../..')
+const rootDir = path.resolve(__dirname, '../../../../..')
 const {
   configFileName,
   configDirs
-} = require('../../../config/server.config.ini')
+} = require('../../../../modules/config/config.data')
 const lookupConfigPaths = configDirs.map(dir =>
   path.resolve(rootDir, dir, configFileName)
 )
@@ -26,7 +26,7 @@ const cliTest = {
 
 const localConfigData = [
   {
-    rootDir: 'testRootDir',
+    rootDir: 'c:\\testRootDir',
     view: {
       test: 'testView'
     },
@@ -44,30 +44,9 @@ const localConfigData = [
   }
 ]
 
-const returnIniConfigData = [
-  {
-    siteRootDir: 'dist',
-    serverMiddlewares: null,
-    installServerMiddlewares: true,
-    siteMiddlewaresDir: null,
-    siteMiddlewares: null,
-    wrongRequestHandler: null
-  },
-  {
-    rootDir: rootDir,
-    view: null,
-    noHelmet: false,
-    serveDynamicFiles: null,
-    serveStaticFiles: 'dist'
-  }
-]
-
-const __dirnameIndex = 0
-
 module.exports = {
+  rootDir,
   lookupConfigPaths,
   cliTest,
-  localConfigData,
-  returnIniConfigData,
-  __dirnameIndex
+  localConfigData
 }

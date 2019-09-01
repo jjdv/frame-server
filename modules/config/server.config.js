@@ -3,13 +3,24 @@
 const path = require('path')
 
 const { isFile, argValue, findFileInDirs } = require('../helpers/basic')
+const { configFileName, configDirs } = require('./config.data')
 const { validatedDirectory } = require('../helpers/validators')
-const { rootDir, configFileName, configDirs } = require('./config.data')
+const Status = require('../classes/status')
 const serverConfigIni = require('./server.config.ini')
+
+// --- start of test purpose code ---
+if (global.testReplace && global.testReplace['server.config.js']) {
+  const replace = global.testReplace['server.config.js']
+  /* eslint-disable no-global-assign */
+  if (replace.__dirname) __dirname = replace.__dirname
+  if (replace.require) require = replace.require
+  /* eslint-enable no-global-assign */
+}
+// --- end of test purpose code ---
 
 function getServerConfig () {
   // get and validate the path of the local configuration file
-  const localConfPath = getConfPath()
+  const localConfPath = getConfPath(serverConfigIni.rootDir)
   if (!localConfPath) return serverConfigIni
   if (localConfPath === 'error') return null
 
@@ -29,37 +40,34 @@ function getServerConfig () {
 
   // get the final server config
   const serverConfig = { ...serverConfigIni, ...locaServerlConfig }
+  const status = new Status()
 
   // rootDir check and registration if valid
-  if (validatedDirectory('rootDir', serverConfig.rootDir, null)) {
-    process.env.ROOT_DIR = serverConfig.rootDir
+  if (validatedDirectory('rootDir', serverConfig.rootDir, null, status)) {
+    process.env.APP_ROOT_DIR = serverConfig.rootDir
   } else return null
 
   // siteRootDir validity check & change into absolute path
   // registration if valid
-  process.env.SITE_ROOT_DIR = validatedDirectory(
+  const siteRootDir = validatedDirectory(
     'siteRootDir',
     serverConfig.siteRootDir,
-    rootDir
+    serverConfig.rootDir,
+    status
   )
-  if (!process.env.SITE_ROOT_DIR) return null
+  if (siteRootDir) process.env.SITE_ROOT_DIR = siteRootDir
 
   // port check
   if (!Number.isInteger(serverConfig.port)) {
-    console.error(
-      'Error: Provided port is not an integer but: ',
-      serverConfig.port
-    )
-    return null
+    status.reportErr('Provided port is not an integer but: ', serverConfig.port)
   }
 
-  return serverConfig
+  return status.error ? null : serverConfig
 }
 
-module.exports = {
-  getServerConfig,
-  getConfPath // for test purposes
-}
+const serverConfig = getServerConfig()
+
+module.exports = serverConfig
 
 //
 // -------------------------------------------------------------------------------
@@ -67,8 +75,8 @@ module.exports = {
 // -------------------------------------------------------------------------------
 
 // getConfPath makes sure to provide valid path or null
-function getConfPath () {
-  let confPath = argValue('--conf', '-c')
+function getConfPath (rootDir) {
+  const confPath = argValue('--conf', '-c')
   if (confPath) {
     // confPath provided as cli argument
     const absConfPath = path.resolve(rootDir, confPath)

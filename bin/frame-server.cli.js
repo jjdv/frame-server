@@ -5,8 +5,7 @@
 // If errors are found, they are reported and null is returned.
 // Exists if errors.
 
-const { getServerConfig } = require('../config/server.config')
-const serverConfig = getServerConfig()
+const serverConfig = require('../config/server.config')
 if (!serverConfig) process.exit()
 
 // Validates each feature config data and gets server features.

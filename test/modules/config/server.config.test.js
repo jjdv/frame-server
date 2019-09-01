@@ -1,23 +1,40 @@
 /* eslint-env mocha */
-'use strict'
 
 const path = require('path')
 
 // test environment
-const { expect, sinon } = require('../../test/test-env')
+const { expect, sinon } = require('../../test-env')
+const {
+  fakeFs,
+  resetFakePaths,
+  addFakeDirPaths,
+  addFakeFilePaths
+} = require('../../../modules/helpers/fake-fs')
 const {
   lookupConfigPaths,
   cliTest,
   localConfigData,
-  returnIniConfigData
+  finalConfigData
 } = require('./test-support/data')
 
-// absolute path of 'config.ini.js' for cache cleanup of the node's require function
-const serverConfigAbsPath = require.resolve('../../config/server.config.js')
+// absolute paths for cache cleanup of the node's require function
+const helpersBasicAbsPath = require.resolve('../../../modules/helpers/basic')
+const validatorsAbsPath = require.resolve('../../../modules/helpers/validators')
+const serverConfigAbsPath = require.resolve(
+  '../../../modules/config/server.config'
+)
 // cached 'config.ini' required value
-const configIni = require('../../config/server.config.ini')
-// friendly name for require() stub
-const requireStub = sinon.stub()
+const configIni = require('../../../modules/config/server.config.ini')
+
+const basicRequireStub = sinon.stub()
+const serverConfigRequireStub = sinon.stub()
+
+function setStubIniConfig () {
+  basicRequireStub.resetBehavior()
+  basicRequireStub.callsFake(pathVal => require(pathVal))
+  serverConfigRequireStub.resetBehavior()
+  serverConfigRequireStub.returns(null)
+}
 
 describe('config > server.config.js', function () {
   let argv
@@ -26,54 +43,58 @@ describe('config > server.config.js', function () {
     // save argv
     argv = process.argv
     // flag test scope being executed
-    process.env.testScope = 'server.config'
-    global.requireStub = requireStub
+    global.testReplace = {
+      'basic.js': {
+        require: basicRequireStub
+      },
+      'server.config.js': {
+        require: serverConfigRequireStub
+      }
+    }
   })
 
   after(function () {
-    delete process.env.testScope
-    delete global.requireStub
-    sinon.restore()
+    delete global.testReplace
     process.argv = argv
   })
 
   beforeEach(function () {
     // process.argv cleanup to avoid interferences
     process.argv = argv.slice(0, 2)
-
-    // requireStub initial setup
-    requireStub.resetBehavior()
-    requireStub.returns(null)
-    requireStub.withArgs('path').returns(path)
-    requireStub.withArgs('./server.config.ini').returns(configIni)
+    setStubIniConfig()
   })
 
   it('provides ini config if no local config is found', function () {
-    requireStub.withArgs('fs').returns({
-      existsSync: sinon.fake.returns(false)
+    basicRequireStub.withArgs('fs').returns({
+      existsSync: () => false
     })
-    delete require.cache[serverConfigAbsPath]
-    const returnedConfigData = require('../../config/server.config')
-    expect(returnedConfigData).to.deep.equal(configIni.serverConfig)
+    const returnedConfigData = require('../../../modules/config/server.config')
+    expect(returnedConfigData).to.deep.equal(configIni)
   })
 
   it("finds local config in any default directory specified in '(config>config.ini.js).configDirs' and correctly merges ini and local configs", function () {
     let confIndex
     lookupConfigPaths.forEach((configPath, index) => {
       confIndex = index % 2
-      requireStub.withArgs('fs').returns({
-        existsSync: sinon.fake(arg => arg === configPath)
-      })
-      requireStub.withArgs(configPath).returns(localConfigData[confIndex])
+      const localConfig = localConfigData[confIndex]
+      const expectedConfigData = { ...configIni, ...localConfig }
 
-      delete require.cache[serverConfigAbsPath]
-      const returnedConfigData = require('../../config/server.config')
-      const expectedConfigData = Object.assign(
-        {},
-        localConfigData[confIndex],
-        returnIniConfigData[confIndex]
+      setStubIniConfig()
+      resetFakePaths()
+      const siteRootDirAbsPath = path.resolve(
+        expectedConfigData.rootDir,
+        expectedConfigData.siteRootDir
       )
-      expect(returnedConfigData).to.include(expectedConfigData)
+      addFakeFilePaths(configPath)
+      addFakeDirPaths([expectedConfigData.rootDir, siteRootDirAbsPath])
+      basicRequireStub.withArgs('fs').returns(fakeFs)
+      serverConfigRequireStub.withArgs(configPath).returns(localConfig)
+
+      delete require.cache[helpersBasicAbsPath]
+      delete require.cache[validatorsAbsPath]
+      delete require.cache[serverConfigAbsPath]
+      const returnedConfigData = require('../../../modules/config/server.config')
+      expect(returnedConfigData).to.deep.equal(expectedConfigData)
     })
   })
 
@@ -83,20 +104,18 @@ describe('config > server.config.js', function () {
     cliTest.validTestArgvIndexes.forEach((testArgvIndex, index) => {
       confIndex = index % 2
       const cliTestArgv = cliTest.argv[testArgvIndex]
-      requireStub.withArgs('fs').returns({
+      basicRequireStub.withArgs('fs').returns({
         existsSync: sinon.fake(arg => arg === cliTest.absPath)
       })
-      requireStub.withArgs(cliTest.absPath).returns(localConfigData[confIndex])
+      serverConfigRequireStub
+        .withArgs(cliTest.absPath)
+        .returns(localConfigData[confIndex])
       process.argv = argvIni.concat(cliTestArgv)
 
+      delete require.cache[helpersBasicAbsPath]
       delete require.cache[serverConfigAbsPath]
-      const returnedConfigData = require('../../config/server.config')
-      const expectedConfigData = Object.assign(
-        {},
-        localConfigData[confIndex],
-        returnIniConfigData[confIndex]
-      )
-      expect(returnedConfigData).to.include(expectedConfigData)
+      const returnedConfigData = require('../../../modules/config/server.config')
+      expect(returnedConfigData).to.include(finalConfigData[confIndex])
     })
   })
 
@@ -106,15 +125,18 @@ describe('config > server.config.js', function () {
     cliTest.invalidTestArgvIndexes.forEach((testArgvIndex, index) => {
       confIndex = index % 2
       const cliTestArgv = cliTest.argv[testArgvIndex]
-      requireStub.withArgs('fs').returns({
+      basicRequireStub.withArgs('fs').returns({
         existsSync: sinon.fake.returns(false)
       })
-      requireStub.withArgs(cliTest.absPath).returns(localConfigData[confIndex])
+      serverConfigRequireStub
+        .withArgs(cliTest.absPath)
+        .returns(localConfigData[confIndex])
       process.argv = argvIni.concat(cliTestArgv)
       sinon.stub(console, 'error')
 
+      delete require.cache[helpersBasicAbsPath]
       delete require.cache[serverConfigAbsPath]
-      const returnedConfigData = require('../../config/server.config')
+      const returnedConfigData = require('../../../modules/config/server.config')
       expect(returnedConfigData).to.be.null()
       expect(console.error.getCall(0).args[0]).to.include(
         `Server config file '${cliTestArgv[cliTestArgv.length - 1]}' not found.`
@@ -129,15 +151,18 @@ describe('config > server.config.js', function () {
     cliTest.validTestArgvIndexes.forEach((testArgvIndex, index) => {
       confIndex = index % 2
       const cliTestArgv = cliTest.argv[testArgvIndex]
-      requireStub.withArgs('fs').returns({
+      basicRequireStub.withArgs('fs').returns({
         existsSync: sinon.fake(arg => arg === cliTest.absPath)
       })
-      requireStub.withArgs(cliTest.absPath).returns([null, () => {}][confIndex])
+      serverConfigRequireStub
+        .withArgs(cliTest.absPath)
+        .returns([null, () => {}][confIndex])
       process.argv = argvIni.concat(cliTestArgv)
       sinon.stub(console, 'error')
 
+      delete require.cache[helpersBasicAbsPath]
       delete require.cache[serverConfigAbsPath]
-      const returnedConfigData = require('../../config/server.config')
+      const returnedConfigData = require('../../../modules/config/server.config')
       expect(returnedConfigData).to.be.null()
       expect(console.error.getCall(0).args[0]).to.include(
         'Error: The local server configuration data is not an object but: '

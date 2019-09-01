@@ -1,9 +1,12 @@
-'use strict'
-
-if (process.env.testScope === 'server.config.ini') {
-  // eslint-disable-next-line no-global-assign
-  __dirname = process.env.testDirname
+// --- start of test purpose code ---
+if (global.testReplace && global.testReplace['basic.js']) {
+  const replace = global.testReplace['basic.js']
+  /* eslint-disable no-global-assign */
+  if (replace.__dirname) __dirname = replace.__dirname
+  if (replace.require) require = replace.require
+  /* eslint-enable no-global-assign */
 }
+// --- end of test purpose code ---
 
 const fs = require('fs')
 const path = require('path')
@@ -43,7 +46,7 @@ function argValue (argName, argNameAlt) {
   return argValue || undefined
 }
 
-function getServerRootDir () {
+function getAppRootDir () {
   const serverDirs = path.resolve(__dirname, '../../..').split(path.sep)
   if (serverDirs[serverDirs.length - 1] === 'node_modules') serverDirs.pop()
   return serverDirs.join(path.sep)
@@ -63,7 +66,7 @@ module.exports = {
   isDirectory,
   isFile,
   argValue,
-  getServerRootDir,
+  getAppRootDir,
   findFileInDirs
 }
 

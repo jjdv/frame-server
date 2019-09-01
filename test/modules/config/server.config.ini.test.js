@@ -12,24 +12,22 @@ const configIniAbsPath = require.resolve(
   '../../../modules/config/server.config.ini'
 )
 const helpersBasicAbsPath = require.resolve('../../../modules/helpers/basic')
+let replace // eslint-disable-line no-unused-vars
 
-describe('config > config.ini.js', function() {
-  before(function() {
+describe('config > config.ini.js', function () {
+  before(function () {
     // flag test scope being executed
-    process.env.testScope = 'server.config.ini'
+    global.testReplace = { 'basic.js': {} }
+    replace = global.testReplace['basic.js']
   })
 
-  after(function() {
-    delete process.env.testScope
-    delete process.env.testDirname
+  after(function () {
+    delete global.testReplace
   })
 
-  it("provides correct 'rootDir' if package is located directly in the server root directory", function() {
+  it("provides correct 'rootDir' if package is located directly in the server root directory", function () {
     // set __dirname to test value
-    process.env.testDirname = path.resolve(
-      rootDir,
-      'frame-server/modules/config'
-    )
+    replace.__dirname = path.resolve(rootDir, 'frame-server/modules/config')
 
     delete require.cache[configIniAbsPath]
     delete require.cache[helpersBasicAbsPath]
@@ -38,9 +36,9 @@ describe('config > config.ini.js', function() {
     expect(returnedServerRootDir).to.equal(rootDir)
   })
 
-  it("provides correct 'rootDir' if package is located in 'node_modules' in the server root directory", function() {
+  it("provides correct 'rootDir' if package is located in 'node_modules' in the server root directory", function () {
     // set __dirname to test value
-    process.env.testDirname = path.resolve(
+    replace.__dirname = path.resolve(
       rootDir,
       'node_modules/frame-server/modules/config'
     )
