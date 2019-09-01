@@ -37,7 +37,7 @@ function validateView (view, status) {
     )
   }
   if (view.dir) {
-    const rootDir = process.env.ROOT_DIR
+    const rootDir = process.env.APP_ROOT_DIR
     if (typeof view.dir === 'string') {
       validatedDirectory('view.dir', view.dir, rootDir, status)
     } else if (Array.isArray(view.dir)) {

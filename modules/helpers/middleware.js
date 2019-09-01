@@ -55,7 +55,7 @@ function middlewareTypeErrCheck (type, middlewareName, status) {
 }
 
 function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
-  if (!rootDir) rootDir = process.env.ROOT_DIR
+  if (!rootDir) rootDir = process.env.APP_ROOT_DIR
   switch (middlewareDef && middlewareDef.constructor) {
     case String:
       const mPath = filePathRequired(middlewareDef, rootDir, middlewareName)

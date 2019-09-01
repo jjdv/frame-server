@@ -9,13 +9,13 @@ module.exports = function validateConfigData (config) {
   const validationStatus = new Status()
 
   // rootDir check
-  process.env.ROOT_DIR = validatedDirectory(
+  process.env.APP_ROOT_DIR = validatedDirectory(
     'rootDir',
     rootDir,
     null,
     validationStatus
   )
-  if (!process.env.ROOT_DIR) return null
+  if (!process.env.APP_ROOT_DIR) return null
 
   // siteRootDir changed into absolute path and done validity check
   process.env.SITE_ROOT_DIR = validatedDirectory(

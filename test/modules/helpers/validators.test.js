@@ -160,7 +160,7 @@ function testValidateView () {
       )
     })
 
-    process.env.ROOT_DIR = 'c:/root'
+    process.env.APP_ROOT_DIR = 'c:/root'
     const testDirArrs = [
       'abc',
       ['...', invalidDirPath],

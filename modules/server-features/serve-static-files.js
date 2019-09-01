@@ -36,7 +36,7 @@ function validateDirDef (dirDef, index, status) {
         `Missing 'dir' definition in 'serveStaticFiles', item ${index + 1}.`
       )
     } else {
-      const rootDir = process.env.ROOT_DIR
+      const rootDir = process.env.APP_ROOT_DIR
       filePathRequired(
         dirDef.dir,
         rootDir,
@@ -62,7 +62,7 @@ function validateDirDef (dirDef, index, status) {
 }
 
 function normalizeStaticFilesDef (serveStaticFilesDef) {
-  const rootDir = process.env.ROOT_DIR
+  const rootDir = process.env.APP_ROOT_DIR
   if (!Array.isArray(serveStaticFilesDef)) {
     serveStaticFilesDef = [serveStaticFilesDef]
   }
