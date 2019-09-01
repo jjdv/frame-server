@@ -1,9 +1,7 @@
 'use strict'
 
-const { toReadOnlyProps } = require('../helpers/object')
-
 module.exports = class Status {
-  constructor(props) {
+  constructor (props) {
     if (!props) setupGlobalProps.call(this)
     else if (Array.isArray(props) && props.length) {
       setupGlobalProps.call(this)
@@ -26,15 +24,16 @@ module.exports = class Status {
           reset: () => (this[prop].error = false)
         }
       }
-    } else
+    } else {
       console.error(
         'Error: Invalid arguments for creating Status instance:',
         props,
         '\nExpected a non-empty string array ...'
       )
+    }
   }
 
-  reset() {
+  reset () {
     this.error = false
     for (const prop in this) {
       if (!['error', 'reportErr', 'reset'].includes(prop)) this[prop].reset()
@@ -46,12 +45,12 @@ module.exports = class Status {
 // helpers
 // -----------------------------------------------------------------------
 
-function setupGlobalProps() {
+function setupGlobalProps () {
   this.error = false
   this.reportErr = reportError
 }
 
-function reportError(...errMsgs) {
+function reportError (...errMsgs) {
   this.error = true
   if (errMsgs.length) console.error('Error: ', ...errMsgs)
 }

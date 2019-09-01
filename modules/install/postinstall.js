@@ -44,7 +44,7 @@ if (installServerMiddlewares && serverMiddlewares) {
 // supporting functions
 // -------------------------------------------------------------------------------
 
-function installExternalPackages(externalPackages) {
+function installExternalPackages (externalPackages) {
   console.log(
     `The following server middleware external packages, found in the server configuration file, will be instaled: ${externalPackages.join(
       ', '

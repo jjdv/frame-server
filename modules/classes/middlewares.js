@@ -5,7 +5,7 @@ const Status = require('./status')
 //   if (middlewaresArgsErr(middlewaresName, middlewares, applyMsg)) return
 
 class Middlewares {
-  constructor(middlewaresName, middlewaresDef, options, applyMsg) {
+  constructor (middlewaresName, middlewaresDef, options, applyMsg) {
     const status = new Status()
 
     if (nameErr(middlewaresName, 'middlewares group', middlewares)) return
@@ -34,7 +34,7 @@ class Middlewares {
     this.applyMsg = applyMsg
   }
 
-  apply(app, groupReporting = true) {
+  apply (app, groupReporting = true) {
     if (!app || isEmpty(this.middlewares)) return
 
     const individualReporting = !groupReporting

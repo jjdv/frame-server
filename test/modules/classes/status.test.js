@@ -22,7 +22,7 @@ let status, consoleErrorStub
 // test body
 // -----------------------------------------------------------------------
 
-describe('instance of Status', function() {
+describe('instance of Status', function () {
   before(() => {
     status = new Status()
     consoleErrorStub = sinon.stub(console, 'error')
@@ -37,15 +37,15 @@ describe('instance of Status', function() {
     consoleErrorStub.restore()
   })
 
-  describe('with no props', function() {
+  describe('with no props', function () {
     testNoProps()
   })
 
-  describe('with invalid props', function() {
+  describe('with invalid props', function () {
     testInvalidProps()
   })
 
-  describe('with valid and invalid props', function() {
+  describe('with valid and invalid props', function () {
     testMixedProps()
   })
 })
@@ -54,7 +54,7 @@ describe('instance of Status', function() {
 // helpers
 // -----------------------------------------------------------------------
 
-function testNoProps() {
+function testNoProps () {
   it('has the initial error property set to false', () => {
     expect(status.error).to.be.false()
   })
@@ -93,7 +93,7 @@ function testNoProps() {
   })
 }
 
-function testInvalidProps() {
+function testInvalidProps () {
   it('returns empty object and reports invalid arguments for creating Status instance', () => {
     invalidStatusArgs.forEach(arg => {
       consoleErrorStub.resetHistory()
@@ -108,7 +108,7 @@ function testInvalidProps() {
   })
 }
 
-function testMixedProps() {
+function testMixedProps () {
   it('has the initial error property set to false', () => {
     status = new Status(statusProps)
     expect(status.error).to.be.false()

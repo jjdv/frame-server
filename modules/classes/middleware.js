@@ -9,7 +9,7 @@ const {
 } = require('../helpers/middleware')
 
 class Middleware {
-  constructor(mDef, options = {}) {
+  constructor (mDef, options = {}) {
     const status = new Status()
 
     if (!mDef || mDef.constructor !== Object || isEmpty(mDef)) {
@@ -39,7 +39,7 @@ class Middleware {
     }
   }
 
-  apply(app, report = true) {
+  apply (app, report = true) {
     if (!app || !this.middlewareFn) return
 
     if (this.routePaths) app[this.type](this.routePaths, this.middlewareFn)
