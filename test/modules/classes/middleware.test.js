@@ -46,7 +46,7 @@ function testCreation () {
   middlewareTestData.forEach(mtd => {
     it(mtd.title, () => {
       if (Array.isArray(mtd.definition)) {
-        mtd.definition.forEach((mtdEl, index) => {
+        mtd.definition.forEach(mtdEl => {
           consoleErrorStub.resetHistory()
           checkMiddlewareFromDef(mtdEl, mtd)
         })

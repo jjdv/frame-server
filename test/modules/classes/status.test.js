@@ -2,7 +2,6 @@
 'use strict'
 
 // test environment
-const path = require('path')
 const { expect, sinon } = require('../../test-env')
 
 // class under test

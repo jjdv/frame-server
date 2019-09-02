@@ -14,7 +14,7 @@ const packageNames = {
 function getServerMiddlewares (config, status) {
   // noHelmet check
   if (typeof config.noHelmet !== 'boolean') {
-    validationStatus.reportErr(
+    status.reportErr(
       "The 'noHelmet' parameter in the server config file is not boolean but:",
       config.noHelmet
     )
@@ -23,11 +23,7 @@ function getServerMiddlewares (config, status) {
   // serverMiddlewares check
   if (config.serverMiddlewares) {
     const { validateServerMiddlewares } = require('./server-middlewares')
-    validateServerMiddlewares(
-      config.serverMiddlewares,
-      config.noHelmet,
-      validationStatus
-    )
+    validateServerMiddlewares(config.serverMiddlewares, config.noHelmet, status)
   }
 }
 
