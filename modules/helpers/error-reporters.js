@@ -65,6 +65,11 @@ function filePathRequired (pathDef, rootDir, varName, status) {
   return null
 }
 
+function safeRequire (path, root, varName, status) {
+  const safePath = filePathRequired(path, root, varName, status)
+  return safePath ? require(safePath) : null
+}
+
 /**
  * Check if all route paths are valid, i.e. if each route is a string starting with '/' or RegExp
  * @param {(string|string[])} paths - path or array of paths to be verified
@@ -121,6 +126,7 @@ module.exports = {
   validatedDirectory,
   filePath,
   filePathRequired,
+  safeRequire,
   routePathsErr,
   nameErr
 }

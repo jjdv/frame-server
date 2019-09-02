@@ -1,4 +1,4 @@
-const { filePathRequired } = require('./error-reporters')
+const { safeRequire } = require('./error-reporters')
 
 const middlewareMock = {
   name: undefined,
@@ -58,8 +58,7 @@ function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
   if (!rootDir) rootDir = process.env.APP_ROOT_DIR
   switch (middlewareDef && middlewareDef.constructor) {
     case String:
-      const mPath = filePathRequired(middlewareDef, rootDir, middlewareName)
-      return mPath ? require(mPath) : null
+      return safeRequire(middlewareDef, rootDir, middlewareName)
     case Function:
       return middlewareDef
     default:
