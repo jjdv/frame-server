@@ -1,4 +1,4 @@
-const { filePathRequired } = require('./validators')
+const { filePathRequired } = require('./error-reporters')
 
 const middlewareMock = {
   name: undefined,

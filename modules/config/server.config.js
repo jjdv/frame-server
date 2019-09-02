@@ -4,7 +4,7 @@ const path = require('path')
 
 const { isFile, argValue, findFileInDirs } = require('../helpers/basic')
 const { configFileName, configDirs } = require('./config.data')
-const { validatedDirectory } = require('../helpers/validators')
+const { validatedDirectory } = require('../helpers/error-reporters')
 const Status = require('../classes/status')
 const serverConfigIni = require('./server.config.ini')
 
