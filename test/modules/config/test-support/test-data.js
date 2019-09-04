@@ -11,17 +11,19 @@ const lookupConfigPaths = configDirs.map(dir =>
 
 const cliDir = 'testdir'
 const cliConfigFile = path.join(cliDir, configFileName)
+const postfix = 'ccc'
 const cliTest = {
-  dir: cliDir,
+  cliConfigFile,
   absPath: path.resolve(rootDir, cliDir, configFileName),
-  argv: [
+  correctConfArgv: [
     ['aaa', '--conf', cliConfigFile],
-    ['aaa', 'bbb', '--conf', cliConfigFile + 'ccc'],
-    ['aaa', '-c', cliConfigFile + 'ddd'],
     ['aaa', 'bbb', '-c', cliConfigFile]
   ],
-  validTestArgvIndexes: [0, 3],
-  invalidTestArgvIndexes: [1, 2]
+  postfix,
+  incorrectConfArgv: [
+    ['aaa', 'bbb', '--conf', cliConfigFile + postfix],
+    ['aaa', '-c', cliConfigFile + postfix]
+  ]
 }
 
 const localConfigData = [
@@ -45,7 +47,6 @@ const localConfigData = [
 ]
 
 module.exports = {
-  rootDir,
   lookupConfigPaths,
   cliTest,
   localConfigData

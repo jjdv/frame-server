@@ -1,6 +1,6 @@
 'use strict'
 
-import { validatedDirectory } from '../helpers/validators'
+import { validatedDirectory } from '../helpers/error-reporters'
 
 function getView (config, status) {
   if (config.view) {

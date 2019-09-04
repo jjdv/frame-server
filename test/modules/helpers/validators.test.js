@@ -15,7 +15,7 @@ const {
   filePathRequired,
   routePathsErr,
   nameErr
-} = require('../../../modules/helpers/validators')
+} = require('../../../modules/helpers/error-reporters')
 
 // test data
 const {
@@ -30,7 +30,7 @@ const {
   invalidDirPath,
   invalidFilePath
 } = require('./test-support/basic.test.data')
-const validViews = require('./test-support/validators.test.data')
+const validViews = require('./test-support/error-reporters.test.data')
 
 // test variables
 let status, consoleErrorStub, res, varName, varDef

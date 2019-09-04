@@ -1,6 +1,6 @@
 'use strict'
 
-const { validatedDirectory, validateView } = require('../helpers/validators')
+const { validatedDirectory, validateView } = require('../helpers/error-reporters')
 const { filePath } = require('../helpers/basic')
 const Status = require('../classes/status')
 

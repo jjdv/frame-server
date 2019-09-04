@@ -1,6 +1,6 @@
 const Status = require('./status')
 const { isEmpty } = require('../helpers/basic')
-const { routePathsErr, nameErr } = require('../helpers/validators')
+const { routePathsErr, nameErr } = require('../helpers/error-reporters')
 const {
   middlewareMock,
   middlewareDefToArgs,
@@ -9,7 +9,7 @@ const {
 } = require('../helpers/middleware')
 
 class Middleware {
-  constructor (mDef, options = {}) {
+  constructor(mDef, options = {}) {
     const status = new Status()
 
     if (!mDef || mDef.constructor !== Object || isEmpty(mDef)) {
