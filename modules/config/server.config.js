@@ -21,13 +21,14 @@ if (global.testReplace && global.testReplace['server.config.js']) {
 function getServerConfig () {
   // get and validate the path of the local configuration file
   const localConfPath = getConfPath(serverConfigIni.rootDir)
-  if (!localConfPath) return serverConfigIni
   if (localConfPath === 'error') return null
+  if (!localConfPath) return serverConfigIni
 
   const locaServerlConfig = require(localConfPath)
 
   // check if format of localSerrverConfig is acceptable
   if (
+    !locaServerlConfig ||
     typeof locaServerlConfig !== 'object' ||
     locaServerlConfig.constructor !== Object
   ) {
@@ -58,8 +59,11 @@ function getServerConfig () {
   if (siteRootDir) process.env.SITE_ROOT_DIR = siteRootDir
 
   // port check
-  if (!Number.isInteger(serverConfig.port)) {
-    status.reportErr('Provided port is not an integer but: ', serverConfig.port)
+  if (!Number.isInteger(serverConfig.port) || serverConfig.port < 1) {
+    status.reportErr(
+      'Provided port must be an integer above 0 but it is: ',
+      serverConfig.port
+    )
   }
 
   return status.error ? null : serverConfig
