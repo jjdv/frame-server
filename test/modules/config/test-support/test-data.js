@@ -26,7 +26,7 @@ const cliTest = {
   ]
 }
 
-const localConfigData = [
+const correctLocalConfigData = [
   {
     rootDir: 'c:\\testRootDir',
     view: {
@@ -46,8 +46,54 @@ const localConfigData = [
   }
 ]
 
+const errValidationResFormat = (varName, pathDef) => [
+  'Error: ',
+  `Wrong directory format of '${varName}':`,
+  pathDef
+]
+
+const errValidationResPath = (varName, pathDef) => [
+  'Error: ',
+  `Cannot find directory "${pathDef}" specified in '${varName}'.`
+]
+
+const errPortRes = port => [
+  'Error: ',
+  'Provided port must be an integer above 0 but it is: ',
+  port
+]
+
+const incorrectLocalConfigData = [
+  {
+    conf: { rootDir: [] },
+    errArgs: errValidationResFormat('rootDir', [])
+  },
+  {
+    conf: { rootDir: 'abc' },
+    errArgs: errValidationResPath('rootDir', 'abc')
+  },
+  {
+    conf: { siteRootDir: [] },
+    errArgs: errValidationResFormat('siteRootDir', [])
+  },
+  {
+    conf: { siteRootDir: 'def' },
+    errArgs: errValidationResPath('siteRootDir', path.resolve(rootDir, 'def'))
+  },
+  {
+    conf: { port: [] },
+    errArgs: errPortRes([])
+  },
+  {
+    conf: { port: 0 },
+    errArgs: errPortRes(0)
+  }
+]
+
 module.exports = {
+  rootDir,
   lookupConfigPaths,
   cliTest,
-  localConfigData
+  correctLocalConfigData,
+  incorrectLocalConfigData
 }
