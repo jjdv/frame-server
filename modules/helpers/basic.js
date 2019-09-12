@@ -33,41 +33,16 @@ function isFile (filePath) {
   return fsStatMethodResultSync('isFile', filePath)
 }
 
-function argValue (argName, argNameAlt) {
-  if (!argName || process.argv.length < 4) return undefined
-
-  let argIndex = process.argv.indexOf(argName, 2)
-  if (argIndex === -1 && argNameAlt) {
-    argIndex = process.argv.indexOf(argNameAlt, 2)
-  }
-  const argValue =
-    ++argIndex && process.argv.length > argIndex && process.argv[argIndex]
-
-  return argValue || undefined
-}
-
-function getAppRootDir () {
-  const serverDirs = path.resolve(__dirname, '../../..').split(path.sep)
-  if (serverDirs[serverDirs.length - 1] === 'node_modules') serverDirs.pop()
-  return serverDirs.join(path.sep)
-}
-
-function findFileInDirs (root, dirs, fileName) {
-  let confPath
-  for (const dir of dirs) {
-    confPath = path.resolve(root, dir, fileName)
-    if (isFile(confPath)) return confPath
-  }
-  return undefined
-}
+const appRootDirArr = path.resolve(__dirname, '../../..').split(path.sep)
+if (appRootDirArr[appRootDirArr.length - 1] === 'node_modules')
+  appRootDirArr.pop()
+const appRootDir = appRootDirArr.join(path.sep)
 
 module.exports = {
   isEmpty,
   isDirectory,
   isFile,
-  argValue,
-  getAppRootDir,
-  findFileInDirs
+  appRootDir
 }
 
 // -----------------------------------------------------------------------

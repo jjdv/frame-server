@@ -1,16 +1,16 @@
 /* eslint-env mocha */
 'use strict'
 
+const path = require('path')
+
 // test environment
 const { expect, sinon } = require('../../test-env')
 
-const Status = require('../../../modules/classes/status')
-
 // methods under test
 const {
+  isEmpty,
   isDirectory,
-  isFile,
-  isEmpty
+  isFile
 } = require('../../../modules/helpers/basic')
 
 // test data
@@ -24,16 +24,14 @@ const {
 } = require('./test-support/basic.test.data')
 
 // test variables
-let status, consoleErrorStub, res
+let consoleErrorStub, res
 
 describe('modules > helpers > basic.js', () => {
   before(() => {
-    status = new Status()
     consoleErrorStub = sinon.stub(console, 'error')
   })
 
   beforeEach(async () => {
-    status.reset()
     consoleErrorStub.resetHistory()
   })
 
@@ -89,6 +87,45 @@ describe('modules > helpers > basic.js', () => {
     it('returns true for valid file path', () => {
       res = isFile(validFilePath)
       expect(res).to.be.true()
+    })
+  })
+
+  describe('appRootDir', function () {
+    const rootDir = path.resolve(__dirname, '../../../..')
+    const helpersBasicAbsPath = require.resolve(
+      '../../../modules/helpers/basic'
+    )
+    let replace
+
+    before(() => {
+      // flag test scope being executed
+      global.testReplace = { 'basic.js': {} }
+      replace = global.testReplace['basic.js']
+    })
+
+    beforeEach(() => {
+      delete require.cache[helpersBasicAbsPath]
+    })
+
+    after(() => {
+      delete global.testReplace
+    })
+
+    it("provides correct 'rootDir' if package is located directly in the server root directory", function () {
+      // set __dirname to test value
+      replace.__dirname = path.resolve(rootDir, 'frame-server/modules/config')
+      const { appRootDir } = require('../../../modules/helpers/basic')
+      expect(appRootDir).to.equal(rootDir)
+    })
+
+    it("provides correct 'rootDir' if package is located in 'node_modules' in the server root directory", function () {
+      // set __dirname to test value
+      replace.__dirname = path.resolve(
+        rootDir,
+        'node_modules/frame-server/modules/config'
+      )
+      const { appRootDir } = require('../../../modules/helpers/basic')
+      expect(appRootDir).to.equal(rootDir)
     })
   })
 })
