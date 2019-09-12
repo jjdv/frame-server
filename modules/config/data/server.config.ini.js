@@ -1,10 +1,10 @@
 'use strict'
 
-const { getAppRootDir } = require('../helpers/basic')
+const { appRootDir } = require('../../helpers/basic')
 
 const serverConfig = {
   // rootDir is the starting point in the file resolution process
-  rootDir: getAppRootDir(),
+  rootDir: appRootDir,
 
   // siteRootDir relative to rootDir or absolute (path resolution with path.resolve)
   siteRootDir: 'dist',

@@ -2,11 +2,13 @@
 
 const path = require('path')
 
-const { isFile, argValue, findFileInDirs } = require('../helpers/basic')
-const { configFileName, configDirs } = require('./config.data')
+const { isFile } = require('../helpers/basic')
+const { argValue, findFileInDirs } = require('../helpers/node')
 const { validatedDirectory } = require('../helpers/error-reporters')
 const Status = require('../classes/status')
-const serverConfigIni = require('./server.config.ini')
+
+const { configFileName, configDirs } = require('./data/config-base-data')
+const serverConfigIni = require('./data/server.config.ini')
 
 // --- start of test purpose code ---
 if (global.testReplace && global.testReplace['server.config.js']) {
@@ -69,9 +71,7 @@ function getServerConfig () {
   return status.error ? null : serverConfig
 }
 
-const serverConfig = getServerConfig()
-
-module.exports = serverConfig
+module.exports = getServerConfig
 
 //
 // -------------------------------------------------------------------------------

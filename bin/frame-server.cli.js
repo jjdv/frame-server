@@ -3,18 +3,22 @@
 
 // Finds local server config and merges with default config data.
 // If errors are found, they are reported and null is returned.
-// Exists if errors.
 
-const serverConfig = require('../config/server.config')
+const getServerConfig = require('../config/get-server-config')
+
+const serverConfig = getServerConfig()
 if (!serverConfig) process.exit()
 
-// Validates each feature config data and gets server features.
+// Validates each feature config data.
 // If errors are found, they are reported and null is returned.
-// Exists if errors.
 
-const validateAndGetServerFeatures = require('../modules/server-features')
-const serverFeatures = validateAndGetServerFeatures(serverConfig)
-if (!serverFeatures) process.exit()
+const {
+  invalidConfigs,
+  getServerFeatures
+} = require('../modules/server-features')
+
+if (invalidConfigs(serverConfig)) process.exit()
+const serverFeatures = getServerFeatures(serverConfig)
 
 // Gets the Express app and applies all got server features.
 
