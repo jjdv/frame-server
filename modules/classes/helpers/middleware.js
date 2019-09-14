@@ -1,4 +1,4 @@
-const Status = require('./status')
+const Status = require('../status')
 const {
   routePathsErr,
   nameErr,
