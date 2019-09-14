@@ -1,11 +1,21 @@
-const { safeRequire } = require('./error-reporters')
+const Status = require('./status')
+const {
+  routePathsErr,
+  nameErr,
+  safeRequire
+} = require('../../helpers/error-reporters')
 
 const middlewareMock = {
   name: undefined,
-  middlewareFn: null
+  middlewareFn: null,
+  apply: () => {}
 }
 
-function middlewareDefToArgs (middlewareDef, options = {}) {
+function middlewareDefToArgs (
+  middlewareDef,
+  options = {},
+  status = new Status()
+) {
   const { rootDir, defaultType } = options
   const {
     name: middlewareName,
@@ -19,6 +29,11 @@ function middlewareDefToArgs (middlewareDef, options = {}) {
     rootDir
   )
   const type = middlewareDef.type ? middlewareDef.type : defaultType || 'use'
+
+  nameErr(middlewareName, 'middleware', middlewareDef, status)
+  middlewareFnErrCheck(middlewareFn, middlewareName, status)
+  if (routePaths) routePathsErr(routePaths, middlewareName, status)
+  middlewareTypeErrCheck(type, middlewareName, status)
 
   return [middlewareName, middlewareFn, routePaths, type]
 }

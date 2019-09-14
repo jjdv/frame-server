@@ -1,5 +1,5 @@
 const Middleware = require('../classes/middleware')
-const { middlewareArgsErr } = require('../helpers/middleware')
+const { middlewareArgsErr } = require('../classes/helpers/middleware')
 
 function validateWrongRequestHandlerDef (wrongRequestHandlerDef, status) {
   const mArgs = Middleware.defToArgs(

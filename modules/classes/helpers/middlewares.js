@@ -1,6 +1,6 @@
-const Status = require('../classes/status')
-const Middleware = require('../classes/middleware')
-const { nameErr } = require('./basic')
+const Status = require('../status')
+const Middleware = require('../middleware')
+const { nameErr } = require('../../helpers/basic')
 
 function validateDefs (defs, validateFn, status) {
   if (!defs) return

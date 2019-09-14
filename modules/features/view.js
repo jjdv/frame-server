@@ -1,6 +1,6 @@
 'use strict'
 
-import { validatedDirectory } from '../helpers/error-reporters'
+const { validatedDirectory } = require('../helpers/error-reporters')
 
 function validateViewConfig (viewConfig, status) {
   if (viewConfig.constructor !== Object) {

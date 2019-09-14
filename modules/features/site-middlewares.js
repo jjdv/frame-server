@@ -1,6 +1,6 @@
 const Middleware = require('../classes/middleware')
 const Middlewares = require('../classes/middlewares')
-const { validateDefs } = require('../helpers/middlewares')
+const { validateDefs } = require('../classes/helpers/middlewares')
 
 function validateSiteMiddlewares (siteMiddlewaresDef, status) {
   validateDefs(siteMiddlewaresDef, validateSiteMiddleware, status)
