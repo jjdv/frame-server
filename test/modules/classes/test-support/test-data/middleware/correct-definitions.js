@@ -1,3 +1,5 @@
+const path = require('path')
+
 const correctDefinitions = {
   title: 'returns correct middleware instance if definition is correct',
   definition: [
@@ -32,10 +34,10 @@ const correctDefinitions = {
         name: 'myMiddlewareName3',
         type: 'get',
         routePaths: ['/route/path', '/', /abc*/],
-        middleware: 'middleware-test-function.js'
+        middleware: 'test-support/test-function.js'
       },
       options: {
-        rootDir: __dirname + '/../..'
+        rootDir: path.resolve(__dirname, '../../../../..')
       },
       result: {
         name: 'myMiddlewareName3',
@@ -48,10 +50,10 @@ const correctDefinitions = {
       definition: {
         name: 'myMiddlewareName4',
         routePaths: /abc*/,
-        middleware: 'middleware-test-function.js'
+        middleware: 'test-support/test-function.js'
       },
       options: {
-        rootDir: __dirname + '/../..',
+        rootDir: path.resolve(__dirname, '../../../../..'),
         defaultType: 'put'
       },
       result: {

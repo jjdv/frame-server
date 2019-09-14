@@ -2,7 +2,7 @@
 'use strict'
 
 // test environment
-const { expect, sinon } = require('../../test-env')
+const { expect, sinon } = require('../../test-support/test-env')
 const Middleware = require('../../../modules/classes/middleware')
 
 // class under test

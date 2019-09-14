@@ -1,6 +1,6 @@
 const {
   middlewareMock
-} = require('../../../../../../modules/helpers/middleware')
+} = require('../../../../../../modules/classes/helpers/middleware')
 
 const definitions = [null, false, undefined, {}, [], ''].map(def => ({
   definition: def,

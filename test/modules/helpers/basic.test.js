@@ -4,7 +4,7 @@
 const path = require('path')
 
 // test environment
-const { expect, sinon } = require('../../test-env')
+const { expect, sinon } = require('../../test-support/test-env')
 
 // methods under test
 const {

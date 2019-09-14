@@ -3,8 +3,8 @@
 const path = require('path')
 
 // test environment
-const { expect, sinon } = require('../../test-env')
-const FakeFs = require('../../../modules/helpers/fake-fs')
+const { expect, sinon } = require('../../test-support/test-env')
+const FakeFs = require('../../test-support/fake-fs')
 const {
   lookupConfigPaths,
   cliTest,
