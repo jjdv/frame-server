@@ -18,7 +18,9 @@ let consoleErrorStub, res, appSpy
 describe('Middleware', function () {
   before(() => {
     consoleErrorStub = sinon.stub(console, 'error')
-    appSpy = { use: sinon.spy() }
+    appSpy = sinon.fake()
+    appSpy.use = sinon.spy()
+    appSpy.get = sinon.spy()
   })
 
   after(() => {
@@ -75,8 +77,6 @@ function testApply () {
       middleware: () => 'testResult'
     })
     mdlw.apply(appSpy, false)
-    appSpy.use.should.have.callCount(1)
-    expect(appSpy.use.getCall(0).args.length).to.equal(1)
     appSpy.use.should.have.been.calledOnce()
     expect(appSpy.use.getCall(0).args.length).to.equal(1)
     expect(appSpy.use.args[0][0].toString()).to.equal(
@@ -88,15 +88,16 @@ function testApply () {
     const mdlw = new Middleware({
       name: 'testName',
       middleware: () => 'testResult',
-      routePaths: '/api'
+      routePaths: '/api',
+      type: 'get'
     })
     const consoleLogStub = sinon.stub(console, 'log')
     mdlw.apply(appSpy, false)
     consoleLogStub.restore()
-    appSpy.use.should.have.callCount(1)
-    expect(appSpy.use.getCall(0).args.length).to.equal(2)
-    expect(appSpy.use.args[0][0]).to.equal('/api')
-    expect(appSpy.use.args[0][1].toString()).to.equal(
+    appSpy.get.should.have.callCount(1)
+    expect(appSpy.get.getCall(0).args.length).to.equal(2)
+    expect(appSpy.get.args[0][0]).to.equal('/api')
+    expect(appSpy.get.args[0][1].toString()).to.equal(
       (() => 'testResult').toString()
     )
   })
