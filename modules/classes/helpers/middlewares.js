@@ -1,6 +1,8 @@
-const Status = require('../status')
 const Middleware = require('../middleware')
-const { nameErr } = require('../../helpers/basic')
+const {
+  Status,
+  statusFunctions: { nameErr }
+} = require('node-basic-helpers')
 
 function validateDefs (defs, validateFn, status) {
   if (!defs) return

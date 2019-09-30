@@ -2,7 +2,9 @@ const path = require('path')
 const express = require('express')
 
 const Middlewares = require('../classes/middlewares')
-const { filePathRequired, routePathsErr } = require('../helpers/basic')
+const {
+  statusFunctions: { filePathRequired, routePathsErr }
+} = require('node-basic-helpers')
 const { validateDefs } = require('../classes/helpers/middlewares')
 
 function validateStaticFilesDef (serveStaticFilesDef, status) {

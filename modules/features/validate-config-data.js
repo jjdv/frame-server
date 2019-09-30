@@ -1,8 +1,10 @@
 'use strict'
 
-const { validatedDirectory, validateView } = require('../helpers/error-reporters')
-const { filePath } = require('../helpers/basic')
-const Status = require('../classes/status')
+const {
+  Status,
+  statusFunctions: { validatedDirectory, filePathValidated }
+} = require('node-basic-helpers')
+const { validateViewConfig } = require('./view')
 
 module.exports = function validateConfigData (config) {
   const rootDir = config.rootDir
@@ -27,7 +29,7 @@ module.exports = function validateConfigData (config) {
   if (!process.env.SITE_ROOT_DIR) return null
 
   // view check
-  if (config.view) validateView(config.view, validationStatus)
+  if (config.view) validateViewConfig(config.view, validationStatus)
 
   // noHelmet check
   if (typeof config.noHelmet !== 'boolean') {
@@ -51,7 +53,7 @@ module.exports = function validateConfigData (config) {
   if (config.siteMiddlewares) {
     const siteMiddlewaresDir =
       config.siteMiddlewaresDir &&
-      filePath(
+      filePathValidated(
         config.siteMiddlewaresDir,
         rootDir,
         'siteMiddlewaresDir',

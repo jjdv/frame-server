@@ -1,9 +1,7 @@
-const Status = require('../status')
 const {
-  routePathsErr,
-  nameErr,
-  safeRequire
-} = require('../../helpers/error-reporters')
+  Status,
+  statusFunctions: { routePathsErr, nameErr, safeRequire }
+} = require('node-basic-helpers')
 
 const middlewareMock = {
   name: undefined,

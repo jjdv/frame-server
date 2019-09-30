@@ -1,6 +1,6 @@
 'use strict'
 
-const { appRootDir } = require('../../helpers/basic')
+const { appRootDir } = require('./config-base-data')
 
 const serverConfig = {
   // rootDir is the starting point in the file resolution process

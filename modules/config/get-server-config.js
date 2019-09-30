@@ -2,10 +2,11 @@
 
 const path = require('path')
 
-const { isFile } = require('../helpers/basic')
-const { argValue, findFileInDirs } = require('../helpers/node')
-const { validatedDirectory } = require('../helpers/error-reporters')
-const Status = require('../classes/status')
+const {
+  Status,
+  basicFunctions: { isFile, argValue, findFileInDirs },
+  statusFunctios: { validatedDirectory }
+} = require('node-basic-helpers')
 
 const { configFileName, configDirs } = require('./data/config-base-data')
 const serverConfigIni = require('./data/server.config.ini')

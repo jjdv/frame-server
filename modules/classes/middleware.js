@@ -1,5 +1,7 @@
-const Status = require('./status')
-const { isEmpty } = require('../helpers/basic')
+const {
+  Status,
+  basicFunctions: { isEmpty }
+} = require('node-basic-helpers')
 const { middlewareMock, middlewareDefToArgs } = require('./helpers/middleware')
 
 class Middleware {

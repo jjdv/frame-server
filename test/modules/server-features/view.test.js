@@ -5,21 +5,16 @@
 const path = require('path')
 const { expect, sinon } = require('../../test-support/test-env')
 
-const Status = require('../../../modules/classes/status')
+const { Status } = require('node-basic-helpers')
 
 // methods under test
-const { validateView } = require('../../../modules/server-features/view')
+const { validateViewConfig } = require('../../../modules/server-features/view')
 
 // test data
 const {
-  falsyVars,
-  stringValues,
   nonObjectValues,
   nonStringValues,
-  testPathsData,
-  validDirPath,
   validFilePath,
-  validFileNameStr,
   invalidDirPath,
   invalidFilePath
 } = require('./test-support/basic.test.data')
@@ -28,7 +23,7 @@ const validViews = require('./test-support/error-reporters.test.data')
 // test variables
 let status, consoleErrorStub, res, varName, varDef
 
-describe('modules > server-features > validateView()', () => {
+describe('modules > server-features > validateViewConfig()', () => {
   before(() => {
     status = new Status()
     consoleErrorStub = sinon.stub(console, 'error')
@@ -46,7 +41,7 @@ describe('modules > server-features > validateView()', () => {
   it('reports error and returns status.error true for non-object values', () => {
     nonObjectValues.forEach(nonObjectVal => {
       consoleErrorStub.resetHistory()
-      validateView(nonObjectVal, status)
+      validateViewConfig(nonObjectVal, status)
       expect(status.error).to.be.true()
       consoleErrorStub.should.have.been.calledOnceWithExactly(
         'Error: ',
@@ -59,7 +54,7 @@ describe('modules > server-features > validateView()', () => {
   it('reports error and returns status.error true for non-string, not falsy view.engine values', () => {
     nonStringValues.forEach(nonObjectVal => {
       consoleErrorStub.resetHistory()
-      validateView({ engine: nonObjectVal }, status)
+      validateViewConfig({ engine: nonObjectVal }, status)
       expect(status.error).to.be.true()
       consoleErrorStub.should.have.been.calledOnceWithExactly(
         'Error: ',
@@ -72,7 +67,7 @@ describe('modules > server-features > validateView()', () => {
   it('reports error and returns status.error true for invalid, not falsy view.dir values', () => {
     ;[{}, /abc/, 44].forEach(wrongFormatVal => {
       consoleErrorStub.resetHistory()
-      validateView({ dir: wrongFormatVal }, status)
+      validateViewConfig({ dir: wrongFormatVal }, status)
       expect(status.error).to.be.true()
       consoleErrorStub.should.have.been.calledOnceWithExactly(
         'Error: ',
@@ -89,7 +84,7 @@ describe('modules > server-features > validateView()', () => {
     ]
     testDirArrs.forEach(wrongFormatVal => {
       consoleErrorStub.resetHistory()
-      validateView({ dir: wrongFormatVal }, status)
+      validateViewConfig({ dir: wrongFormatVal }, status)
       expect(status.error).to.be.true()
       if (!Array.isArray(wrongFormatVal)) wrongFormatVal = [wrongFormatVal]
       wrongFormatVal.forEach((wfVal, index) => {
@@ -105,7 +100,7 @@ describe('modules > server-features > validateView()', () => {
   })
 
   it('returns status.error false for valid view definitions', () => {
-    validViews.forEach(validView => validateView(validView, status))
+    validViews.forEach(validView => validateViewConfig(validView, status))
     expect(status.error).to.be.false()
     consoleErrorStub.should.have.not.been.called()
   })

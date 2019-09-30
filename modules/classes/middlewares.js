@@ -1,6 +1,9 @@
-const { nameErr, isEmpty } = require('../helpers/basic')
+const {
+  Status,
+  basicFunctions: { isEmpty },
+  statusFunctions: { nameErr }
+} = require('node-basic-helpers')
 const Middleware = require('./middleware')
-const Status = require('./status')
 
 //   if (middlewaresArgsErr(middlewaresName, middlewares, applyMsg)) return
 

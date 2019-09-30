@@ -1,6 +1,6 @@
 'use strict'
 
-const { validatedDirectory } = require('../helpers/error-reporters')
+const { validatedDirectory } = require('node-basic-helpers')
 
 function validateViewConfig (viewConfig, status) {
   if (viewConfig.constructor !== Object) {
@@ -45,6 +45,6 @@ function getView (config, status) {
 }
 
 module.exports = {
-  getView,
-  validateViewConfig
+  validateViewConfig,
+  getView
 }

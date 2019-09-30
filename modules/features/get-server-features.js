@@ -1,4 +1,4 @@
-const Status = require('../classes/status')
+const { Status } = require('node-basic-helpers')
 
 const validateAndGetView = require('./view')
 const validateAndGetServerMiddlewares = require('./server-middlewares')
