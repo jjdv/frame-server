@@ -32,19 +32,20 @@
   },
   "homepage": "https://github.com/jjdv/frame-server#readme",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.17.1",
+    "node-basic-helpers": "^1.0.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "dmd-readable": "^0.4.0",
-    "eslint": "^6.3.0",
+    "dmd-readable": "^0.4.1",
+    "eslint": "^6.5.0",
     "eslint-plugin-prettierx": "^0.4.0",
-    "jsdoc-to-markdown": "^5.0.0",
-    "mocha": "^6.1.4",
+    "jsdoc-to-markdown": "^5.0.1",
+    "mocha": "^6.2.1",
     "nyc": "^14.1.1",
     "prettierx": "^0.7.1",
-    "sinon": "^7.3.0",
+    "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0"
   }
 }
