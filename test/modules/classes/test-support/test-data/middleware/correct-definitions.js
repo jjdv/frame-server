@@ -6,13 +6,13 @@ const correctDefinitions = {
     {
       definition: {
         name: 'myMiddlewareName1',
-        type: 'use',
+        type: 'get',
         routePaths: '/route/path',
         middleware: () => ''
       },
       result: {
         name: 'myMiddlewareName1',
-        type: 'use',
+        type: 'get',
         routePaths: '/route/path',
         middlewareFn: () => ''
       }
@@ -32,7 +32,7 @@ const correctDefinitions = {
     {
       definition: {
         name: 'myMiddlewareName3',
-        type: 'get',
+        type: 'put',
         routePaths: ['/route/path', '/', /abc*/],
         middleware: 'test-support/test-function.js'
       },
@@ -41,7 +41,7 @@ const correctDefinitions = {
       },
       result: {
         name: 'myMiddlewareName3',
-        type: 'get',
+        type: 'put',
         routePaths: ['/route/path', '/', /abc*/],
         middlewareFn: () => 'test'
       }

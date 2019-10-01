@@ -19,10 +19,10 @@ function validateViewConfig (viewConfig, status) {
   if (viewConfig.dir) {
     const rootDir = process.env.APP_ROOT_DIR
     if (typeof viewConfig.dir === 'string') {
-      validatedDirectory('view.dir', viewConfig.dir, rootDir, status)
+      validatedDirectory(viewConfig.dir, 'view.dir', rootDir, status)
     } else if (Array.isArray(viewConfig.dir)) {
       viewConfig.dir.forEach(dir =>
-        validatedDirectory('view.dir', dir, rootDir, status)
+        validatedDirectory(dir, 'view.dir', rootDir, status)
       )
     } else {
       status.reportErr(

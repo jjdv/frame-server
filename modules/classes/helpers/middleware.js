@@ -71,7 +71,7 @@ function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
   if (!rootDir) rootDir = process.env.APP_ROOT_DIR
   switch (middlewareDef && middlewareDef.constructor) {
     case String:
-      return safeRequire(middlewareDef, rootDir, middlewareName)
+      return safeRequire(middlewareDef, middlewareName, rootDir)
     case Function:
       return middlewareDef
     default:

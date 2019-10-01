@@ -50,8 +50,8 @@ function validateDynamicFileDef (fileDef, index, status) {
       const siteRootDir = process.env.SITE_ROOT_DIR
       filePathRequired(
         fileDef.fileName,
-        siteRootDir,
         `'fileName' in 'serveDynamicFiles', item ${index + 1}`,
+        siteRootDir,
         status
       )
     }

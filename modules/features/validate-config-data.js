@@ -12,8 +12,8 @@ module.exports = function validateConfigData (config) {
 
   // rootDir check
   process.env.APP_ROOT_DIR = validatedDirectory(
-    'rootDir',
     rootDir,
+    'rootDir',
     null,
     validationStatus
   )
@@ -21,8 +21,8 @@ module.exports = function validateConfigData (config) {
 
   // siteRootDir changed into absolute path and done validity check
   process.env.SITE_ROOT_DIR = validatedDirectory(
-    'siteRootDir',
     config.siteRootDir,
+    'siteRootDir',
     rootDir,
     validationStatus
   )
@@ -55,8 +55,8 @@ module.exports = function validateConfigData (config) {
       config.siteMiddlewaresDir &&
       filePathValidated(
         config.siteMiddlewaresDir,
-        rootDir,
         'siteMiddlewaresDir',
+        rootDir,
         validationStatus
       )
     process.env.SITE_MIDDLEWARES_DIR = siteMiddlewaresDir || rootDir

@@ -41,8 +41,8 @@ function validateDirDef (dirDef, index, status) {
       const rootDir = process.env.APP_ROOT_DIR
       filePathRequired(
         dirDef.dir,
-        rootDir,
         `'dir' in 'serveStaticFiles', item ${index + 1}`,
+        rootDir,
         status
       )
     }

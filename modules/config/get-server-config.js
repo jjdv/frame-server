@@ -47,15 +47,15 @@ function getServerConfig () {
   const status = new Status()
 
   // rootDir check and registration if valid
-  if (validatedDirectory('rootDir', serverConfig.rootDir, null, status)) {
+  if (validatedDirectory(serverConfig.rootDir, 'rootDir', null, status)) {
     process.env.APP_ROOT_DIR = serverConfig.rootDir
   } else return null
 
   // siteRootDir validity check & change into absolute path
   // registration if valid
   const siteRootDir = validatedDirectory(
-    'siteRootDir',
     serverConfig.siteRootDir,
+    'siteRootDir',
     serverConfig.rootDir,
     status
   )
