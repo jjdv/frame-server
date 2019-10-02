@@ -8,7 +8,7 @@ const { expect, sinon } = require('../../test-support/test-env')
 const Middleware = require('../../../modules/classes/middleware')
 
 // test variables
-const middlewareTestData = require('./test-support/test-data/middleware/middleware-test-data')
+const middlewareTestData = require('./test-support/middleware-test-data')
 let consoleErrorStub, res, appSpy
 
 // -----------------------------------------------------------------------
