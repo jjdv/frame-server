@@ -11,7 +11,7 @@
     "test": "mocha 'test/**/*.test.js'",
     "testc": "nyc mocha 'test/**/*.test.js'",
     "docs": "jsdoc2md %INIT_CWD%/**/*.js --plugin dmd-readable > %INIT_CWD%/doc.md",
-    "postinstall": "node modules/install/postinstall.js"
+    "postinstall": "node install/postinstall.js"
   },
   "repository": {
     "type": "git",
