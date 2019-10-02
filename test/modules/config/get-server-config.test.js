@@ -4,7 +4,7 @@ const path = require('path')
 
 // test environment
 const { expect, sinon } = require('../../test-support/test-env')
-const FakeFs = require('../../test-support/fake-fs')
+const { FakeFs } = require('node-basic-helpers')
 const {
   lookupConfigPaths,
   cliTest,
@@ -13,10 +13,12 @@ const {
 } = require('./test-support/test-data')
 
 // absolute paths for cache cleanup of the node's require function
-const helpersBasicAbsPath = require.resolve('../../../modules/helpers/basic')
-const helpersNodeAbsPath = require.resolve('../../../modules/helpers/node')
-const errorReportersAbsPath = require.resolve(
-  '../../../modules/helpers/error-reporters'
+const helpersBasicAbsPath = require.resolve('node-basic-helpers')
+const helpersBasicFunctionsAbsPath = require.resolve(
+  'node-basic-helpers/modules/helpers/basic-functions.js'
+)
+const errorStatusFunctionsAbsPath = require.resolve(
+  'node-basic-helpers/modules/helpers/status-functions.js'
 )
 const getServerConfigAbsPath = require.resolve(
   '../../../modules/config/get-server-config'
@@ -25,22 +27,22 @@ const getServerConfigAbsPath = require.resolve(
 const configIni = require('../../../modules/config/data/server.config.ini')
 const helpersBasicRequireStub = sinon.stub()
 const getServerConfigRequireStub = sinon.stub()
-let argvOriginal, consoleErrStub
+let argvOriginal, fakeFs, consoleErrStub
 
 function setTestEnv () {
   sinon.reset()
   helpersBasicRequireStub.callsFake(require)
   getServerConfigRequireStub.returns(null)
+  fakeFs.resetFakePaths()
   delete require.cache[helpersBasicAbsPath]
-  delete require.cache[helpersNodeAbsPath]
-  delete require.cache[errorReportersAbsPath]
+  delete require.cache[helpersBasicFunctionsAbsPath]
+  delete require.cache[errorStatusFunctionsAbsPath]
   delete require.cache[getServerConfigAbsPath]
 }
 
 describe('config > server.config.js', function () {
   before(function () {
     argvOriginal = process.argv
-    consoleErrStub = sinon.stub(console, 'error')
     global.testReplace = {
       'basic.js': {
         require: helpersBasicRequireStub
@@ -49,6 +51,8 @@ describe('config > server.config.js', function () {
         require: getServerConfigRequireStub
       }
     }
+    fakeFs = new FakeFs()
+    consoleErrStub = sinon.stub(console, 'error')
   })
 
   after(function () {
@@ -78,7 +82,6 @@ describe('config > server.config.js', function () {
       expectedConfigData.rootDir,
       expectedConfigData.siteRootDir
     )
-    const fakeFs = new FakeFs()
     fakeFs.addFakeDirPaths([expectedConfigData.rootDir, siteRootDirAbsPath])
     helpersBasicRequireStub.withArgs('fs').returns(fakeFs)
 
@@ -102,7 +105,6 @@ describe('config > server.config.js', function () {
       expectedConfigData.rootDir,
       expectedConfigData.siteRootDir
     )
-    const fakeFs = new FakeFs()
     fakeFs.addFakeFilePaths(cliTest.absPath)
     fakeFs.addFakeDirPaths([expectedConfigData.rootDir, siteRootDirAbsPath])
     helpersBasicRequireStub.withArgs('fs').returns(fakeFs)
@@ -118,7 +120,6 @@ describe('config > server.config.js', function () {
   })
 
   it('correctly merges ini and local configs', function () {
-    const fakeFs = new FakeFs()
     fakeFs.addFakeFilePaths(cliTest.absPath)
     helpersBasicRequireStub.withArgs('fs').returns(fakeFs)
 
@@ -163,7 +164,6 @@ describe('config > server.config.js', function () {
   it('returns null and logs error when the format of local config object is invalid', function () {
     const confArgv = ['aaa', '--conf', 'testdir/server.config.js']
     process.argv = process.argv.concat(confArgv)
-    const fakeFs = new FakeFs()
     fakeFs.addFakeFilePaths(cliTest.absPath)
     helpersBasicRequireStub.withArgs('fs').returns(fakeFs)
     const wrongLocalConfigs = [null, () => {}, []]
@@ -191,7 +191,6 @@ describe('config > server.config.js', function () {
     process.argv = process.argv.concat(confArgv)
     const rootDir = configIni.rootDir
     const siteRootDir = path.resolve(configIni.rootDir, configIni.siteRootDir)
-    const fakeFs = new FakeFs()
     fakeFs.addFakeFilePaths(cliTest.absPath)
     fakeFs.addFakeDirPaths([rootDir, siteRootDir])
     helpersBasicRequireStub.withArgs('fs').returns(fakeFs)

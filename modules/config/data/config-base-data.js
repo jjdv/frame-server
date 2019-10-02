@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 
-const appRootDirArr = path.resolve(__dirname, '../../..').split(path.sep)
+const appRootDirArr = path.resolve(__dirname, '../../../..').split(path.sep)
 if (appRootDirArr[appRootDirArr.length - 1] === 'node_modules')
   appRootDirArr.pop()
 const appRootDir = appRootDirArr.join(path.sep)

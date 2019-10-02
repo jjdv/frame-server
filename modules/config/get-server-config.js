@@ -5,45 +5,43 @@ const path = require('path')
 const {
   Status,
   basicFunctions: { isFile, argValue, findFileInDirs },
-  statusFunctios: { validatedDirectory }
+  statusFunctions: { validatedDirectory }
 } = require('node-basic-helpers')
 
 const { configFileName, configDirs } = require('./data/config-base-data')
 const serverConfigIni = require('./data/server.config.ini')
 
+// -----------------------------------------------------------------------------------------
 // --- start of test purpose code ---
-if (global.testReplace && global.testReplace['server.config.js']) {
-  const replace = global.testReplace['server.config.js']
-  /* eslint-disable no-global-assign */
-  if (replace.__dirname) __dirname = replace.__dirname
-  if (replace.require) require = replace.require
-  /* eslint-enable no-global-assign */
-}
+const replace = global.testReplace && global.testReplace['server.config.js']
+// eslint-disable-next-line no-global-assign
+if (replace.require) require = replace.require
 // --- end of test purpose code ---
+// -----------------------------------------------------------------------------------------
 
 function getServerConfig () {
   // get and validate the path of the local configuration file
   const localConfPath = getConfPath(serverConfigIni.rootDir)
-  if (localConfPath === 'error') return null
   if (!localConfPath) return serverConfigIni
+  if (localConfPath === 'error') return null
 
-  const locaServerlConfig = require(localConfPath)
+  const locaServerConfig = require(localConfPath)
 
   // check if format of localSerrverConfig is acceptable
   if (
-    !locaServerlConfig ||
-    typeof locaServerlConfig !== 'object' ||
-    locaServerlConfig.constructor !== Object
+    !locaServerConfig ||
+    typeof locaServerConfig !== 'object' ||
+    locaServerConfig.constructor !== Object
   ) {
     console.error(
       'Error: The local server configuration data is not an object but: ',
-      locaServerlConfig
+      locaServerConfig
     )
     return null
   }
 
   // get the final server config
-  const serverConfig = { ...serverConfigIni, ...locaServerlConfig }
+  const serverConfig = { ...serverConfigIni, ...locaServerConfig }
   const status = new Status()
 
   // rootDir check and registration if valid
