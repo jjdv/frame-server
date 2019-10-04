@@ -5,13 +5,12 @@ const {
 } = require('node-basic-helpers')
 const Middleware = require('./middleware')
 
-//   if (middlewaresArgsErr(middlewaresName, middlewares, applyMsg)) return
-
 class Middlewares {
   constructor (middlewaresName, middlewaresDef, options, applyMsg) {
-    const status = new Status()
+    this.middlewares = []
+    if (nameErr(middlewaresName, 'middlewares group', middlewaresDef)) return
 
-    if (nameErr(middlewaresName, 'middlewares group', middlewares)) return
+    const status = new Status()
     if (isEmpty(middlewaresDef)) {
       status.reportErr(
         'Invalid middlewares definition: ',
@@ -20,7 +19,8 @@ class Middlewares {
       )
     }
 
-    const middlewares = []
+    this.name = middlewaresName
+    this.applyMsg = applyMsg
     if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
     middlewaresDef.forEach((mDef, index) => {
       if (mDef.constructor !== Object) {
@@ -29,25 +29,22 @@ class Middlewares {
           middleware: mDef
         }
       } else if (!mDef.name) mDef.name = `${middlewaresName}-${index}`
-      middlewares.push(new Middleware(mDef, options))
+      this.middlewares.push(new Middleware(mDef, options))
     })
-
-    this.name = middlewaresName
-    this.middlewares = middlewares
-    this.applyMsg = applyMsg
   }
 
-  apply (app, groupReporting = true) {
+  apply (app, middlewareGroupReporting = true) {
     if (!app || isEmpty(this.middlewares)) return
 
-    const individualReporting = !groupReporting
-    if (groupReporting) {
+    if (middlewareGroupReporting) {
       const mNames = this.middlewares.map(m => m.name)
       const applyMsg = this.applyMsg
         ? this.applyMsg
         : `The middlewares applied from the '${this.name}': `
       console.log(applyMsg, mNames)
     }
+
+    const individualReporting = !middlewareGroupReporting
     this.middlewares.forEach(m => m.apply(app, individualReporting))
   }
 }

@@ -1,31 +1,44 @@
-const emptyNameDefinitions = [null, false, undefined, {}, [], ''].map(def => ({
-  definition: def,
+const emptyNameDefinitions = [null, false, undefined, NaN, ''].map(def => ({
+  middlewaresName: def,
   errMsg: {
-    args: ['Error: ', 'Invalid middleware definition: ', def]
+    args: [
+      'Error: ',
+      "Missing name of the 'middlewares group' with definition:",
+      undefined
+    ]
   }
 }))
 
-const emptyMiddlewaresDefinitions = [null, false, undefined, {}, [], ''].map(
-  def => ({
-    definition: def,
-    errMsg: {
-      args: ['Error: ', 'Invalid middleware definition: ', def]
-    }
-  })
-)
+const nonStringNameDefinitions = [{}, []].map(def => ({
+  middlewaresName: def,
+  middlewaresDef: 'middlewares definition',
+  errMsg: {
+    args: [
+      'Error: ',
+      "The name of the 'middlewares group', with definition:",
+      'middlewares definition',
+      ' must be a string and not: ',
+      def
+    ]
+  }
+}))
+
+const emptyMiddlewares = {
+  middlewares: []
+}
 
 const incorrectDefinitions = [
   {
     title:
-      'returns instance with middlewareFn null and reports error in case of empty definition',
+      "returns instance with property 'middlewares' being an empty array and reports error in case of missing (falsy) name definition",
     definition: emptyNameDefinitions,
-    result: {}
+    result: emptyMiddlewares
   },
   {
     title:
-      'returns instance with middlewareFn null and reports error in case of empty definition',
-    definition: emptyMiddlewaresDefinitions,
-    result: {}
+      "returns instance with property 'middlewares' being an empty array and reports error in case of non-string name definition",
+    definition: nonStringNameDefinitions,
+    result: emptyMiddlewares
   }
 ]
 

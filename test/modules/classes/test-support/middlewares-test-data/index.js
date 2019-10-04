@@ -1,6 +1,7 @@
-const correctDefinitions = require('./correct-definitions')
 const incorrectDefinitions = require('./incorrect-definitions')
+// const correctDefinitions = require('./correct-definitions')
 
-const middlewaresTestData = [correctDefinitions, incorrectDefinitions]
+// const middlewaresTestData = [...incorrectDefinitions, correctDefinitions]
+const middlewaresTestData = [...incorrectDefinitions]
 
 module.exports = middlewaresTestData

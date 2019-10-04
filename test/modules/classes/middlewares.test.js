@@ -3,7 +3,6 @@
 
 // test environment
 const { expect, sinon } = require('../../test-support/test-env')
-const Middleware = require('../../../modules/classes/middleware')
 
 // class under test
 const Middlewares = require('../../../modules/classes/middlewares')
@@ -26,15 +25,13 @@ describe('Middlewares', function () {
     consoleErrorStub.restore()
   })
 
-  it('generates class with no propperties and just apply method if invalid middlewares name or definition is provided', () => {})
-
   describe('creation', function () {
     testCreation()
   })
 
-  describe('.apply()', () => {
-    testApply()
-  })
+  // describe('.apply()', () => {
+  //   testApply()
+  // })
 })
 
 // -----------------------------------------------------------------------
@@ -130,25 +127,21 @@ function testApply () {
 }
 
 function checkMiddlewaresFromDef (mtdEl, mtd) {
-  let definition, options, result, errMsg
-  if (
-    mtdEl &&
-    mtdEl.constructor === Object &&
-    Object.keys(mtdEl).includes('definition')
-  ) {
-    ;({ definition, options, result, errMsg } = mtdEl)
-    if (!result) result = mtd.result
-    if (!errMsg) errMsg = mtd.errMsg
-  } else {
-    definition = mtdEl
-    result = mtd.result
-    errMsg = mtd.errMsg
-  }
+  let {
+    middlewaresName,
+    middlewaresDef,
+    options,
+    applyMsg,
+    result,
+    errMsg
+  } = mtdEl
+  if (!result) result = mtd.result
+  if (!errMsg) errMsg = mtd.errMsg
 
-  res = new Middlewares(definition, options)
+  res = new Middlewares(middlewaresName, middlewaresDef, options, applyMsg)
   expect(res.apply).to.exist()
   expect(mComparable(res)).to.deep.equal(mComparable(result))
-  if (!res.middlewareFn) {
+  if (!res.middlewares.length) {
     checkErrMessages(errMsg)
   }
 }
@@ -156,7 +149,8 @@ function checkMiddlewaresFromDef (mtdEl, mtd) {
 // middlewares comparable
 function mComparable (m) {
   const mC = Object.assign({}, m)
-  if (mC.middlewareFn) mC.middlewareFn = mC.middlewareFn.toString()
+  if (mC.middlewares)
+    mC.middlewares = Array.isArray(mC.middlewares) && mC.middlewares.length
   return mC
 }
 
