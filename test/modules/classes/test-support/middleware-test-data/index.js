@@ -1,11 +1,11 @@
 const emptyDefinitions = require('./empty-definitions')
-const correctDefinitions = require('./correct-definitions')
 const incorrectDefinitions = require('./incorrect-definitions')
+const correctDefinitions = require('./correct-definitions')
 
 const middlewareTestData = [
   emptyDefinitions,
-  correctDefinitions,
-  incorrectDefinitions
+  incorrectDefinitions,
+  correctDefinitions
 ]
 
 module.exports = middlewareTestData
