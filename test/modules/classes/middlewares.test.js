@@ -1,32 +1,43 @@
 /* eslint-env mocha */
 'use strict'
 
-// test environment
-const { expect, sinon } = require('../../test-support/test-env')
-
 // class under test
 const Middlewares = require('../../../modules/classes/middlewares')
 
-// test variables
-const middlewaresTestData = require('./test-support/middlewares-test-data')
-let consoleErrorStub, res, appSpy
+// test environment
+const { expect, sinon } = require('../../test-support/test-env')
+const consoleErrorStub = sinon.stub(console, 'error')
+const appSpy = { use: sinon.spy() }
+
+const DataTester = require('../../test-support/data-tester.class')
+const dataTester = new DataTester(
+  it,
+  expect,
+  getResult,
+  checkResult,
+  consoleErrorStub
+)
+
+const {
+  middlewaresTestData,
+  normalizeResult
+} = require('./test-support/middlewares-test-data')
 
 // -----------------------------------------------------------------------
 // test body
 // -----------------------------------------------------------------------
 
 describe('Middlewares', function () {
-  before(() => {
-    consoleErrorStub = sinon.stub(console, 'error')
-    appSpy = { use: sinon.spy() }
-  })
-
   after(() => {
     consoleErrorStub.restore()
   })
 
   describe('creation', function () {
-    testCreation()
+    beforeEach(() => {
+      consoleErrorStub.resetHistory()
+    })
+
+    dataTester.test(middlewaresTestData)
   })
 
   // describe('.apply()', () => {
@@ -38,30 +49,13 @@ describe('Middlewares', function () {
 // helpers
 // -----------------------------------------------------------------------
 
-function testCreation () {
-  beforeEach(async () => {
-    consoleErrorStub.resetHistory()
-  })
-
-  middlewaresTestData.forEach(mtd => {
-    it(mtd.title, () => {
-      if (Array.isArray(mtd.definition)) {
-        mtd.definition.forEach(mtdEl => {
-          consoleErrorStub.resetHistory()
-          checkMiddlewaresFromDef(mtdEl, mtd)
-        })
-      } else checkMiddlewaresFromDef(mtd.definition, mtd)
-    })
-  })
-}
-
 function testApply () {
   beforeEach(async () => {
     appSpy.use.resetHistory()
   })
 
   it('does not call app if the middlewareFn is falsy', () => {
-    const mdlw = new Middleware({
+    const mdlw = new Middlewares({
       name: 'testName',
       middleware: null
     })
@@ -70,7 +64,7 @@ function testApply () {
   })
 
   it('invokes app[this.type](this.middlewareFn) if this.routePaths does not exist', () => {
-    const mdlw = new Middleware({
+    const mdlw = new Middlewares({
       name: 'testName',
       middleware: () => 'testResult'
     })
@@ -85,7 +79,7 @@ function testApply () {
   })
 
   it('invokes app[this.type](this.routePaths, this.middlewareFn) if this.routePaths exists', () => {
-    const mdlw = new Middleware({
+    const mdlw = new Middlewares({
       name: 'testName',
       middleware: () => 'testResult',
       routePaths: '/api'
@@ -102,7 +96,7 @@ function testApply () {
   })
 
   it('reports middleware use if invoked with 2nd argument true as .apply(app, true)', () => {
-    const mdlw = new Middleware({
+    const mdlw = new Middlewares({
       name: 'testName',
       middleware: () => 'testResult'
     })
@@ -125,50 +119,19 @@ function testApply () {
     )
   })
 }
+// ------------------------------------
 
-function checkMiddlewaresFromDef (mtdEl, mtd) {
-  let {
-    middlewaresName,
-    middlewaresDef,
-    options,
-    applyMsg,
-    result,
-    errMsg
-  } = mtdEl
-  if (!result) result = mtd.result
-  if (!errMsg) errMsg = mtd.errMsg
-
-  res = new Middlewares(middlewaresName, middlewaresDef, options, applyMsg)
-  expect(res.apply).to.exist()
-  expect(mComparable(res)).to.deep.equal(mComparable(result))
-  if (!res.middlewares.length) {
-    checkErrMessages(errMsg)
-  }
+function getResult (testDataElement) {
+  return new Middlewares(
+    testDataElement.middlewaresName,
+    testDataElement.middlewaresDef,
+    testDataElement.options,
+    testDataElement.applyMsg
+  )
 }
+function checkResult (actualResult, referenceResult, expect) {
+  expect(actualResult.apply).to.exist()
 
-// middlewares comparable
-function mComparable (m) {
-  const mC = Object.assign({}, m)
-  if (mC.middlewares)
-    mC.middlewares = Array.isArray(mC.middlewares) && mC.middlewares.length
-  return mC
-}
-
-function checkErrMessages (errMsgs) {
-  if (Array.isArray(errMsgs)) {
-    expect(errMsgs.length).to.equal(consoleErrorStub.args.length)
-    errMsgs.forEach((errM, mIndx) =>
-      checkErrMsg(errM, consoleErrorStub.getCall(mIndx))
-    )
-  } else checkErrMsg(errMsgs, consoleErrorStub.getCall(0))
-}
-
-function checkErrMsg (errMsg, errMsgStub) {
-  if (argsDefined(errMsg)) {
-    errMsgStub.should.have.been.calledWithExactly(...errMsg.args)
-  } else errMsgStub.should.have.been.calledWithExactly(errMsg)
-}
-
-function argsDefined (val) {
-  return val && typeof val === 'object' && val.args
+  actualResult = normalizeResult(actualResult)
+  expect(actualResult).to.deep.equal(referenceResult)
 }
