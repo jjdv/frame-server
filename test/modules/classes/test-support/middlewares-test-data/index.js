@@ -1,7 +1,17 @@
 const incorrectDefinitions = require('./incorrect-definitions')
-// const correctDefinitions = require('./correct-definitions')
+const correctDefinitions = require('./correct-definitions')
 
-// const middlewaresTestData = [...incorrectDefinitions, correctDefinitions]
-const middlewaresTestData = [...incorrectDefinitions]
+const middlewaresTestData = [...incorrectDefinitions, correctDefinitions]
 
-module.exports = middlewaresTestData
+function normalizeResult (res) {
+  const resNormalized = Object.assign({}, res)
+  if (resNormalized.middlewares) {
+    resNormalized.middlewaresLength =
+      Array.isArray(resNormalized.middlewares) &&
+      resNormalized.middlewares.length
+    delete resNormalized.middlewares
+  }
+  return resNormalized
+}
+
+module.exports = { middlewaresTestData, normalizeResult }
