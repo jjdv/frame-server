@@ -7,28 +7,29 @@ class DataTester {
     this._errorStub = errorStub
   }
 
-  test (testData) {
+  test (testData, checkErrors = true) {
     testData.forEach(td => {
       this._it(td.title, () => {
         if (Array.isArray(td.definition)) {
           td.definition.forEach(tdEl => {
             this._errorStub.resetHistory()
-            this.checkTestDataElement(tdEl, td)
+            this.checkTestDataElement(tdEl, td, checkErrors)
           })
-        } else this.checkTestDataElement(td.definition, td)
+        } else this.checkTestDataElement(td.definition, td, checkErrors)
       })
     })
   }
 
-  checkTestDataElement (tdEl, td) {
+  checkTestDataElement (tdEl, td, checkErrors) {
     let { result: referenceResult, errMsg } = tdEl
     if (!referenceResult) referenceResult = td.result
     if (!errMsg) errMsg = td.errMsg
 
     let actualResult = this._getResult(tdEl)
     this._checkResult(actualResult, referenceResult, this._expect)
-    if (errMsg && this._errorStub) {
-      this.checkErrMessages(errMsg)
+    if (checkErrors && this._errorStub) {
+      if (errMsg) this.checkErrMessages(errMsg)
+      else this._errorStub.should.have.not.been.called()
     }
   }
 
@@ -48,15 +49,10 @@ module.exports = DataTester
 // helpers
 // -----------------------------------------------------------------------
 
-function checkErrMsg (errMsg, errMsgStub) {
-  if (!errMsg) {
-    errMsgStub.should.have.not.been.called()
-    return
-  }
-
+function checkErrMsg (errMsg, errorStub) {
   if (argsDefined(errMsg)) {
-    errMsgStub.should.have.been.calledWithExactly(...errMsg.args)
-  } else errMsgStub.should.have.been.calledWithExactly(errMsg)
+    errorStub.should.have.been.calledWithExactly(...errMsg.args)
+  } else errorStub.should.have.been.calledWithExactly(errMsg)
 }
 
 function argsDefined (val) {
