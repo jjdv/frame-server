@@ -1,66 +1,27 @@
-const path = require('path')
+const pathToTestFunction = require.resolve(
+  '../../../../test-support/test-function'
+)
 
 const correctDefinitions = {
-  title: 'returns correct middleware instance if definition is correct',
+  title: 'returns correct middlewares instance if definition is correct',
   definition: [
     {
-      definition: {
-        name: 'myMiddlewareName1',
-        type: 'use',
-        routePaths: '/route/path',
-        middleware: () => ''
-      },
+      middlewaresName: 'myMiddlewaresName1',
+      middlewaresDef: () => '',
       result: {
-        name: 'myMiddlewareName1',
-        type: 'use',
-        routePaths: '/route/path',
-        middlewareFn: () => ''
+        name: 'myMiddlewaresName1',
+        middlewaresLength: 1,
+        applyMsg: undefined
       }
     },
     {
-      definition: {
-        name: 'myMiddlewareName2',
-        middleware: () => ''
-      },
+      middlewaresName: 'myMiddlewaresName2',
+      middlewaresDef: [() => '', pathToTestFunction],
+      applyMsg: 'Test apply message.',
       result: {
-        name: 'myMiddlewareName2',
-        type: 'use',
-        routePaths: undefined,
-        middlewareFn: () => ''
-      }
-    },
-    {
-      definition: {
-        name: 'myMiddlewareName3',
-        type: 'get',
-        routePaths: ['/route/path', '/', /abc*/],
-        middleware: 'test-support/test-function.js'
-      },
-      options: {
-        rootDir: path.resolve(__dirname, '../../../../..')
-      },
-      result: {
-        name: 'myMiddlewareName3',
-        type: 'get',
-        routePaths: ['/route/path', '/', /abc*/],
-        middlewareFn: () => 'test'
-      }
-    },
-    {
-      definition: {
-        name: 'myMiddlewareName4',
-        routePaths: /abc*/,
-        middleware: 'test-support/test-function.js'
-      },
-      options: {
-        rootDir: path.resolve(__dirname, '../../../../..'),
-        defaultType: 'put'
-      },
-      result: {
-        name: 'myMiddlewareName4',
-        type: 'put',
-        routePaths: /abc*/,
-        middlewareFn: () => 'test'
+        name: 'myMiddlewaresName2',
+        middlewaresLength: 2,
+        applyMsg: 'Test apply message.'
       }
     }
   ]
