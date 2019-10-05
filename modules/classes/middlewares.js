@@ -9,6 +9,7 @@ class Middlewares {
   constructor (middlewaresName, middlewaresDef, options, applyMsg) {
     this.middlewares = []
     if (nameErr(middlewaresName, 'middlewares group', middlewaresDef)) return
+    this.name = middlewaresName
 
     const status = new Status()
     if (isEmpty(middlewaresDef)) {
@@ -17,24 +18,29 @@ class Middlewares {
         middlewaresDef,
         `in the middleware '${middlewaresName}'.`
       )
+      return
     }
 
-    this.name = middlewaresName
     this.applyMsg = applyMsg
     if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
     middlewaresDef.forEach((mDef, index) => {
-      if (mDef.constructor !== Object) {
+      if (!mDef) return
+      if (typeof mDef === 'object' && mDef.constructor !== Object) {
         mDef = {
-          name: `${middlewaresName}-${index}`,
+          name: `${middlewaresName}-element${index + 1}`,
           middleware: mDef
         }
-      } else if (!mDef.name) mDef.name = `${middlewaresName}-${index}`
+      } else if (!mDef.name)
+        mDef.name = `${middlewaresName}-element${index + 1}`
       this.middlewares.push(new Middleware(mDef, options))
     })
   }
 
   apply (app, middlewareGroupReporting = true) {
     if (!app || isEmpty(this.middlewares)) return
+
+    const individualReporting = !middlewareGroupReporting
+    this.middlewares.forEach(m => m.apply(app, individualReporting))
 
     if (middlewareGroupReporting) {
       const mNames = this.middlewares.map(m => m.name)
@@ -43,9 +49,6 @@ class Middlewares {
         : `The middlewares applied from the '${this.name}': `
       console.log(applyMsg, mNames)
     }
-
-    const individualReporting = !middlewareGroupReporting
-    this.middlewares.forEach(m => m.apply(app, individualReporting))
   }
 }
 
