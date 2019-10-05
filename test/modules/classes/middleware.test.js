@@ -9,20 +9,17 @@ const Middleware = require('../../../modules/classes/middleware')
 
 // test variables
 const middlewareTestData = require('./test-support/middleware-test-data')
-let consoleErrorStub, res, appSpy
+const consoleErrorStub = sinon.stub(console, 'error')
+const appSpy = () => {}
+appSpy.use = sinon.spy()
+appSpy.get = sinon.spy()
+let res
 
 // -----------------------------------------------------------------------
 // test body
 // -----------------------------------------------------------------------
 
 describe('Middleware', function () {
-  before(() => {
-    consoleErrorStub = sinon.stub(console, 'error')
-    appSpy = sinon.fake()
-    appSpy.use = sinon.spy()
-    appSpy.get = sinon.spy()
-  })
-
   after(() => {
     consoleErrorStub.restore()
   })
@@ -60,6 +57,7 @@ function testCreation () {
 function testApply () {
   beforeEach(async () => {
     appSpy.use.resetHistory()
+    appSpy.get.resetHistory()
   })
 
   it('does not call app if the middlewareFn is falsy', () => {
@@ -69,6 +67,7 @@ function testApply () {
     })
     mdlw.apply(appSpy, false)
     appSpy.use.should.have.not.been.called()
+    appSpy.get.should.have.not.been.called()
   })
 
   it('invokes app[this.type](this.middlewareFn) if this.routePaths does not exist', () => {
@@ -82,6 +81,7 @@ function testApply () {
     expect(appSpy.use.args[0][0].toString()).to.equal(
       (() => 'testResult').toString()
     )
+    appSpy.get.should.have.not.been.called()
   })
 
   it('invokes app[this.type](this.routePaths, this.middlewareFn) if this.routePaths exists', () => {
@@ -100,6 +100,7 @@ function testApply () {
     expect(appSpy.get.args[0][1].toString()).to.equal(
       (() => 'testResult').toString()
     )
+    appSpy.use.should.have.not.been.called()
   })
 
   it('reports middleware use if invoked with 2nd argument true as .apply(app, true)', () => {
@@ -124,6 +125,7 @@ function testApply () {
     expect(appSpy.use.args[1][0].toString()).to.equal(
       (() => 'testResult').toString()
     )
+    appSpy.get.should.have.not.been.called()
   })
 }
 
