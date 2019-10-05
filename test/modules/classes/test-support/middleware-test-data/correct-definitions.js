@@ -37,7 +37,7 @@ const correctDefinitions = {
         middleware: 'test-support/test-function.js'
       },
       options: {
-        rootDir: path.resolve(__dirname, '../../../../..')
+        rootDir: path.resolve(__dirname, '../../../..')
       },
       result: {
         name: 'myMiddlewareName3',
@@ -53,7 +53,7 @@ const correctDefinitions = {
         middleware: 'test-support/test-function.js'
       },
       options: {
-        rootDir: path.resolve(__dirname, '../../../../..'),
+        rootDir: path.resolve(__dirname, '../../../..'),
         defaultType: 'put'
       },
       result: {
