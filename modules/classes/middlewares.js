@@ -25,7 +25,7 @@ class Middlewares {
     if (!Array.isArray(middlewaresDef)) middlewaresDef = [middlewaresDef]
     middlewaresDef.forEach((mDef, index) => {
       if (!mDef) return
-      if (typeof mDef === 'object' && mDef.constructor !== Object) {
+      if (typeof mDef !== 'object' || mDef.constructor !== Object) {
         mDef = {
           name: `${middlewaresName}-element${index + 1}`,
           middleware: mDef
@@ -37,7 +37,7 @@ class Middlewares {
   }
 
   apply (app, middlewareGroupReporting = true) {
-    if (!app || isEmpty(this.middlewares)) return
+    if (!(app instanceof Function) || isEmpty(this.middlewares)) return
 
     const individualReporting = !middlewareGroupReporting
     this.middlewares.forEach(m => m.apply(app, individualReporting))
