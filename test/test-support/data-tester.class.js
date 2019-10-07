@@ -1,34 +1,48 @@
 class DataTester {
-  constructor (it, expect, getResult, checkResult, logStub) {
+  constructor (it, expect, getResult, checkResult, checkLogMatch, logStub) {
     this._it = it
     this._expect = expect
     this._getResult = getResult
     this._checkResult = checkResult
+    this._checkLogMatch = checkLogMatch
     this._logStub = logStub
   }
 
-  test (testData, checkLogs = true) {
+  test (testData) {
     testData.forEach(td => {
       this._it(td.title, () => {
-        if (Array.isArray(td.definition)) {
+        if (Array.isArray(td.definition))
           td.definition.forEach(tdEl => {
-            this._logStub.resetHistory()
-            this.checkTestDataElement(tdEl, td, checkLogs)
+            this._checkTestDataElement(tdEl, td)
           })
-        } else this.checkTestDataElement(td.definition, td, checkLogs)
+        else this._checkTestDataElement(td.definition, td)
       })
     })
   }
 
-  checkTestDataElement (tdEl, td, checkLogs) {
+  _checkTestDataElement (tdEl, td) {
     let { result: referenceResult, logs } = tdEl
     if (!referenceResult) referenceResult = td.result
     if (!logs) logs = td.logs
 
+    if (this._logStub) this._logStub.resetHistory()
     let actualResult = this._getResult(tdEl)
     this._checkResult(actualResult, referenceResult, this._expect)
-    if (checkLogs && this._logStub)
-      checkLogsMatch(logs, this._logStub, this._expect)
+    if (this._logStub) this._checkLogsMatch(logs, this._logStub, this._expect)
+  }
+
+  _checkLogsMatch (logs) {
+    if (logs) {
+      if (Array.isArray(logs)) {
+        this._expect(logs.length).to.equal(this._logStub.args.length)
+        logs.forEach((log, logIndx) =>
+          this._checkLogMatch(log, this._logStub.getCall(logIndx))
+        )
+      } else {
+        this._logStub.should.have.been.calledOnce()
+        this._checkLogMatch(logs, this._logStub.getCall(0))
+      }
+    } else this._logStub.should.have.not.been.called()
   }
 }
 
@@ -37,20 +51,6 @@ module.exports = DataTester
 // -----------------------------------------------------------------------
 // helpers
 // -----------------------------------------------------------------------
-
-function checkLogsMatch (logs, logStub, expect) {
-  if (logs) {
-    if (Array.isArray(logs)) {
-      expect(logs.length).to.equal(logStub.args.length)
-      logs.forEach((log, logIndx) =>
-        checkLogMatch(log, logStub.getCall(logIndx))
-      )
-    } else {
-      logStub.should.have.been.calledOnce()
-      checkLogMatch(logs, logStub.getCall(0))
-    }
-  } else logStub.should.have.not.been.called()
-}
 
 function checkLogMatch (logs, logStub) {
   if (propDefined('args', logs)) {
