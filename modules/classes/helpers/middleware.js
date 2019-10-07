@@ -14,13 +14,12 @@ function middlewareDefToArgs (
   options = {},
   status = new Status()
 ) {
-  const { rootDir, defaultType } = options
   const {
     name: middlewareName,
     middleware: middlewareFnDef,
     routePaths
   } = middlewareDef
-
+  const { rootDir, defaultType } = options
   const middlewareFn = middlewareFnFromDef(
     middlewareFnDef,
     middlewareName,
@@ -29,18 +28,10 @@ function middlewareDefToArgs (
   const type = middlewareDef.type ? middlewareDef.type : defaultType || 'use'
 
   nameErr(middlewareName, 'middleware', middlewareDef, status)
-  middlewareFnErrCheck(middlewareFn, middlewareName, status)
   if (routePaths) routePathsErr(routePaths, middlewareName, status)
   middlewareTypeErrCheck(type, middlewareName, status)
 
   return [middlewareName, middlewareFn, routePaths, type]
-}
-
-function middlewareFnErrCheck (middlewareFn, middlewareName, status) {
-  if (!middlewareFn) {
-    const extraInfo = `provided for the middleware: '${middlewareName}'.`
-    status.reportErr(`No middleware function ${extraInfo}`)
-  }
 }
 
 function middlewareTypeErrCheck (type, middlewareName, status) {
@@ -67,17 +58,17 @@ function middlewareTypeErrCheck (type, middlewareName, status) {
   }
 }
 
-function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
+function middlewareFnFromDef (middlewareFnDef, middlewareName, rootDir) {
   if (!rootDir) rootDir = process.env.APP_ROOT_DIR
-  switch (middlewareDef && middlewareDef.constructor) {
+  switch (middlewareFnDef && middlewareFnDef.constructor) {
     case String:
-      return safeRequire(middlewareDef, middlewareName, rootDir)
+      return safeRequire(middlewareFnDef, middlewareName, rootDir)
     case Function:
-      return middlewareDef
+      return middlewareFnDef
     default:
       console.error(
         'Error: Invalid format of the middleware: ',
-        middlewareDef,
+        middlewareFnDef,
         `in the middleware: '${middlewareName}'`
       )
       return null
@@ -87,7 +78,6 @@ function middlewareFnFromDef (middlewareDef, middlewareName, rootDir) {
 module.exports = {
   middlewareMock,
   middlewareDefToArgs,
-  middlewareFnErrCheck,
   middlewareTypeErrCheck,
   middlewareFnFromDef
 }
