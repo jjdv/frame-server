@@ -1,3 +1,5 @@
+const path = require('path')
+
 const pathToTestFunction = require.resolve(
   '../../../../test-support/test-function'
 )
@@ -16,7 +18,10 @@ const correctDefinitions = {
     },
     {
       middlewaresName: 'myMiddlewaresName2',
-      middlewaresDef: [() => '', pathToTestFunction],
+      middlewaresDef: [() => '', path.basename(pathToTestFunction)],
+      options: {
+        rootDir: path.dirname(pathToTestFunction)
+      },
       applyMsg: 'Test apply message.',
       result: {
         name: 'myMiddlewaresName2',
