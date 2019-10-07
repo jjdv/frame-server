@@ -43,10 +43,10 @@ class Middlewares {
     this.middlewares.forEach(m => m.apply(app, individualReporting))
 
     if (middlewareGroupReporting) {
-      const mNames = this.middlewares.map(m => m.name)
+      const mNames = this.middlewares.map(m => m.name).join('\n')
       const applyMsg = this.applyMsg
         ? this.applyMsg
-        : `The middlewares applied from the '${this.name}': `
+        : `The middlewares applied from the '${this.name}':\n`
       console.log(applyMsg, mNames)
     }
   }
